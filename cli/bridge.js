@@ -14,12 +14,12 @@ const ITALIC = "\x1b[3m";
 const RESET = "\x1b[0m";
 
 // Custom palette
-const ACCENT = "\x1b[38;2;99;102;241m";     // indigo #6366f1
+const ACCENT = "\x1b[38;2;237;112;46m";      // orange #ED702E
 const SUCCESS = "\x1b[38;2;34;197;94m";      // green #22c55e
 const WARN = "\x1b[38;2;250;204;21m";        // yellow #facc15
 const ERROR = "\x1b[38;2;239;68;68m";        // red #ef4444
 const MUTED = "\x1b[38;2;107;114;128m";      // gray #6b7280
-const INFO = "\x1b[38;2;147;151;255m";       // light indigo #9397ff
+const INFO = "\x1b[38;2;245;166;35m";        // light orange #F5A623
 const WHITE = "\x1b[38;2;243;244;246m";      // near-white #f3f4f6
 
 const BRIDGE_HOME = path.join(process.env.HOME, ".bridge");
@@ -30,12 +30,12 @@ const PORT = process.env.BRIDGE_PORT || 9001;
 
 const LOGO = `
 ${ACCENT}  ┌──────────────────────────────────────┐
-  │${RESET}${BOLD}          Bridge for Claude Code       ${RESET}${ACCENT}│
-  │${RESET}${MUTED}    Design in Figma from your terminal   ${RESET}${ACCENT}│
+  │${RESET}  🧱 ${BOLD}Bridge for Claude Code${RESET}             ${ACCENT}│
+  │${RESET}${MUTED}     Design in Figma from your terminal  ${RESET}${ACCENT}│
   └──────────────────────────────────────┘${RESET}
 `;
 
-const LOGO_SMALL = `${ACCENT}${BOLD}  bridge${RESET}`;
+const LOGO_SMALL = `  🧱 ${ACCENT}${BOLD}bridge${RESET}`;
 
 // ─── Spinner ───
 
@@ -339,7 +339,7 @@ async function cmdInit() {
 
   print();
   print(`  ${ACCENT}┌──────────────────────────────────────┐${RESET}`);
-  print(`  ${ACCENT}│${RESET}  ${SUCCESS}${BOLD}Setup complete!${RESET}                      ${ACCENT}│${RESET}`);
+  print(`  ${ACCENT}│${RESET}  🧱 ${SUCCESS}${BOLD}Setup complete!${RESET}                   ${ACCENT}│${RESET}`);
   print(`  ${ACCENT}│${RESET}                                      ${ACCENT}│${RESET}`);
   print(`  ${ACCENT}│${RESET}  Next:                                ${ACCENT}│${RESET}`);
   print(`  ${ACCENT}│${RESET}  ${WHITE}$ bridge start${RESET}    ${MUTED}start server${RESET}       ${ACCENT}│${RESET}`);
