@@ -30,8 +30,8 @@ const PORT = process.env.BRIDGE_PORT || 9001;
 
 const LOGO = `
 ${ACCENT}  ┌──────────────────────────────────────┐
-  │${RESET}  🧱 ${BOLD}Bridge for Claude Code${RESET}             ${ACCENT}│
-  │${RESET}${MUTED}     Design in Figma from your terminal  ${RESET}${ACCENT}│
+  │${RESET}  🧱 ${BOLD}Bridge for Claude Code${RESET}            ${ACCENT}│
+  │${RESET}${MUTED}     Design in Figma from your terminal ${RESET}${ACCENT}│
   └──────────────────────────────────────┘${RESET}
 `;
 
@@ -415,16 +415,16 @@ async function cmdInit() {
   // ─── Done ───
 
   print();
-  print(`  ${ACCENT}┌──────────────────────────────────────────────┐${RESET}`);
-  print(`  ${ACCENT}│${RESET}  🧱 ${SUCCESS}${BOLD}Setup complete!${RESET}                           ${ACCENT}│${RESET}`);
-  print(`  ${ACCENT}│${RESET}                                              ${ACCENT}│${RESET}`);
-  print(`  ${ACCENT}│${RESET}  ${BOLD}Next steps:${RESET}                                 ${ACCENT}│${RESET}`);
-  print(`  ${ACCENT}│${RESET}  ${WHITE}1.${RESET} ${MUTED}Add screenshots to${RESET} ${WHITE}.bridge/ui-references/${RESET} ${ACCENT}│${RESET}`);
-  print(`  ${ACCENT}│${RESET}  ${WHITE}2.${RESET} ${MUTED}Open Claude Code and say:${RESET}                ${ACCENT}│${RESET}`);
-  print(`  ${ACCENT}│${RESET}     ${WHITE}"Build my knowledge base"${RESET}               ${ACCENT}│${RESET}`);
-  print(`  ${ACCENT}│${RESET}  ${WHITE}3.${RESET} ${MUTED}Then start designing:${RESET} ${WHITE}spec {name}${RESET}       ${ACCENT}│${RESET}`);
-  print(`  ${ACCENT}│${RESET}                                              ${ACCENT}│${RESET}`);
-  print(`  ${ACCENT}└──────────────────────────────────────────────┘${RESET}`);
+  print(`  ${ACCENT}┌─────────────────────────────────────────────┐${RESET}`);
+  print(`  ${ACCENT}│${RESET}  🧱 ${SUCCESS}${BOLD}Setup complete!${RESET}                          ${ACCENT}│${RESET}`);
+  print(`  ${ACCENT}│${RESET}                                             ${ACCENT}│${RESET}`);
+  print(`  ${ACCENT}│${RESET}  ${BOLD}Next steps:${RESET}                                ${ACCENT}│${RESET}`);
+  print(`  ${ACCENT}│${RESET}  ${WHITE}1.${RESET} ${MUTED}Add screenshots to${RESET} ${WHITE}.bridge/ui-references${RESET} ${ACCENT}│${RESET}`);
+  print(`  ${ACCENT}│${RESET}  ${WHITE}2.${RESET} ${MUTED}Open Claude Code and say:${RESET}               ${ACCENT}│${RESET}`);
+  print(`  ${ACCENT}│${RESET}     ${WHITE}"Build my knowledge base"${RESET}              ${ACCENT}│${RESET}`);
+  print(`  ${ACCENT}│${RESET}  ${WHITE}3.${RESET} ${MUTED}Then start designing:${RESET} ${WHITE}spec {name}${RESET}      ${ACCENT}│${RESET}`);
+  print(`  ${ACCENT}│${RESET}                                             ${ACCENT}│${RESET}`);
+  print(`  ${ACCENT}└─────────────────────────────────────────────┘${RESET}`);
   print();
 }
 

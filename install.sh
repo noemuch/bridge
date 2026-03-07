@@ -51,8 +51,8 @@ fail() {
 
 echo ""
 echo -e "${ACCENT}  ┌──────────────────────────────────────┐${RESET}"
-echo -e "${ACCENT}  │${RESET}  🧱 ${BOLD}Bridge for Claude Code${RESET}             ${ACCENT}│${RESET}"
-echo -e "${ACCENT}  │${RESET}${MUTED}     Design in Figma from your terminal  ${RESET}${ACCENT}│${RESET}"
+echo -e "${ACCENT}  │${RESET}  🧱 ${BOLD}Bridge for Claude Code${RESET}            ${ACCENT}│${RESET}"
+echo -e "${ACCENT}  │${RESET}${MUTED}     Design in Figma from your terminal ${RESET}${ACCENT}│${RESET}"
 echo -e "${ACCENT}  └──────────────────────────────────────┘${RESET}"
 echo ""
 
@@ -149,7 +149,7 @@ succeed "${BOLD}bridge${RESET} command added to PATH"
 
 echo ""
 echo -e "${ACCENT}  ┌──────────────────────────────────────┐${RESET}"
-echo -e "${ACCENT}  │${RESET}  🧱 ${SUCCESS}${BOLD}Installed!${RESET}                         ${ACCENT}│${RESET}"
+echo -e "${ACCENT}  │${RESET}  🧱 ${SUCCESS}${BOLD}Installed!${RESET}                        ${ACCENT}│${RESET}"
 echo -e "${ACCENT}  │${RESET}                                      ${ACCENT}│${RESET}"
 echo -e "${ACCENT}  │${RESET}  ${WHITE}cd your-project${RESET}                      ${ACCENT}│${RESET}"
 echo -e "${ACCENT}  │${RESET}  ${WHITE}bridge init${RESET}                          ${ACCENT}│${RESET}"
