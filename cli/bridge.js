@@ -545,7 +545,7 @@ function cmdHelp() {
   print(`  ${BOLD}Links${RESET}`);
   print(`  ${MUTED}${"─".repeat(40)}${RESET}`);
   print(`  ${MUTED}Plugin${RESET}   ${ACCENT}${PLUGIN_URL}${RESET}`);
-  print(`  ${MUTED}GitHub${RESET}   ${ACCENT}https://github.com/noe-finary/bridge${RESET}`);
+  print(`  ${MUTED}GitHub${RESET}   ${ACCENT}https://github.com/noemuch/bridge${RESET}`);
   print();
 }
 

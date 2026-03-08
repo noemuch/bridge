@@ -31,14 +31,14 @@ Terminal → Bridge Server (localhost:9001) → This Plugin → Figma API
 ### Setup
 
 ```
-git clone https://github.com/noe-finary/bridge.git
+git clone https://github.com/noemuch/bridge.git
 cd bridge && npm install --prefix server
 node server/server.js
 ```
 
 Then open this plugin in Figma. That's it.
 
-Full documentation: https://github.com/noe-finary/bridge
+Full documentation: https://github.com/noemuch/bridge
 
 ### Works with
 

@@ -14,7 +14,7 @@ Claude Code  -->  Bridge Server (:9001)  <--WebSocket-->  Figma Plugin  -->  You
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/noe-finary/bridge/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/noemuch/bridge/main/install.sh | bash
 ```
 
 ## Quick Start
@@ -46,7 +46,7 @@ bridge help       # Show available commands
 If you prefer not to use the install script:
 
 ```bash
-git clone https://github.com/noe-finary/bridge.git
+git clone https://github.com/noemuch/bridge.git
 cd bridge
 npm install --prefix server
 node server/server.js

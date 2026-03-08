@@ -3,11 +3,11 @@ set -e
 
 # ─────────────────────────────────────────────
 # 🧱 Bridge for Claude Code — Install Script
-# curl -fsSL https://raw.githubusercontent.com/noe-finary/bridge/main/install.sh | bash
+# curl -fsSL https://raw.githubusercontent.com/noemuch/bridge/main/install.sh | bash
 # ─────────────────────────────────────────────
 
 BRIDGE_HOME="$HOME/.bridge"
-REPO="https://github.com/noe-finary/bridge.git"
+REPO="https://github.com/noemuch/bridge.git"
 
 # ─── Brand Colors (true color) ───
 
