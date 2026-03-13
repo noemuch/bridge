@@ -6,9 +6,10 @@
 
 | Gate | Blocking | Check |
 |------|----------|-------|
-| Bridge server running | Yes (before design) | `curl -s http://localhost:9001/status` returns JSON |
-| Bridge connected to Figma | Yes (before design) | Status has `"connected": true` |
+| figma-console-mcp available | Yes (before design) | `figma_get_status()` returns valid connection |
+| Connected to Figma Desktop | Yes (before design) | Status has `setup.valid: true` |
 | DS libraries enabled | Yes (before design) | User confirmation |
+| Knowledge base exists | Yes (before spec) | `registries/` has JSON files |
 
 ---
 
@@ -65,8 +66,11 @@
 | Gate | Blocking | Check |
 |------|----------|-------|
 | **Atomic generation** | **Yes** | Design split into 4-6 sequential scripts (~30-80 lines each), never one monolithic script |
-| **Screenshot verification between steps** | **Yes** | `get_screenshot` via Figma MCP called after EACH atomic step, issues fixed before proceeding |
-| **Bridge command format** | **Yes** | All commands include `"action": "runScript"` field |
+| **Screenshot verification between steps** | **Yes** | `figma_take_screenshot` called after EACH atomic step, issues fixed before proceeding |
+| **Pre-script element audit (Rule 18)** | **Yes** | Before EACH script: list every visual element, verify against registries. NEVER recreate a DS component as raw frame |
+| **Registry loaded before first script** | **Yes** | `components.json` and other registries read and available before writing any generation script |
+| **Zero hardcoded hex colors** | **Yes** | Every color uses `setBoundVariableForPaint` or `setBoundVariable` with registry variables |
+| **Canvas positioning (Rule 19)** | **Yes** | Components positioned with 80px+ gaps, never stacked at (0,0) |
 
 ---
 
@@ -74,13 +78,14 @@
 
 | Gate | Blocking | Check |
 |------|----------|-------|
-| Figma design exists | Yes | Generated via Bridge |
+| Figma design exists | Yes | Generated via figma_execute |
 | Canvas width correct | Yes | 1440px (web), 390px (mobile), 1024px (tablet) |
 | Component properties exposed | Yes (component mode) | All text = TEXT prop, all icons = INSTANCE_SWAP, optionals = BOOLEAN |
 | **No interaction state variants** | **Yes** | Hover/pressed/disabled handled via prototyping, NOT as separate variants |
-| **Variants arranged in grid** | **Yes (component mode)** | Variants positioned in readable grid after `combineAsVariants()` |
-| **Zero raw elements** | **Yes** | Every visible element checked against registries before creation |
+| **Variants arranged in grid** | **Yes (component mode)** | Variants positioned in readable grid after `combineAsVariants()`, not stacked |
+| **Zero raw elements (Rule 18)** | **Yes** | Every visible element checked against registries before creation. Raw frames/text only if justified. **FAIL if Avatar, Divider, Tag, Badge, or Button recreated as raw element** |
 | **Design follows matched pattern layout** | **Yes** | Zones, proportions match pattern rules |
+| **Content density matches reference** | **Yes** | Similar item count, whitespace balance |
 
 ---
 
@@ -91,11 +96,11 @@
 | **Layout match** | Yes | Zones in correct positions per pattern |
 | **Proportion match** | Yes | Relative widths/heights match pattern |
 | **Density match** | Yes | Information density similar to reference screenshots |
-| **Hierarchy match** | Yes | Visual weight of titles, sections, CTAs matches reference |
-| **Card pattern match** | Yes (if cards present) | Size, grid, rhythm, internal layout per pattern |
+| **Hierarchy match** | Yes | Visual weight of titles, sections, CTAs matches product patterns |
+| **Card pattern match** | Yes (if cards present) | Size, grid, rhythm, internal layout per design patterns |
 | **Navigation match** | Yes | Sidebar/stepper/tabs follow correct pattern |
-| **Section organization** | Yes | Consistent gaps between sections |
-| **Whitespace balance** | Yes | Margins and breathing room consistent |
+| **Section organization** | Yes | Consistent spacing between sections, titles properly placed |
+| **Whitespace balance** | Yes | Margins and breathing room consistent with product density |
 
 ---
 
@@ -114,7 +119,7 @@
 
 ## Skip Policy
 
-- **Non-skippable (NEVER):** spec creation, spec validation, new components check, pattern matching, visual fidelity review
+- **Non-skippable (NEVER):** spec creation, spec validation, new components check, pattern matching, visual fidelity review, DS component reuse audit (Rule 18), pre-script element audit, registry loading
 - **Skippable with warning:** Figma URL in spec, individual structural review sub-checks
 - When skipping:
   1. Warn user about quality impact

@@ -19,12 +19,13 @@ Implement a **{description}**. {Design principle justification}.
 ## Visual Reference (recommended)
 
 > If this component appears in existing screens, document which patterns/screenshots show similar components.
+> This helps the `design` step match proportions, density, and visual weight.
 
 | | |
 |---|---|
 | **Closest pattern** | {pattern name or "N/A — new pattern"} |
 | **Screenshots** | {screenshot filenames showing similar components, or "N/A"} |
-| **Composition notes** | {what to match: card size, internal spacing rhythm, visual weight} |
+| **Composition notes** | {what to match: card size, internal spacing rhythm, visual weight relative to surroundings} |
 
 ---
 
@@ -125,11 +126,14 @@ interface {Composed}Props {
 
 ## Component Properties (Figma)
 
+> Define ALL configurable properties for the Figma component.
+> Every text, icon, and optional element must be exposed.
+
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `{name}` | TEXT | {default} | {what it controls} |
-| `{name}` | INSTANCE_SWAP | {default component} | {what it swaps} |
-| `{name}` | BOOLEAN | {true/false} | {what it shows/hides} |
+| `{name}` | INSTANCE_SWAP | {default component} | {what icon/sub-component it swaps} |
+| `{name}` | BOOLEAN | {true/false} | {what element it shows/hides} |
 
 ---
 
@@ -146,9 +150,9 @@ interface {Composed}Props {
 
 ## Reused DS Components
 
-| Component | Usage |
-|-----------|-------|
-| `{Name}` | {usage} |
+| Component | Available | Usage |
+|-----------|-----------|-------|
+| `{Name}` | {platforms} | {usage} |
 
 ---
 

@@ -1,29 +1,29 @@
-# Bridge — Claude Code Instructions
+# Bridge DS — Claude Code Instructions
 
-Bridge connects Claude Code to Figma via a WebSocket bridge. You can create frames, import components, bind variables, and apply text styles — all through scripts executed in the Figma Plugin API.
+Bridge DS is an AI-powered design workflow that generates Figma designs using your real design system. It uses [figma-console-mcp](https://github.com/southleft/figma-console-mcp) as the transport layer.
 
-## Quick Start
+## Architecture
 
-```bash
-# 1. Start the server
-node server/server.js
-
-# 2. Open your Figma file + run the Bridge plugin
-# 3. Verify connection
-curl -s http://localhost:9001/status
+```
+Claude Code  ──MCP──>  figma-console-mcp  ──WebSocket──>  Figma Desktop
 ```
 
-## Sending Commands
+All Figma operations use MCP tools — no custom server, no HTTP calls, no curl.
 
-**Every command MUST include `"action": "runScript"`.** Without it, the plugin silently ignores the message.
+## Key MCP Tools
 
-```bash
-cat script.js | jq -Rs '{"action":"runScript","code":.}' | \
-  curl -s --max-time 60 -X POST http://localhost:9001/command \
-  -H "Content-Type: application/json" -d @-
-```
+| Tool | Usage |
+|------|-------|
+| `figma_execute` | Run Figma Plugin API code (create frames, import components, bind variables) |
+| `figma_take_screenshot` | Visual verification between atomic generation steps |
+| `figma_get_design_system_kit` | Extract full DS (tokens + components + styles) |
+| `figma_get_variables` | Extract design tokens/variables |
+| `figma_get_component` | Get component specs and properties |
+| `figma_get_styles` | Get text, color, effect styles |
+| `figma_search_components` | Find components by name |
+| `figma_get_status` | Check Figma connection |
 
-## Script Structure
+## Script Structure (for figma_execute)
 
 Every script must follow this pattern:
 
@@ -32,10 +32,10 @@ return (async function() {
   // 1. Load fonts (required before ANY text operation)
   await figma.loadFontAsync({ family: "Inter", style: "Regular" });
 
-  // 2. Import your DS assets
-  // var myVar = await figma.variables.importVariableByKeyAsync("key-from-registries");
-  // var myStyle = await figma.importStyleByKeyAsync("key-from-registries");
-  // var myComp = await figma.importComponentByKeyAsync("key-from-registries");
+  // 2. Import DS assets (keys from knowledge-base/registries/)
+  // var myVar = await figma.variables.importVariableByKeyAsync("key");
+  // var myStyle = await figma.importStyleByKeyAsync("key");
+  // var myComp = await figma.importComponentByKeyAsync("key");
 
   // 3. Build
   // ...
@@ -47,184 +47,19 @@ return (async function() {
 
 The `return` before the IIFE is mandatory — without it the Promise is lost.
 
-## Atomic Generation (MANDATORY)
+## Critical Figma API Rules
 
-Never generate a full design in one script. Split into 4-6 small sequential steps (~30-80 lines each).
+Full rules: `.claude/skills/design-workflow/references/figma-api-rules.md`
 
-**Standard steps for a screen:**
+**Top 5 (most common bugs):**
 
-| Step | What | Returns |
-|------|------|---------|
-| 1. Structure | Root frame + section frames (empty) | rootId, sectionIds |
-| 2. Top bar / Nav | Populate nav with DS components | — |
-| 3. Content sections | One step per major section | sectionId |
-| 4. Footer / minor | Secondary elements | — |
-| 5. Instance overrides | Set TEXT/ICON props on instances | — |
-| 6. States | Clone root + modify per state | stateIds |
-
-**After each step:** verify visually with `get_screenshot` via Figma MCP before proceeding. Fix issues before moving on.
-
-## Figma Plugin API — Mandatory Rules
-
-These rules are learned from real bugs. Breaking them = broken layout.
-
-### Rule 1: FILL after appendChild (CRITICAL)
-
-`layoutSizingHorizontal = "FILL"` only works on children of auto-layout frames.
-
-```javascript
-// WRONG — crashes
-child.layoutSizingHorizontal = "FILL";
-parent.appendChild(child);
-
-// CORRECT
-parent.appendChild(child);
-child.layoutSizingHorizontal = "FILL";
-```
-
-### Rule 2: resize() overrides sizing modes (CRITICAL)
-
-`resize()` forces both axes to FIXED. Set sizing modes AFTER resize.
-
-```javascript
-// CORRECT — resize first, then set modes
-frame.resize(700, 10);
-frame.primaryAxisSizingMode = "AUTO";
-frame.counterAxisSizingMode = "FIXED";
-```
-
-### Rule 3: FILL + AUTO parent = collapsed layout
-
-A child with `FILL` inside a parent with `primaryAxisSizingMode = "AUTO"` collapses to 0px.
-
-```javascript
-// CORRECT — parent must be FIXED for FILL children
-root.primaryAxisSizingMode = "FIXED";
-root.resize(1440, 900);
-mainArea.layoutSizingVertical = "FILL";
-```
-
-### Rule 4: Colors via setBoundVariableForPaint
-
-Fills and strokes use a different API than layout properties.
-
-```javascript
-// CORRECT
-function makeColorFill(colorVar) {
-  var p = figma.util.solidPaint("#000000");
-  p = figma.variables.setBoundVariableForPaint(p, "color", colorVar);
-  return [p];
-}
-frame.fills = makeColorFill(myColorVar);
-```
-
-### Rule 5: Text styles via importStyleByKeyAsync
-
-Never hardcode font properties. Always use text styles from your library.
-
-```javascript
-var style = await figma.importStyleByKeyAsync("your-text-style-key");
-textNode.textStyleId = style.id;
-```
-
-### Rule 6: textAutoResize — set AFTER node has width
-
-Setting `textAutoResize = "HEIGHT"` before the node has real width causes 0-width vertical text.
-
-```javascript
-// CORRECT — characters first, append, FILL, then textAutoResize
-var t = figma.createText();
-t.characters = "Long text...";
-parent.appendChild(t);
-t.layoutSizingHorizontal = "FILL";
-t.textAutoResize = "HEIGHT";
-```
-
-### Rule 7: loadFontAsync before ANY text operation
-
-```javascript
-await figma.loadFontAsync({ family: "Inter", style: "Regular" });
-await figma.loadFontAsync({ family: "Inter", style: "Medium" });
-await figma.loadFontAsync({ family: "Inter", style: "Semi Bold" });
-await figma.loadFontAsync({ family: "Inter", style: "Bold" });
-```
-
-### Rule 8: strokeAlign INSIDE for cards
-
-```javascript
-card.strokes = makeColorFill(borderVar);
-card.strokeWeight = 1;
-card.strokeAlign = "INSIDE";
-```
-
-### Rule 9: Cannot add children to instances
-
-Component instances are sealed. Use `setProperties()` or `swapComponent()`.
-
-```javascript
-// WRONG — crashes
-instance.appendChild(extraFrame);
-
-// CORRECT
-instance.setProperties({ [titleKey]: "New title" });
-```
-
-### Rule 10: Property keys include hash suffix
-
-`componentPropertyDefinitions` returns keys like `title#9311:226`. Use the full key.
-
-```javascript
-var propDefs = compSet.componentPropertyDefinitions;
-var titleKey = Object.keys(propDefs).find(k =>
-  k.startsWith("title") && propDefs[k].type === "TEXT"
-);
-instance.setProperties({ [titleKey]: "My value" });
-```
-
-### Rule 11: importComponentSetByKeyAsync vs importComponentByKeyAsync
-
-| What | API |
-|------|-----|
-| Component with variants (Button, Tag) | `importComponentSetByKeyAsync` |
-| Single component (icon, logo) | `importComponentByKeyAsync` |
-
-### Rule 12: Variant grid after combineAsVariants
-
-After `combineAsVariants()`, all variants stack at (0,0). Arrange them:
-
-```javascript
-var cols = 4;
-for (var i = 0; i < compSet.children.length; i++) {
-  var child = compSet.children[i];
-  child.x = (i % cols) * (child.width + 40);
-  child.y = Math.floor(i / cols) * (child.height + 40);
-}
-```
-
-### Rule 13: addComponentProperty AFTER combineAsVariants
-
-```javascript
-var compSet = figma.combineAsVariants(components, figma.currentPage);
-compSet.addComponentProperty('title', 'TEXT', 'Default');
-```
-
-## Using Your Design System
-
-If you have a Figma DS library, extract the keys using the scripts in `extract/`:
-
-1. Open your DS library file in Figma
-2. Run the extraction scripts via Bridge
-3. Save the JSON output to `registries/`
-4. Reference the keys in your scripts
-
-The registries give you:
-- **Component keys** for `importComponentByKeyAsync` / `importComponentSetByKeyAsync`
-- **Variable keys** for `importVariableByKeyAsync` (colors, spacing, radius)
-- **Text style keys** for `importStyleByKeyAsync`
+1. **FILL after appendChild** — Set `layoutSizingHorizontal = "FILL"` AFTER `parent.appendChild(child)`, never before
+2. **resize() overrides sizing** — Call `resize()` FIRST, then set `primaryAxisSizingMode`
+3. **Colors via setBoundVariableForPaint** — Not `setBoundVariable` (different API for fills/strokes)
+4. **textAutoResize after width** — Set characters → append → FILL → then `textAutoResize = "HEIGHT"`
+5. **DS component reuse** — NEVER recreate existing components as raw frames. Always import via `importComponentByKeyAsync`
 
 ## Helpers
-
-Useful helper functions to include in your scripts:
 
 ```javascript
 // Color fill bound to variable
@@ -257,3 +92,17 @@ function bindRadius(frame, radiusVar) {
   frame.setBoundVariable("bottomRightRadius", radiusVar);
 }
 ```
+
+## Design Workflow
+
+The `/design-workflow` skill handles everything:
+
+```
+/design-workflow setup    → Extract DS + build knowledge base
+/design-workflow spec     → Write component or screen specification
+/design-workflow design   → Generate in Figma (atomic, verified)
+/design-workflow review   → Validate against spec + tokens
+/design-workflow done     → Archive and ship
+```
+
+Read `.claude/skills/design-workflow/SKILL.md` for the full workflow definition.

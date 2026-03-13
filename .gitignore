@@ -1,5 +1,4 @@
 node_modules/
-.tmp/
 .DS_Store
-registries/*.json
-!registries/.gitkeep
+.tmp/
+.claude/

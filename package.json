@@ -1,0 +1,39 @@
+{
+  "name": "bridge-ds",
+  "version": "2.0.0",
+  "description": "AI-powered design generation in Figma — 100% design system compliant. Connects Claude Code to Figma via MCP for spec-first, token-bound, component-native design.",
+  "main": "lib/cli.js",
+  "bin": {
+    "bridge-ds": "./bin/bridge.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "skills/",
+    "commands/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node bin/bridge.js help"
+  },
+  "keywords": [
+    "claude-code",
+    "figma",
+    "design-system",
+    "mcp",
+    "design-tokens",
+    "ai-design",
+    "figma-plugin-api"
+  ],
+  "author": "noemuch",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/noemuch/bridge.git"
+  },
+  "homepage": "https://github.com/noemuch/bridge"
+}

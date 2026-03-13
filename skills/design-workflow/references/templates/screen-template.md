@@ -17,7 +17,7 @@
 |---|---|
 | **Pattern** | {pattern name from `design-patterns.md`} |
 | **Screenshots studied** | {list of screenshot filenames, min 2} |
-| **Key composition rules** | {bullet list of rules from the pattern that apply} |
+| **Key composition rules** | {bullet list of specific rules from the pattern that apply} |
 
 **Composition notes:**
 {What was observed in the screenshots that informs this spec's layout: zone proportions, content density, visual hierarchy, navigation pattern, card rhythm, etc.}
@@ -26,7 +26,7 @@
 
 ## Layout Structure
 
-> Based on the matched pattern above.
+> Based on the matched pattern above. The diagram MUST reflect the pattern's zone placement and proportions.
 
 ```
 ┌─────────────────────────────────────────┐
@@ -65,7 +65,8 @@
 
 ## DS Components Used
 
-> Look up component keys in `.bridge/registries/components.json`.
+> Look up component keys in `knowledge-base/registries/components.json`.
+> Use `knowledge-base/guides/components/overview.md` decision tree to choose the right component.
 
 | Component | Variant/Size | Figma Key | Location |
 |-----------|-------------|-----------|----------|
@@ -75,13 +76,13 @@
 
 ## New DS Components Required
 
-> List UI patterns NOT covered by existing DS components.
-> Each one needs its own `spec → design → done` cycle BEFORE this screen is designed.
+> List any UI patterns in this screen that are NOT covered by existing DS components.
+> Each one will need its own `spec {component}` → `design` → `done` cycle BEFORE this screen is designed.
 > If none, write "None — all patterns covered by existing DS components."
 
 | Component Name | Used in Section | Description | Variants Needed |
 |---------------|----------------|-------------|-----------------|
-| `{Name}` | {section} | {what it does, why existing don't cover it} | {variants/states} |
+| `{Name}` | {section} | {what it does, why existing components don't cover it} | {list of variants/states} |
 
 ---
 
