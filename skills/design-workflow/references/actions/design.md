@@ -109,14 +109,26 @@ Never generate a full design in a single script. Split into small, sequential st
 
 **CRITICAL — Pre-script element audit (BLOCKING, Rule 18):**
 
-Before writing EACH script, list every visual element it will create and verify against registries:
+Before writing EACH script, list every visual element it will create and cross-reference against the spec's "DS Components Used" table AND the registries:
+
 ```
-Elements in this step:
-- Avatar → components.json key: xxx ✓
-- Divider → components.json key: xxx ✓
-- Label text → raw text (layout frame label, no DS component) ✓
+PRE-SCRIPT AUDIT — Step {n}:
+Spec requires:           Registry match:              Script will use:
+─────────────────────────────────────────────────────────────────────
+AssetLogo (logo)       → logos.json key: abc123       → importComponentByKeyAsync ✓
+Tag v2 (label)         → components.json key: def456  → importComponentSetByKeyAsync ✓
+CardBase (container)   → components.json key: ghi789  → importComponentByKeyAsync ✓
+Section title          → NO DS component              → raw text (justified) ✓
+Layout wrapper         → NO DS component              → raw frame (structural) ✓
 ```
-If an element exists in `components.json`, it MUST be imported via `importComponentByKeyAsync`. NEVER recreate as raw frame/text/shape. NEVER hardcode hex colors — always bind variables.
+
+**BLOCKING RULES:**
+- If a spec-listed DS component is planned as a raw element → **STOP. Rewrite the script.**
+- If an element exists in ANY registry (components, icons, logos, illustrations) → **MUST import it**. No exceptions.
+- If you're about to use `figma.createEllipse()`, `figma.createRectangle()`, or `figma.createFrame()` for something that looks like a DS component → **STOP and check registries first.**
+- Only create raw elements for pure structural layout frames or when NO DS component exists (document WHY in the audit).
+
+NEVER recreate as raw frame/text/shape. NEVER hardcode hex colors — always bind variables.
 
 **Standard steps for a screen:**
 

@@ -159,10 +159,10 @@ text.fontSize = 32;
 
 // CORRECT (key from registries/text-styles.json)
 var style = await figma.importStyleByKeyAsync("YOUR_TEXT_STYLE_KEY");
-text.textStyleId = style.id;
+await text.setTextStyleIdAsync(style.id);  // MUST use async version — see Rule 20
 ```
 
-**Load text style keys from `registries/text-styles.json`.**
+**Load text style keys from `registries/text-styles.json`.** Always use `setTextStyleIdAsync()`, not `textStyleId =`.
 
 ---
 
@@ -356,27 +356,37 @@ The `return` before the IIFE is mandatory — without it, the Promise is lost.
 
 ## Rule 18: DS component reuse — NEVER recreate existing components
 
-**This is the most critical rule. Violations require script rewrite.**
+**This is the most critical rule. Violations require FULL script rewrite.**
 
 Before creating ANY visual element, check the registries:
-1. `registries/components.json` → Buttons, Tags, Inputs, Avatars, Dividers, etc.
+1. `registries/components.json` → Buttons, Tags, Inputs, Avatars, Dividers, Cards, etc.
 2. `registries/icons.json` → Icons (if exists)
-3. `registries/logos.json` → Logos (if exists)
+3. `registries/logos.json` → Logos, brand assets (if exists)
 4. `registries/illustrations.json` → Illustrations (if exists)
 
 **NEVER:**
-- Create a raw frame/ellipse for an Avatar → import the DS component
-- Create a raw rectangle for a Divider → import the DS component
-- Create a raw frame with text for a Tag/Badge → import the DS component
+- `figma.createEllipse()` for a logo → import from logos.json via `importComponentByKeyAsync`
+- `figma.createFrame()` for a Tag/Badge → import from components.json via `importComponentSetByKeyAsync`
+- `figma.createFrame()` for a Card → import the DS Card component
+- `figma.createRectangle()` for a Divider → import the DS Divider component
 - Hardcode hex colors → always bind variables
 
-**Pre-script checklist (mandatory):**
+**Why this matters:** Using raw elements cascades into multiple failures:
+- No `INSTANCE_SWAP` props possible (can't swap a logo on an ellipse)
+- No inherited component properties (size, variant, state)
+- Wrong proportions (raw frames don't match DS component sizing)
+- Breaks the design system contract — the whole point of Bridge
+
+**Pre-script audit (MANDATORY — must appear before every script):**
 ```
-Elements in this step:
-- Avatar → components.json key: xxx ✓
-- Divider → components.json key: xxx ✓
-- Label → raw text (no DS component for this) ✓
+PRE-SCRIPT AUDIT — Step {n}:
+Spec requires:           Registry match:              Script will use:
+─────────────────────────────────────────────────────────────────────
+{element}              → {registry}.json key: {key}   → import{method} ✓
+{element}              → NO DS component              → raw {type} (reason) ✓
 ```
+
+**If ANY spec-listed DS component is planned as a raw element → STOP and fix before writing the script.**
 
 ---
 
@@ -397,6 +407,22 @@ for (var i = 0; i < subComponents.length; i++) {
 mainComponent.x = 0;
 mainComponent.y = 400;
 ```
+
+---
+
+## Rule 20: setTextStyleIdAsync (not textStyleId) in dynamic-page context
+
+When running scripts via `figma_execute` (which uses `documentAccess: "dynamic-page"`), text style assignment MUST use the async API:
+
+```js
+// WRONG — crashes in dynamic-page context
+text.textStyleId = style.id;
+
+// CORRECT
+await text.setTextStyleIdAsync(style.id);
+```
+
+Same applies to `setFillStyleIdAsync`, `setStrokeStyleIdAsync`, `setEffectStyleIdAsync`.
 
 ---
 
