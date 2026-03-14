@@ -1,4 +1,8 @@
 node_modules/
 .DS_Store
 .tmp/
-.claude/
+
+# Bridge DS — knowledge base data (regenerated via /design-workflow setup)
+.claude/skills/design-workflow/references/knowledge-base/registries/*.json
+.claude/skills/design-workflow/references/knowledge-base/ui-references/screenshots/*.png
+.claude/skills/design-workflow/references/knowledge-base/ui-references/screenshots/*.jpg
