@@ -446,6 +446,59 @@ Same applies to `setFillStyleIdAsync`, `setStrokeStyleIdAsync`, `setEffectStyleI
 
 ---
 
+## Rule 22: Clone-first for screens with reference
+
+When a reference Figma node is available (from the spec's "Reference Screen" section), **clone the shell structure instead of rebuilding from scratch**.
+
+### When to clone
+
+Clone when the element is:
+- A **layout shell** (sidebar + content + footer structure)
+- A **complex pre-configured instance** (stepper with labels, navigation with active states)
+- A **local/unpublished component** (backgrounds, decorative elements not in the DS library)
+- An instance with **deeply nested properties** (3+ levels, properties on nested children not exposed at root)
+
+### How to clone
+
+```js
+// Clone an entire subtree from a reference node
+var ref = await figma.getNodeByIdAsync("REFERENCE_NODE_ID");
+var clone = ref.clone();
+
+// Position the clone
+clone.x = 0;
+clone.y = 0;
+
+// Now modify the clone's content (replace text, swap instances, etc.)
+var title = clone.findOne(function(n) { return n.name === "title" && n.type === "TEXT"; });
+if (title) title.characters = "New Title";
+```
+
+### Clone vs Import decision
+
+| Situation | Strategy |
+|-----------|----------|
+| Component in DS library, simple props | **Import** via `importComponentByKeyAsync` |
+| Component in DS library, deeply nested | **Clone** from reference if available |
+| Local/unpublished component | **Clone** from reference (only option) |
+| Layout shell (sidebar + content + footer) | **Clone** the whole shell, replace content |
+| Pre-configured stepper/nav with labels set | **Clone** (API can't easily override nested props) |
+
+### Pre-script audit format for clone elements
+
+```
+PRE-SCRIPT AUDIT — Step {n}:
+Spec requires:           Source:                      Strategy:
+─────────────────────────────────────────────────────────────────
+Sidebar shell          → reference node 9569:40232    → clone ✓
+ProductBackground      → reference node 9569:40233    → clone ✓
+SideStepper (5 steps)  → reference node 9569:40240    → clone + modify labels ✓
+Button (primary)       → components.json key: abc123  → import ✓
+Input (default)        → components.json key: def456  → import ✓
+```
+
+---
+
 ## Standard Script Boilerplate
 
 ```js

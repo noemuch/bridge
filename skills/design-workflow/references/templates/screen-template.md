@@ -8,6 +8,23 @@
 
 ---
 
+## Reference Screen (REQUIRED)
+
+> A screen that already exists in Figma with the same layout shell (sidebar + content, topbar + main, etc.).
+> Claude will clone the shell from this reference and replace the content.
+> **Without a reference, generation is significantly less reliable.**
+
+| | |
+|---|---|
+| **Reference URL** | {Figma URL of an existing screen with the same shell/layout} |
+| **Reference node ID** | {nodeId extracted from URL} |
+| **Shell elements to clone** | {list: e.g., "sidebar frame, product background, stepper, footer"} |
+| **What changes vs reference** | {what content/sections differ from the reference} |
+
+> If no existing screen uses this layout: write "None — new layout, building from scratch" and document the shell structure in detail in Layout Structure below.
+
+---
+
 ## Visual Reference
 
 > Identifies which design pattern this screen follows.
@@ -67,10 +84,15 @@
 
 > Look up component keys in `knowledge-base/registries/components.json`.
 > Use `knowledge-base/guides/components/overview.md` decision tree to choose the right component.
+> Mark each element as `import` (from DS library) or `clone` (from reference screen).
 
-| Component | Variant/Size | Figma Key | Location |
-|-----------|-------------|-----------|----------|
-| `{Name}` | {variant} | {key from registry} | {section} |
+| Component | Variant/Size | Key / Source | Strategy | Location |
+|-----------|-------------|-------------|----------|----------|
+| `{Name}` | {variant} | {registry key or "reference node {id}"} | import / clone | {section} |
+
+**Strategy guide:**
+- `import` — Component exists in DS library → use `importComponentByKeyAsync(key)`
+- `clone` — Component is local/unpublished or pre-configured in reference → clone from reference node
 
 ---
 

@@ -69,7 +69,53 @@ Key rules applied: {bullet list}
 
 **GATE: If no pattern matches**, ask the user which existing pattern is closest.
 
-### 1c. Canvas dimensions
+### 1c. Reference Inspection (BLOCKING for screens with reference)
+
+**If the spec has a "Reference Screen" section with a Figma URL/node ID, this step is MANDATORY.**
+
+1. **Screenshot the reference** via `figma_take_screenshot({ node_id, file_key })`
+2. **Inspect the reference structure** via `figma_execute` — extract the node tree:
+   ```js
+   return (async function() {
+     var ref = await figma.getNodeByIdAsync("REFERENCE_NODE_ID");
+     if (!ref) return { error: "Node not found" };
+     var children = [];
+     for (var i = 0; i < ref.children.length; i++) {
+       var c = ref.children[i];
+       children.push({
+         name: c.name, type: c.type, id: c.id,
+         width: Math.round(c.width), height: Math.round(c.height),
+         isComponent: c.type === "INSTANCE" || c.type === "COMPONENT",
+         componentName: c.type === "INSTANCE" ? c.mainComponent.name : undefined
+       });
+     }
+     return { name: ref.name, width: Math.round(ref.width), height: Math.round(ref.height), children: children };
+   })();
+   ```
+3. **Document findings** before proceeding:
+   ```
+   Reference inspection:
+   - Shell structure: {sidebar Xpx | content FILL | buffer Xpx}
+   - DS components found: {list with node IDs}
+   - Local/unpublished elements: {list with node IDs — these need cloning}
+   - Logo variant: {exact name}
+   - Key differences from spec: {what content changes}
+   ```
+4. **Update generation strategy:**
+   - Elements found in reference → plan to **clone** (faster, guaranteed match)
+   - Elements in DS registry but not in reference → plan to **import**
+   - Update the pre-script audit to reflect clone vs import per element
+
+**GATE:** Do not generate until reference inspection is complete and strategy is documented.
+
+**If no reference provided (building from scratch):** Skip this step but warn the user:
+```
+No reference screen provided. Building layout from scratch.
+This may require more iterations. For better results, provide a Figma URL
+of an existing screen with a similar layout shell.
+```
+
+### 1d. Canvas dimensions
 
 - **Web**: 1440px wide
 - **Mobile**: 390px wide

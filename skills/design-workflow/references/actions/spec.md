@@ -12,6 +12,17 @@ Ask or infer from context:
 - **Component**: design system primitive, block, or composition (Button, Card, Tag...)
 - **Screen**: full interface or page (dashboard, settings, onboarding flow...)
 
+**If screen mode detected**, immediately ask the user:
+```
+This is a screen spec. For reliable generation, I need a reference:
+
+→ Do you have a Figma URL of an existing screen with a similar layout?
+  (e.g., same sidebar + content structure, same navigation shell)
+
+With a reference, I'll clone the shell and replace the content (fast, accurate).
+Without one, I'll build from scratch (slower, may need iterations).
+```
+
 ### 2. Gather context
 
 - **Load design patterns** (MANDATORY for screens, recommended for components):
@@ -94,6 +105,29 @@ For each UI pattern described in the spec, check if it exists in `registries/com
 - A custom indicator or status pattern not covered by Badge/Tag
 - A navigation pattern not covered by existing nav components
 - A data display pattern not covered by existing list/table components
+
+### 3c. Auto-enrich DS Components Used (screen mode)
+
+For every component listed in "DS Components Used", resolve the exact registry key:
+
+1. Search `registries/components.json` by name → fill the `Key` column with the exact key
+2. Search `registries/icons.json`, `registries/logos.json` if applicable
+3. For each element, determine the **strategy**:
+   - Found in registry → `import`
+   - Not in registry but exists in reference screen → `clone` (note the reference node ID)
+   - Not in registry and no reference → flag as "New DS Component Required"
+
+**Example enriched table:**
+```
+| Component | Variant | Key / Source | Strategy |
+|-----------|---------|-------------|----------|
+| Button | primary, large | components.json → key: abc123 | import |
+| Logo | finary-one | logos.json → key: 78defbf4 | import |
+| SideStepper | 5 steps | components.json → key: 1668b598 | clone (reference 9569:40240) |
+| ProductBackground | finaryOne | NOT IN REGISTRY | clone (reference 9569:40233) |
+```
+
+This removes ambiguity at design time and prevents wrong component selection.
 
 ### 4. Validate
 
