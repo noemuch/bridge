@@ -49,7 +49,7 @@ The `return` before the IIFE is mandatory — without it the Promise is lost.
 
 ## Critical Figma API Rules
 
-Full rules: `.claude/skills/design-workflow/references/figma-api-rules.md`
+Full rules: `skills/design-workflow/references/figma-api-rules.md`
 
 **Top 5 (most common bugs):**
 
@@ -61,37 +61,7 @@ Full rules: `.claude/skills/design-workflow/references/figma-api-rules.md`
 
 ## Helpers
 
-```javascript
-// Color fill bound to variable
-function mf(colorVar) {
-  var p = figma.util.solidPaint("#000000");
-  p = figma.variables.setBoundVariableForPaint(p, "color", colorVar);
-  return [p];
-}
-
-// Append + FILL in one call
-function appendFill(parent, child, fillH, fillV) {
-  parent.appendChild(child);
-  if (fillH) child.layoutSizingHorizontal = "FILL";
-  if (fillV) child.layoutSizingVertical = "FILL";
-}
-
-// Bind all 4 padding sides
-function bindPadding(frame, top, right, bottom, left) {
-  if (top) frame.setBoundVariable("paddingTop", top);
-  if (right) frame.setBoundVariable("paddingRight", right);
-  if (bottom) frame.setBoundVariable("paddingBottom", bottom);
-  if (left) frame.setBoundVariable("paddingLeft", left);
-}
-
-// Bind all 4 corners radius
-function bindRadius(frame, radiusVar) {
-  frame.setBoundVariable("topLeftRadius", radiusVar);
-  frame.setBoundVariable("topRightRadius", radiusVar);
-  frame.setBoundVariable("bottomLeftRadius", radiusVar);
-  frame.setBoundVariable("bottomRightRadius", radiusVar);
-}
-```
+Helpers (`mf`, `appendFill`, `bindPadding`, `bindRadius`) and the standard script boilerplate are defined in `skills/design-workflow/references/figma-api-rules.md` (Standard Script Boilerplate section). Always copy them from there.
 
 ## Design Workflow
 
@@ -103,6 +73,8 @@ The `/design-workflow` skill handles everything:
 /design-workflow design   → Generate in Figma (atomic, verified)
 /design-workflow review   → Validate against spec + tokens
 /design-workflow done     → Archive and ship
+/design-workflow drop     → Abandon with preserved learnings
+/design-workflow status   → Show current state, suggest next
 ```
 
-Read `.claude/skills/design-workflow/SKILL.md` for the full workflow definition.
+Read `skills/design-workflow/SKILL.md` for the full workflow definition.
