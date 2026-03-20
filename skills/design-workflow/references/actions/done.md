@@ -26,15 +26,32 @@ Append to `specs/history.log`:
 {date} | {name} | {component|screen} | {figma_url} | {author}
 ```
 
-### 4. Brief retro
+### 4. Persist learnings
+
+Check if `learn` was run during this cycle (i.e., `references/knowledge-base/learnings.json` was updated with entries referencing this spec):
+
+- If yes: learnings are already persisted — confirm count:
+  ```
+  Learnings persisted: {n} learnings, {n} flags from this spec.
+  ```
+- If no learnings exist yet but a snapshot exists (`specs/active/{name}-snapshot.json`):
+  ```
+  💡 A snapshot exists but `learn` was never run.
+     If you made manual corrections in Figma, run `learn` before `done` to capture them.
+     Skip? (learnings will be lost)
+  ```
+  If user skips, proceed. If not, abort and let them run `learn` first.
+
+### 5. Brief retro
 
 - **What went well?** (patterns to repeat)
 - **What was friction?** (improvements for the workflow)
 - **What was learned?** (reusable knowledge)
 
-### 5. Cleanup
+### 6. Cleanup
 
-Delete any remaining temp files if not already done.
+- Delete snapshot file: `specs/active/{name}-snapshot.json` (if exists)
+- Delete any remaining temp files
 
 ---
 

@@ -46,6 +46,30 @@ Without one, I'll build from scratch (slower, may need iterations).
 - Check existing specs: `specs/active/`, `specs/backlog/`
 - Check existing DS components in `references/knowledge-base/registries/components.json`
 
+### 2.5. Load Learnings
+
+Load `references/knowledge-base/learnings.json` (skip if file doesn't exist).
+
+Filter learnings by `screenType` matching the new spec's type (from step 1 context):
+- Include all **global** learnings (`scope: "global"`)
+- Include **contextual** learnings where `context.screenType` matches
+
+If matching learnings exist, include a **"Known Preferences"** section in the spec:
+
+```markdown
+## Known Preferences (from learnings)
+
+The following preferences have been learned from previous design corrections:
+
+| Rule | Property | Preferred Token | Scope | Signals |
+|------|----------|----------------|-------|---------|
+| {rule} | {property} | {to.token} | {scope} | {signals} |
+
+These preferences MUST be applied during design generation unless the spec explicitly overrides them.
+```
+
+This section goes after "Design tokens" and before "Responsive rules" (screens) or before "Acceptance criteria" (components).
+
 ### 3. Write the spec
 
 Write to `specs/active/{name}-spec.md`.

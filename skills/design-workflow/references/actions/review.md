@@ -100,6 +100,17 @@ Cross-reference every visual element in the design against `registries/component
 
 **If any check fails:** identify the specific gap, reference the pattern rule that was violated, and suggest the fix.
 
+#### G. Learning Opportunity
+
+If the review identifies issues that the user may want to correct manually in Figma (spacing adjustments, token swaps, component replacements):
+
+```
+💡 After making corrections in Figma, run: `learn`
+   Bridge will detect your changes and remember them for future designs.
+```
+
+This hint is informational only — it does not block the review.
+
 #### F. Component API Quality (component mode)
 
 - [ ] Is the composition pattern the right one? (slots vs config vs compound)

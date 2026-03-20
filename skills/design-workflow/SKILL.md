@@ -5,8 +5,8 @@ description: >
   Covers components and full interfaces/screens. Use when a designer wants to:
   (1) write or review a component or screen spec, (2) generate a Figma design via MCP,
   (3) review and iterate on a design, (4) close or abandon work.
-  Triggers: "spec", "design", "screen", "review", "done", "drop", "status",
-  "setup", "workflow", "what's next", "new component", "new screen", or any design request.
+  Triggers: "spec", "design", "screen", "review", "done", "drop", "learn", "sync",
+  "status", "setup", "workflow", "what's next", "new component", "new screen", or any design request.
 ---
 
 # Design Workflow
@@ -38,6 +38,8 @@ description: >
 | `review` | Validate design against spec, tokens, and visual fidelity | `references/actions/review.md` |
 | `done` | Archive spec and close | `references/actions/done.md` |
 | `drop` | Abandon with preserved learnings | `references/actions/drop.md` |
+| `learn` | Diff design vs corrections, extract learnings | `references/actions/learn.md` |
+| `sync` | Incremental DS sync (no full re-setup) | `references/actions/sync.md` |
 | `status` | Show current state and suggest next action | *(inline below)* |
 
 ---
@@ -105,7 +107,32 @@ review
   │     3. Verdict: PASS / FAIL with identified gaps
   │
   ▼
+(optional) user corrects in Figma
+  │
+  ▼
+learn (optional, repeatable)
+  │
+  ├─ Diff snapshot vs current Figma state
+  ├─ Classify: DS-compliant → learning | hardcoded → flag
+  ├─ Persist to learnings.json
+  └─ Update spec with corrections
+  │
+  ▼
 done
+  │
+  ├─ Persist learnings
+  ├─ Archive spec
+  └─ Cleanup snapshot
+
+───────────────────────────────
+
+sync (independent, anytime)
+  │
+  ├─ Re-extract DS via MCP
+  ├─ Diff vs current registries
+  ├─ Report: +added, ~modified, -removed
+  ├─ Breaking change analysis
+  └─ Update registries + patch guides
 ```
 
 ---
@@ -122,6 +149,8 @@ Detect intent from user input and **read the action file BEFORE executing**:
 | "review", "check", "validate", "audit" | `references/actions/review.md` |
 | "done", "finish", "complete", "close", "ship" | `references/actions/done.md` |
 | "drop", "abandon", "cancel" | `references/actions/drop.md` |
+| "learn", "diff", "corrections", "what changed" | `references/actions/learn.md` |
+| "sync", "update DS", "refresh DS", "sync DS" | `references/actions/sync.md` |
 | "status", "workflow", "what's next", "what now" | *(status logic below)* |
 
 ---
@@ -152,7 +181,8 @@ Detect state by checking:
 | No spec | "Ready. Run: `spec {name}`" |
 | Active spec, no Figma design | "Spec ready. Run: `design`" |
 | Active spec + Figma done | "Design ready. Run: `review`" |
-| Review passed | "Run: `done`" |
+| Review passed | "Run: `done` (or `learn` if you made manual corrections)" |
+| DS may be outdated | "Run: `sync` to update registries from Figma" |
 
 ---
 
