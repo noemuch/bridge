@@ -1,6 +1,6 @@
 {
   "name": "@noemuch/bridge-ds",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "AI-powered design generation in Figma — 100% design system compliant. Connects Claude Code to Figma via MCP for spec-first, token-bound, component-native design.",
   "main": "lib/cli.js",
   "bin": {
