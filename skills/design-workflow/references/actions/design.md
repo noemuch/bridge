@@ -46,6 +46,24 @@ Parse from spec:
 
 All paths relative to `.claude/skills/design-workflow/references/knowledge-base/`.
 
+### 1e. Load Learnings
+
+Load `references/knowledge-base/learnings.json` (skip if file doesn't exist — no learnings yet).
+
+Filter applicable learnings:
+- **Global learnings** (`scope: "global"`): always apply
+- **Contextual learnings** (`scope: "contextual"`): match by `screenType` (from spec's description), `component`, or `section`
+
+Display matched learnings before generation:
+```
+KNOWN PREFERENCES ({n} learnings):
+─────────────────────────────────
+• {rule} (signals: {n}, scope: {scope})
+• {rule} (signals: {n}, scope: {scope})
+```
+
+Integrate these into pre-script audits: when a script creates an element matching a learning's context, use the learning's `to` token instead of the default.
+
 **Registry key validation (BLOCKING):**
 Before using any registry, verify that entries contain `key` fields (not just `id` or `name`):
 - Components must have `key` (hex hash like `"abc123..."`) — NOT node IDs like `"1008:174"`
@@ -243,6 +261,26 @@ Only create raw elements for pure layout frames or when no DS component exists (
 ### 5. Final naming cleanup
 
 Verify all layers have semantic names (no "Frame", "Rectangle", "Group").
+
+### 6. Save Snapshot
+
+After successful generation, save a snapshot of the design's node tree for future `learn` diffing.
+
+1. Run the node tree extraction script from `schemas/learnings.md` via `figma_execute`, using the root node ID from step 3
+2. Save to `specs/active/{name}-snapshot.json` with structure:
+   ```json
+   {
+     "meta": {
+       "spec": "{name}",
+       "generatedAt": "{ISO timestamp}",
+       "rootNodeId": "{rootId}",
+       "fileKey": "{fileKey}"
+     },
+     "tree": { ... extracted node tree ... }
+   }
+   ```
+
+This snapshot enables the `learn` action to detect user corrections later.
 
 ---
 

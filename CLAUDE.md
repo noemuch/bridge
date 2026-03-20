@@ -74,6 +74,8 @@ The `/design-workflow` skill handles everything:
 /design-workflow review   → Validate against spec + tokens
 /design-workflow done     → Archive and ship
 /design-workflow drop     → Abandon with preserved learnings
+/design-workflow learn    → Diff design vs corrections, extract learnings
+/design-workflow sync     → Incremental DS sync (no full re-setup)
 /design-workflow status   → Show current state, suggest next
 ```
 

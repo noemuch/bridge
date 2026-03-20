@@ -121,6 +121,33 @@
 
 ---
 
+## Phase: learn (after design corrections)
+
+| Gate | Blocking | Check |
+|------|----------|-------|
+| Active spec exists | Yes | `specs/active/{name}-spec.md` present |
+| Snapshot exists | Yes | `specs/active/{name}-snapshot.json` present |
+| figma-console-mcp available | Yes | `figma_get_status()` returns valid connection |
+| Root node still exists | Yes | `figma_execute` can find the node from snapshot meta |
+| Changes classified | Yes | Every change classified as LEARNING or FLAG |
+| Learnings have valid tokens | Yes | Every LEARNING references a token from `registries/variables.json` |
+| Flags surfaced to user | Yes | All FLAG items reported before saving |
+
+---
+
+## Phase: sync (DS incremental update)
+
+| Gate | Blocking | Check |
+|------|----------|-------|
+| Knowledge base exists | Yes | `registries/` has JSON files |
+| figma-console-mcp available | Yes | `figma_get_status()` returns valid connection |
+| Diff computed before apply | Yes | Report shown to user before any registry modification |
+| Breaking changes confirmed | Yes (if removals) | User explicitly approves deletion of removed items |
+| Registry validation after update | Yes | Sample import test passes (3-5 keys per registry) |
+| Guides patched for removals | Yes (if removals) | No guide references deleted components/tokens |
+
+---
+
 ## Skip Policy
 
 - **Non-skippable (NEVER):** spec creation, spec validation, new components check, pattern matching, visual fidelity review, DS component reuse audit (Rule 18), pre-script element audit, registry loading
