@@ -6,7 +6,7 @@ description: >
   (1) write or review a component or screen spec, (2) generate a Figma design via MCP,
   (3) review and iterate on a design, (4) close or abandon work.
   Triggers: "spec", "design", "screen", "review", "done", "drop", "learn", "sync",
-  "status", "setup", "workflow", "what's next", "new component", "new screen", or any design request.
+  "status", "setup", "quick", "express", "fast", "workflow", "what's next", "new component", "new screen", or any design request.
 ---
 
 # Design Workflow
@@ -41,6 +41,16 @@ description: >
 | `learn` | Diff design vs corrections, extract learnings | `references/actions/learn.md` |
 | `sync` | Incremental DS sync (no full re-setup) | `references/actions/sync.md` |
 | `status` | Show current state and suggest next action | *(inline below)* |
+| `quick {description}` | Express generation — skip spec, generate directly | `references/actions/quick.md` |
+| `express {description}` | Alias for quick | `references/actions/quick.md` |
+| `fast {description}` | Alias for quick | `references/actions/quick.md` |
+
+---
+
+### Express Mode
+For rapid generation without formal specs, use `quick`. Requires an existing knowledge base.
+Full quality gates still apply for DS compliance and token binding.
+See `references/actions/quick.md`.
 
 ---
 
@@ -152,6 +162,7 @@ Detect intent from user input and **read the action file BEFORE executing**:
 | "learn", "diff", "corrections", "what changed" | `references/actions/learn.md` |
 | "sync", "update DS", "refresh DS", "sync DS" | `references/actions/sync.md` |
 | "status", "workflow", "what's next", "what now" | *(status logic below)* |
+| "quick", "express", "fast", "quick design", "just design" | `references/actions/quick.md` |
 
 ---
 

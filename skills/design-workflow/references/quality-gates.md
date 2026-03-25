@@ -156,3 +156,25 @@
   1. Warn user about quality impact
   2. Log the skip reason
   3. Flag in review as advisory issue
+
+---
+
+## Phase: Quick Mode
+
+Quick mode relaxes some gates while keeping critical ones:
+
+### Relaxed (non-blocking in quick mode)
+- Pattern matching: best-effort, not blocking
+- Spec creation and validation: skipped entirely
+- New components check: skipped (use what exists in registries)
+- Formal review: skipped (user can run separately)
+- Acceptance criteria: none (no spec)
+
+### Still enforced (BLOCKING even in quick mode)
+- Pre-script element audit (Rule 18) — every element must be in registries
+- Zero hardcoded hex colors — all colors via setBoundVariableForPaint
+- Atomic generation — 4-6 scripts with screenshots between
+- DS component reuse — NEVER recreate existing components as raw frames
+- Registry loading — must load and cross-reference before generating
+- Canvas positioning — 80px+ gaps, no stacking at (0,0)
+- Script structure — follow figma-api-rules.md (Rule 17 / Rule 23)
