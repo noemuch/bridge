@@ -515,6 +515,55 @@ Script format depends on the active MCP transport. See `references/transport-ada
 
 ---
 
+## Rule 24: Never screenshot a page or empty node
+
+`figma_take_screenshot` / `get_screenshot` will fail on:
+- Page nodes (type PAGE) — they are not renderable
+- Empty frames (0 children) — nothing to render
+
+**Always create at least one visible frame before taking the first screenshot.** In quick mode and design mode, skip the initial screenshot attempt and wait until after Script 1 has created the root frame.
+
+---
+
+## Rule 25: Input/Select components — swap to `filled` state for values
+
+When placing TextInput, SelectInput, or similar form components with actual values (not empty placeholders), **always swap to the `state=filled` variant** before setting text properties. The default variant is often `state=placeholder`, which hides the value text layer.
+
+Pattern:
+```js
+// 1. Import the component set
+var inputSet = await figma.importComponentSetByKeyAsync(TEXTINPUT_KEY);
+
+// 2. Find the filled variant (not placeholder)
+var filled = inputSet.findChild(function(n) {
+  return n.name.includes("state=filled") || n.name.includes("state=filling");
+});
+
+// 3. Create instance from the filled variant
+var instance = filled.createInstance();
+
+// 4. Now set text properties — they will be visible
+instance.setProperties({ "label#HASH": "First Name", "placeholder#HASH": "John" });
+```
+
+If the DS has no `filled` variant, check for `default` or `rest` — but never leave `state=placeholder` when displaying real values.
+
+---
+
+## Rule 26: Validate registry keys before writing scripts
+
+Variable and component keys are 40-char hex strings — typos crash scripts at runtime with unhelpful errors like `could not find variable with key "..."`.
+
+**Before writing any figma_execute / use_figma script:**
+1. List every key you plan to use in the script
+2. Cross-reference each key against the exact values in `registries/variables.json`, `registries/components.json`, or `registries/text-styles.json`
+3. Copy-paste keys directly from the registry — never type them manually
+4. If a key is not found in registries, search with `Grep` before assuming the name
+
+This is part of the pre-script audit (Rule 18). Every key in the script must have a verified source in the registries.
+
+---
+
 ## Standard Script Boilerplate
 
 ```js

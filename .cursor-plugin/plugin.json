@@ -1,7 +1,7 @@
 {
   "name": "bridge-ds",
   "displayName": "Bridge Design System",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "AI-powered design generation in Figma — spec-first, DS-native, with a learning loop.",
   "author": "noemuch",
   "homepage": "https://github.com/noemuch/bridge",

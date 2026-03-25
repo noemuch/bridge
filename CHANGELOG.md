@@ -2,6 +2,14 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [2.5.1] — 2026-03-25
+
+### Added
+- **Rule 24**: Never screenshot a page or empty node — create a frame first
+- **Rule 25**: Input/Select components — swap to `state=filled` for real values
+- **Rule 26**: Validate registry keys before writing scripts — copy-paste from registries, never type manually
+- `quick.md`: References Rules 24-26 in generation steps
+
 ## [2.5.0] — 2026-03-25
 
 ### Added

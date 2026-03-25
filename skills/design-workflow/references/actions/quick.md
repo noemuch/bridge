@@ -44,13 +44,15 @@ Show the mini-spec to the user and ask: "Generate this design?" (single yes/no c
 Follow the same generation procedure as design.md steps 3-6:
 1. Read figma-api-rules.md (MANDATORY — same rules apply in quick mode)
 2. Determine canvas dimensions based on screen type
-3. **Pre-script audit** (MANDATORY — list every element, cross-reference against registries)
+3. **Pre-script audit** (MANDATORY — list every element, cross-reference against registries. Validate all keys per Rule 26.)
 4. Generate atomically in 4-6 scripts, ~30-80 lines each
-5. Take screenshot after each atomic step for verification
-6. Fix any issues before proceeding to next step
+5. Take screenshot after each atomic step for verification — **but NOT before Script 1** (Rule 24: empty pages/frames cannot be screenshotted)
+6. For form inputs with values, use `state=filled` variant (Rule 25)
+7. Fix any issues before proceeding to next step
 
 IMPORTANT: These gates are NOT relaxed in quick mode:
 - Pre-script element audit (Rule 18) — BLOCKING
+- Registry key validation (Rule 26) — BLOCKING
 - Zero hardcoded hex colors — BLOCKING
 - Atomic generation with screenshots — MANDATORY
 - DS component reuse (never recreate) — BLOCKING
