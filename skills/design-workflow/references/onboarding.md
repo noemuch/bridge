@@ -56,6 +56,20 @@ What do you want to design? (component or screen)
 
 **If knowledge base is empty → build it:**
 
+#### Knowledge Base Directory Selection
+
+Determine where to create the knowledge base:
+- If `./.claude/skills/design-workflow/references/knowledge-base/` already exists (npm scaffold mode) → use that path
+- Otherwise (plugin mode or fresh project) → create and use `./bridge-ds/knowledge-base/`
+
+Create these subdirectories in the chosen KB root:
+- `registries/`
+- `guides/tokens/`
+- `guides/components/`
+- `guides/patterns/`
+- `guides/assets/`
+- `ui-references/screenshots/`
+
 #### KB Generation Flow
 
 1. **Ask the user for the DS library file key/URL** (the Figma file containing their design system)

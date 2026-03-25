@@ -28,6 +28,18 @@ description: >
 
 ---
 
+## Knowledge Base Location
+
+The knowledge base is project-specific. Resolve its path in this order:
+1. If `./bridge-ds/knowledge-base/registries/` exists and contains JSON files → use `./bridge-ds/knowledge-base/`
+2. Else if `./.claude/skills/design-workflow/references/knowledge-base/registries/` exists and contains JSON files → use that path
+3. Else → knowledge base not found. Suggest running `/design-workflow setup` to extract the DS.
+
+The `specs/` directory is always at `./specs/` (project root), regardless of KB location.
+The `learnings.json` is always inside the knowledge base directory.
+
+---
+
 ## Commands
 
 | Command | Purpose | Action file |
