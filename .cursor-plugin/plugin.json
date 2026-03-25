@@ -1,0 +1,26 @@
+{
+  "name": "bridge-ds",
+  "displayName": "Bridge Design System",
+  "version": "2.5.0",
+  "description": "AI-powered design generation in Figma — spec-first, DS-native, with a learning loop.",
+  "author": "noemuch",
+  "homepage": "https://github.com/noemuch/bridge",
+  "repository": "https://github.com/noemuch/bridge",
+  "license": "MIT",
+  "keywords": ["figma", "design-system", "mcp", "ai-design"],
+  "skills": {
+    "design-workflow": "./skills/design-workflow/SKILL.md"
+  },
+  "commands": {
+    "design-workflow": "./commands/design-workflow.md"
+  },
+  "mcpServers": {
+    "figma-console": {
+      "command": "npx",
+      "args": ["-y", "figma-console-mcp@latest"],
+      "env": {
+        "FIGMA_ACCESS_TOKEN": ""
+      }
+    }
+  }
+}
