@@ -69,7 +69,7 @@
 
 | Gate | Blocking | Check |
 |------|----------|-------|
-| **Atomic generation** | **Yes** | Design split into 4-6 sequential scripts (~30-80 lines each), never one monolithic script |
+| **Atomic generation** | **Yes** | Full mode: design split into 4-6 sequential scripts (~30-80 lines each). Quick mode: 1-2 consolidated scripts (~100-200 lines) with upfront audit (see quick.md) |
 | **Screenshot verification between steps** | **Yes** | `figma_take_screenshot` called after EACH atomic step, issues fixed before proceeding |
 | **Pre-script element audit (Rule 18)** | **Yes** | Before EACH script: list every visual element, verify against registries. NEVER recreate a DS component as raw frame |
 | **Registry loaded before first script** | **Yes** | `components.json` and other registries read and available before writing any generation script |
@@ -171,9 +171,9 @@ Quick mode relaxes some gates while keeping critical ones:
 - Acceptance criteria: none (no spec)
 
 ### Still enforced (BLOCKING even in quick mode)
-- Pre-script element audit (Rule 18) — every element must be in registries
+- Upfront element audit (Rule 18) — all elements audited once before generation (replaces per-script audits)
 - Zero hardcoded hex colors — all colors via setBoundVariableForPaint
-- Atomic generation — 4-6 scripts with screenshots between
+- Consolidated generation — 1-2 scripts with upfront audit + screenshot verification
 - DS component reuse — NEVER recreate existing components as raw frames
 - Registry loading — must load and cross-reference before generating
 - Canvas positioning — 80px+ gaps, no stacking at (0,0)
