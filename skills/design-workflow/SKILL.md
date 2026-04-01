@@ -1,13 +1,38 @@
 ---
-name: design-workflow
+name: design-system
+version: 3.0.1
 description: >
-  Compiler-driven design workflow for designers who use Claude Code to design in Figma.
-  Covers components and full interfaces/screens. Use when a designer wants to:
-  (1) make a new design (spec + compile + execute), (2) fix corrections and learn,
-  (3) ship a completed design, (4) set up the knowledge base, or (5) check status.
-  Triggers: "make", "design", "create", "build", "generate", "fix", "correct",
-  "learn", "done", "ship", "setup", "extract", "status", "drop", "abandon",
-  "new component", "new screen", or any design request.
+  Design system expertise — component creation, token management, Figma workflow.
+  Compiler-driven: Claude produces scene graph JSON, the compiler generates Figma code.
+  Covers components and full interfaces/screens.
+triggers:
+  - make
+  - design
+  - create
+  - build
+  - generate
+  - fix
+  - correct
+  - learn
+  - done
+  - ship
+  - setup
+  - extract
+  - status
+  - drop
+  - component
+  - screen
+  - token
+  - spacing
+  - color
+  - typography
+requires:
+  actions:
+    - figma
+bridge:
+  min_version: "0.1.0"
+  has_compiler: true
+  compiler_path: "../../lib/compiler/compile.js"
 ---
 
 # Design Workflow — v3 (Compiler-Driven)
