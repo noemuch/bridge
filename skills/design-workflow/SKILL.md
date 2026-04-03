@@ -1,6 +1,6 @@
 ---
 name: design-system
-version: 3.0.1
+version: 3.1.0
 description: >
   Design system expertise — component creation, token management, Figma workflow.
   Compiler-driven: Claude produces scene graph JSON, the compiler generates Figma code.
@@ -33,7 +33,62 @@ bridge:
   min_version: "0.1.0"
   has_compiler: true
   compiler_path: "../../lib/compiler/compile.js"
+priority_references:
+  - compiler-reference.md
+  - transport-adapter.md
+generation_phases:
+  - Analyzing
+  - Planning
+  - Speccing
+  - Compiling
+  - Executing
+  - Verifying
+  - Finalizing
+readiness:
+  - id: figma-connected
+    check: mcp_tool
+    tool: figma_get_status
+    description: "Figma Console plugin connected"
+    resolution_hint: "Install figma-console-mcp plugin in Figma Desktop"
+  - id: knowledge-base
+    check: kb_populated
+    description: "Design tokens and components extracted"
+    resolution_hint: "Run bridge setup to extract your design system"
+setup:
+  - type: tool_check
+    id: check_figma
+    tool: figma_get_status
+    description: "Checking Figma connection"
+    on_fail: block
+    hint: "Open Figma Desktop and ensure the figma-console-mcp plugin is running."
+  - type: prompt
+    id: figma_url
+    message: "Figma DS library URL (the file with your components, tokens, and styles)"
+    placeholder: "https://www.figma.com/design/abc123/MyDesignSystem"
+    validate: "^https://(www\\.)?figma\\.com/"
+    store_as: figma_url
+    extract:
+      file_key: "figma\\.com/(?:design|file)/([a-zA-Z0-9]+)"
+  - type: tool_extract
+    id: extract_variables
+    tool: figma_get_variables
+    description: "Extracting design tokens (variables)"
+    output: "registries/variables.json"
+  - type: tool_extract
+    id: extract_styles
+    tool: figma_get_text_styles
+    description: "Extracting text styles"
+    output: "registries/text-styles.json"
+  - type: file_init
+    id: init_recipes
+    path: "recipes/_index.json"
+    template: "{\"version\":1,\"recipes\":[],\"lastUpdated\":\"\"}"
+  - type: file_init
+    id: init_learnings
+    path: "learnings.json"
+    template: "{\"meta\":{\"version\":1},\"learnings\":[],\"flags\":[]}"
 ---
+
 
 # Design Workflow — v3 (Compiler-Driven)
 

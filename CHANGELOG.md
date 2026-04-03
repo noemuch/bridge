@@ -2,6 +2,13 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [3.1.0] — 2026-04-03
+
+### Added
+- **Declarative setup steps** — SKILL.md now includes `setup:` array with typed steps for bridge-app's Setup Engine
+- **Manifest extensions** — `requires`, `priority_references`, `generation_phases`, `readiness` in SKILL.md frontmatter
+- **Readiness checks** — `figma-connected` (mcp_tool) and `knowledge-base` (kb_populated)
+
 ## [3.0.1] — 2026-03-29
 
 ### Fixed
