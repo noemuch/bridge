@@ -1,6 +1,6 @@
 ---
 name: using-bridge
-description: Use when any Bridge command is invoked (make, fix, done, setup, drop, docs) or any Figma / design-system / compiler / Bridge workflow topic is raised. Sets command priorities and non-negotiable hard rules (compiler-only, semantic tokens only, verification-before-ship).
+description: Use when any Bridge command is invoked (make, fix, done, setup, drop) or any Figma / design-system / compiler / Bridge workflow topic is raised. Sets command priorities and non-negotiable hard rules (compiler-only, semantic tokens only, verification-before-ship).
 ---
 
 # Using Bridge
@@ -25,22 +25,15 @@ deliberately small (~400 tokens) to keep the fixed per-session cost low.
 | "done", "ship", "ship it", "finish", "complete" | `skills/design-workflow/` → `references/actions/done.md` |
 | "setup", "extract", "extract DS", "onboard" | `skills/design-workflow/` → `references/actions/setup.md` |
 | "drop", "abandon", "cancel" | `skills/design-workflow/` → `references/actions/drop.md` |
-| "docs", "documentation", "sync docs", "generate docs" | (reserved for v4.0.0 — `skills/generating-ds-docs/`) |
 | "status", "what's next", "workflow" | inline status logic in `skills/design-workflow/SKILL.md` |
-
-> **Note for v3.2.0**: the action layer is still the monolithic
-> `skills/design-workflow/SKILL.md` + its `references/actions/*.md` files.
-> Phase 2 (next plan) splits them into five separate skills
-> (`generating-figma-design`, `learning-from-corrections`, etc.). The command
-> map above will be updated to point at the new skills when that happens.
 
 ---
 
 ## Skill Priority
 
 1. **Process first, then action.** For exploratory or ambiguous requests,
-   use `superpowers:brainstorming` before implementing. For a clear
-   directive that maps to a command in the table above, route directly.
+   brainstorm the intent first before implementing. For a clear directive
+   that maps to a command in the table above, route directly.
 2. **Verification before completion.** No "done" without evidence
    (see Hard Rules below).
 3. **Minimal context.** Load only the references needed for the current

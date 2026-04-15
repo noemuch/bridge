@@ -1,4 +1,7 @@
 node_modules/
 .DS_Store
+**/.DS_Store
 .tmp/
 .claude/
+docs/
+bridge-logo.png

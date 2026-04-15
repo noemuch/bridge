@@ -2,6 +2,21 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [3.2.2] — 2026-04-15
+
+### Changed
+- Plugin manifest versions aligned at `3.2.2` across `package.json`,
+  `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, and
+  `.cursor-plugin/plugin.json` (resolves prior version drift).
+- `skills/design-workflow/SKILL.md` frontmatter updated to
+  `name: design-workflow` / `version: 3.2.2`.
+
+### Fixed
+- README: corrected Figma Desktop plugin import instructions (point to
+  the `figma-console-mcp` manifest rather than a non-existent file).
+- README: documented the `specs/backlog/` directory created by
+  `bridge-ds init`.
+
 ## [3.2.0] — 2026-04-15
 
 ### Added
@@ -19,11 +34,7 @@ All notable changes to Bridge DS are documented here.
 
 ### Notes
 
-This release is the Phase 0+1 increment of the larger Bridge Docs +
-restructure work (spec:
-`docs/superpowers/specs/2026-04-15-bridge-docs-and-restructure-design.md`).
-No breaking changes. Phase 2 (action skill split) ships in 3.5.0; Bridge
-Docs V0.1 lands in 4.0.0.
+No breaking changes.
 
 ## [3.1.0] — 2026-04-03
 

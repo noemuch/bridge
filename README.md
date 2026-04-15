@@ -54,9 +54,9 @@ Get your token from [Figma Settings > Personal access tokens](https://help.figma
 
 ### 2. Connect Figma Desktop
 
-1. Run `npx figma-console-mcp@latest --print-path` to find the plugin directory
+1. Run `npx figma-console-mcp@latest --print-path` to find the figma-console-mcp plugin directory
 2. In Figma Desktop: **Plugins > Development > Import plugin from manifest...**
-3. Select `figma-desktop-bridge/manifest.json`
+3. Select the `manifest.json` inside that directory
 4. Run the plugin in your Figma file
 
 ### 3. Initialize your project
@@ -66,10 +66,10 @@ cd your-project
 npx @noemuch/bridge-ds init
 ```
 
-This scaffolds:
+This scaffolds into your project:
 - `.claude/skills/design-workflow/` — the workflow skill + references + compiler
 - `.claude/commands/design-workflow.md` — the `/design-workflow` slash command
-- `specs/` — directory for active, shipped, and dropped specs
+- `specs/` — directory for active, backlog, shipped, and dropped specs
 
 ### 4. Build your knowledge base
 
