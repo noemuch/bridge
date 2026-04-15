@@ -14,6 +14,7 @@ All notable changes to Bridge DS are documented here.
   replaces the phase-oriented `skills/design-workflow/references/quality-gates.md`.
 - New skill `skills/learning-from-corrections/` (migrated from `fix.md`).
 - New skill `skills/shipping-and-archiving/` (migrated from `done.md`); marks the v4.0.0 cascade trigger point.
+- New skill `skills/extracting-design-system/` (migrated from `setup.md`).
 
 ## [3.2.2] — 2026-04-15
 
