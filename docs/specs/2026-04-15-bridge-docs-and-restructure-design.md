@@ -2,7 +2,7 @@
 
 | Field    | Value                                                  |
 | -------- | ------------------------------------------------------ |
-| Author   | Noé Chagué                                             |
+| Author   | DS maintainer                                          |
 | Date     | 2026-04-15                                             |
 | Status   | Approved for implementation planning                   |
 | Version  | 1.0 (combined spec)                                    |
@@ -30,8 +30,8 @@ AI agent through a local Model Context Protocol (MCP) server.
 Shipping Bridge Docs cleanly requires a second, parallel piece of work:
 **splitting Bridge's monolithic `skills/design-workflow/SKILL.md` into six
 focused skills** (five action skills + one force-loaded process skill),
-adopting three patterns from `obra/superpowers` that give the biggest
-quality leverage without importing its over-granular structure.
+adopting three patterns from prior-art research on AI-skill architectures
+that give the biggest quality leverage without importing over-granular structure.
 
 ### 1.2 Why this, why now
 
@@ -71,7 +71,7 @@ quality leverage without importing its over-granular structure.
    instead of string-matching through markdown.
 6. **Bridge skill restructure.** Six focused skills replace the 300-line
    monolith. `using-bridge` force-loaded via SessionStart hook. Three
-   superpowers patterns adopted: description-as-triggers, HARD-GATE
+   prior-art patterns adopted: description-as-triggers, HARD-GATE
    markers, shared verification gates.
 
 ### 1.4 Non-goals (explicit, non-negotiable for V0.1)
@@ -125,9 +125,9 @@ during brainstorming collapsed this to a repo-native, build-less design:
 |                                      | fast-path                                |
 | Astro components (Do/Don't, swatches) | None — pure CommonMark                  |
 
-### 2.3 obra/superpowers audit takeaways
+### 2.3 Prior-art takeaways
 
-Three high-leverage patterns to adopt:
+Three high-leverage patterns worth adopting from prior-art research on AI-skill architectures:
 
 1. **Description field = triggering conditions only.** A workflow summary
    causes Claude to shortcut and skip reading the skill body. Rewriting
@@ -136,13 +136,13 @@ Three high-leverage patterns to adopt:
    tooling cost, high behavioral effect. Used to enforce "never write raw
    Plugin API", "never claim done without screenshot diff", etc.
 3. **Shared verification gate as a reference file.** Inlined at the end of
-   each action skill. Not a separate skill (that is superpowers' granularity
-   trap; Bridge has 3 concrete gates, not a general-purpose verification
-   discipline).
+   each action skill. Not a separate skill (that is the granularity trap
+   common in general-purpose skill libraries; Bridge has 3 concrete gates,
+   not a general-purpose verification discipline).
 
 Two patterns explicitly rejected:
 
-1. **14-skill granularity.** Bridge is a single-domain tool. Six skills.
+1. **14-skill libraries granularity.** Bridge is a single-domain tool. Six skills.
 2. **No-dependency dogma.** Bridge has a compiler, MCP, REST API, and
    needs Handlebars/figlet/clack. That is correct for a real tool.
 
@@ -154,7 +154,7 @@ Two patterns explicitly rejected:
 
 ```
 ┌───────────────────────────────────────────────────────────────────────┐
-│                    User's DS repo (e.g. spectra-design-system)         │
+│                    User's DS repo (e.g. acme-design-system)            │
 │                                                                        │
 │  ┌──────────────┐    ┌──────────────┐    ┌────────────────────────┐   │
 │  │  bridge-ds/  │    │design-system/│    │ .github/workflows/     │   │
@@ -203,7 +203,7 @@ Two patterns explicitly rejected:
         ▼
 
 ┌─────────────────────────────────────┐
-│ Consumer repo (finary-web, etc.)    │
+│ Consumer repo (acme-web, etc.)      │
 │                                      │
 │ Cursor / Claude Code / Copilot CLI:  │
 │                                      │
@@ -252,7 +252,7 @@ name: Button
 category: actions
 status: stable
 since: 2.1.0
-figma: https://figma.com/file/abc/Spectra?node-id=12:345
+figma: https://figma.com/file/abc/Acme?node-id=12:345
 a11y: WCAG 2.2 AA · audited 2026-04-09
 related:
   alternatives: [Link, IconButton]
@@ -363,7 +363,7 @@ Destructive only. Always inside a confirmation dialog.
 
 ## Source
 
-- **Figma**: [Button in Spectra](https://figma.com/file/abc?node-id=12:345)
+- **Figma**: [Button in Acme DS](https://figma.com/file/abc?node-id=12:345)
 - **Spec**: [`specs/shipped/Button.cspec.yaml`](../../../../bridge-ds/specs/shipped/Button.cspec.yaml)
 - **Recipe**: none (atomic component)
 - **Last shipped**: 2026-04-09
@@ -435,9 +435,9 @@ Following the Answer.AI spec. `llms.txt` is a curated index, `llms-full.txt`
 is the concatenation of every `.md` in `design-system/`.
 
 ```markdown
-# Spectra Design System
+# Acme Design System
 
-> Finary's compiler-driven design system. All components use semantic tokens
+> Acme's compiler-driven design system. All components use semantic tokens
 > (`$color/...`, `$spacing/...`); never primitive values. For all docs
 > inlined: [llms-full.txt](./llms-full.txt).
 
@@ -1054,7 +1054,7 @@ picks up changes without needing re-indexing.
 
 ### 9.2 `using-bridge` (force-loaded)
 
-Installed by `hooks/session-start` (mirroring superpowers' SessionStart
+Installed by `hooks/session-start` (following the SessionStart hook
 pattern). Injected at the top of every Claude Code session in the repo.
 
 Frontmatter:
@@ -1159,7 +1159,7 @@ Mode 3).
 
 ### 10.2 Three scenarios
 
-**Scenario A — DS maintainer (Noé at Finary), Monday morning.**
+**Scenario A — DS maintainer, Monday morning.**
 
 1. Sees GitHub notification: PR #47 `🤖 Bridge Docs — DS sync`.
 2. Opens PR. Reads structured body: "Banner gained variant `inline`,
@@ -1180,7 +1180,7 @@ Mode 3).
    appended. Commit made locally.
 8. Designer pushes. PR-flow or merge-to-main, their choice.
 
-**Scenario C — Consumer dev in finary-web, Cursor.**
+**Scenario C — Consumer dev in acme-web, Cursor.**
 
 1. Cursor's `.cursor/rules/design-system.mdc` loads automatically.
 2. Dev writes "Build a confirmation dialog with danger action".
@@ -1304,10 +1304,10 @@ if (isInteractive) {
 ├─ [1/4] Design System identity
 │
 ◆  What's your DS called?
-│  ✎ Spectra
+│  ✎ Acme DS
 │
 ◆  GitHub repo (for cron PR target)?
-│  ✎ finary/spectra-design-system
+│  ✎ acme-corp/acme-design-system
 │
 ├─ [2/4] Figma connection
 │
@@ -1319,7 +1319,7 @@ if (isInteractive) {
 │  ✎ figd_••••••••••
 │
 ⠋ Validating token...
-✓ Token valid. File "Spectra DS" found. 89 components detected.
+✓ Token valid. File "Acme DS" found. 89 components detected.
 │
 ├─ [3/4] Cron cadence
 │
@@ -1351,7 +1351,7 @@ if (isInteractive) {
 │
 │  GitHub Action secret to add before the first cron runs:
 │     FIGMA_TOKEN = figd_••••••••••
-│  Add at: https://github.com/finary/spectra-design-system/settings/secrets
+│  Add at: https://github.com/acme-corp/acme-design-system/settings/secrets
 │
 ◆  Happy designing.
 ```
@@ -1532,9 +1532,9 @@ refactor block separate from product work.
       including a working `.github/workflows/bridge-docs-cron.yml`.
 - [ ] `bridge-ds extract --headless` successfully extracts variables,
       components, and styles from a real Figma file using `FIGMA_TOKEN`.
-- [ ] Running the cron on Spectra's own repo produces a clean no-diff
+- [ ] Running the cron on the dogfood repo produces a clean no-diff
       exit on day 0, and a diff + PR on day 1 after a deliberate Figma change.
-- [ ] `bridge-ds docs build` on Spectra's KB produces 89 component pages,
+- [ ] `bridge-ds docs build` on the dogfood KB produces 89 component pages,
       all passing the linter.
 - [ ] The MCP server `bridge-ds docs mcp` responds to `resources/list`
       and `resources/read` per the URI scheme, verified by a Cursor session.
@@ -1591,7 +1591,7 @@ None of these block implementation planning.
 
 ## 19. Appendix: Next step
 
-This spec is complete. Implementation planning proceeds via the
-`superpowers:writing-plans` skill, producing a step-by-step, file-level
+This spec is complete. Implementation planning proceeds in a dedicated
+plan document under `docs/plans/`, producing a step-by-step, file-level
 plan grounded in §13 (migration map), §14 (phasing), and §12 (lib
 structure).
