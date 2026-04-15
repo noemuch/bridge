@@ -33,6 +33,7 @@ All notable changes to Bridge DS are documented here.
 - `lib/docs/generators/llms-txt.ts` — llms.txt index + llms-full.txt concatenator (Answer.AI spec).
 - `lib/docs/generators/component.ts` — component page generator with preservation merge.
 - `lib/docs/cascade/impact-analyzer.ts` — changeset → impact computation (components/foundations/patterns/changelogs/migrations).
+- `lib/docs/cascade/regen-planner.ts` — impact → ordered planned writes (foundations → components → patterns → changelogs → migrations).
 
 ## [3.3.0] — 2026-04-15
 
