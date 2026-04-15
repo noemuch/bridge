@@ -160,6 +160,8 @@ Top flags for this skill:
 
 ## Verification
 
+This skill is gated by `references/verification-gates.md` (repo-root):
+
 - **Gate B** — mandatory. Fresh screenshot this turn OR in the immediately
   preceding turn + explicit confirmation text.
 - **Gate C** — not applicable in V3.3.0; becomes mandatory for docs
