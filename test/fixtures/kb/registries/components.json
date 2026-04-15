@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "generatedAt": "2026-04-15T10:00:00Z",
+  "components": [
+    {
+      "key": "abc123def456",
+      "name": "Button",
+      "category": "actions",
+      "status": "stable",
+      "variants": [
+        { "name": "variant", "values": ["primary", "secondary", "ghost", "danger"] },
+        { "name": "size", "values": ["sm", "md", "lg"] }
+      ],
+      "properties": [
+        { "name": "iconLeading", "type": "boolean", "default": false }
+      ],
+      "description": "Triggers an action."
+    }
+  ]
+}

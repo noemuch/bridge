@@ -16,6 +16,7 @@ All notable changes to Bridge DS are documented here.
   `TypeScript build` step. Existing JS codebase (`lib/compiler/*.js`,
   `lib/cli.js`, `bin/bridge.js`) is untouched and keeps working.
 - `lib/kb/hash.ts` — deterministic SHA256 over KB artifacts.
+- `lib/kb/registry-io.ts` — typed registry reader/writer with shape validation.
 
 ## [3.3.0] — 2026-04-15
 

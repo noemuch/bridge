@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "generatedAt": "2026-04-15T10:00:00Z",
+  "variables": [
+    {
+      "key": "VariableID:1:2",
+      "name": "color/bg/primary",
+      "resolvedType": "COLOR",
+      "valuesByMode": {
+        "light": { "r": 0, "g": 0.4, "b": 1, "a": 1 },
+        "dark":  { "r": 0.2, "g": 0.52, "b": 1, "a": 1 }
+      },
+      "scopes": ["ALL_FILLS", "STROKE_COLOR"]
+    }
+  ]
+}
