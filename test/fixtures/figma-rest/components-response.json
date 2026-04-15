@@ -1,0 +1,9 @@
+{
+  "status": 200,
+  "error": false,
+  "meta": {
+    "components": [
+      { "key": "COMPKEY_BTN", "file_key": "FILEKEY", "node_id": "1:2", "name": "Button", "description": "Triggers an action.", "containing_frame": { "pageName": "Components" } }
+    ]
+  }
+}

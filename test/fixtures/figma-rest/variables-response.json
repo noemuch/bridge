@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "error": false,
+  "meta": {
+    "variableCollections": {
+      "col1": { "id": "col1", "name": "Primitives", "modes": [{ "modeId": "m1", "name": "light" }, { "modeId": "m2", "name": "dark" }], "defaultModeId": "m1", "remote": false, "hiddenFromPublishing": false, "variableIds": ["v1"], "key": "COLLECTION_KEY_1" }
+    },
+    "variables": {
+      "v1": { "id": "v1", "name": "color/bg/primary", "key": "VAR_KEY_1", "variableCollectionId": "col1", "resolvedType": "COLOR", "valuesByMode": { "m1": { "r": 0, "g": 0.4, "b": 1, "a": 1 }, "m2": { "r": 0.2, "g": 0.52, "b": 1, "a": 1 } }, "remote": false, "hiddenFromPublishing": false, "scopes": ["ALL_FILLS", "STROKE_COLOR"] }
+    }
+  }
+}
