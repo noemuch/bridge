@@ -29,6 +29,7 @@ All notable changes to Bridge DS are documented here.
 - `lib/docs/generators/foundation.ts` — foundation (color/spacing/radius/text) page generator.
 - `lib/docs/generators/pattern.ts` — pattern page generator.
 - `lib/docs/generators/changelog.ts` — per-component changelog generator.
+- `lib/docs/generators/migration.ts` — migration guide generator (per spec §6.4).
 
 ## [3.3.0] — 2026-04-15
 
