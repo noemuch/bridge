@@ -10,6 +10,7 @@ const REQUIRED_SKILLS = [
   'learning-from-corrections',
   'shipping-and-archiving',
   'extracting-design-system',
+  'generating-ds-docs',
 ];
 const REQUIRED_REFERENCES = [
   'references/compiler-reference.md',
