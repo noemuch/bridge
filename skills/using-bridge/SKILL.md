@@ -1,6 +1,6 @@
 ---
 name: using-bridge
-description: Use when any Bridge command is invoked (make, fix, done, setup, drop) or any Figma / design-system / compiler / Bridge workflow topic is raised. Sets command priorities and non-negotiable hard rules (compiler-only, semantic tokens only, verification-before-ship).
+description: Use when any Bridge command is invoked (make, fix, done, setup, drop, status) or any Figma / design-system / compiler / Bridge workflow topic is raised. Sets command priorities and non-negotiable hard rules (compiler-only, semantic tokens only, verification-before-ship).
 ---
 
 # Using Bridge

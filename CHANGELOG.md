@@ -2,24 +2,42 @@
 
 All notable changes to Bridge DS are documented here.
 
-## [Unreleased] — v3.3.0 skill-split refactor (in progress)
-
-### Added
-- New skill `skills/generating-figma-design/` (migrated from `make.md`), with CSpec templates co-located under the skill.
+## [3.3.0] — 2026-04-15
 
 ### Changed
-- **Verification contract** restructured around three canonical gates
-  (A/Compile, B/Visual, C/Lint). New `references/verification-gates.md`
-  is gate-oriented (with a per-action mandatory-gates table) and
-  replaces the phase-oriented `skills/design-workflow/references/quality-gates.md`.
-- New skill `skills/learning-from-corrections/` (migrated from `fix.md`).
-- New skill `skills/shipping-and-archiving/` (migrated from `done.md`); marks the v4.0.0 cascade trigger point.
-- New skill `skills/extracting-design-system/` (migrated from `setup.md`).
-- `drop` action folded inline into `using-bridge/SKILL.md` (too small to warrant its own skill).
-- `using-bridge` command map rewritten to route at the new action skills (was: legacy `skills/design-workflow/` → `references/actions/*.md`).
+- **Skill architecture restructure.** The monolithic
+  `skills/design-workflow/SKILL.md` has been split into four focused
+  action skills — `generating-figma-design`, `learning-from-corrections`,
+  `shipping-and-archiving`, `extracting-design-system` — plus the
+  existing force-loaded `using-bridge` process skill. The `drop` action
+  folds into `using-bridge` (too small to warrant its own skill). The
+  `using-bridge` command map routes directly at the new action skills.
+- **Shared references lifted to repo root** at `references/`:
+  `compiler-reference.md`, `transport-adapter.md`,
+  `verification-gates.md` (replaces the phase-oriented `quality-gates.md`
+  with a gate-oriented A/B/C contract), and
+  `red-flags-catalog.md` (new).
+- **CSpec templates** moved to
+  `skills/generating-figma-design/references/templates/`.
+
+### Added
+- **`scripts/validate-skills.js`** — CI-integrated validation harness
+  checking frontmatter, required sections, shared references, and
+  shim size. Added to the CI workflow as a dedicated step.
+- **`references/verification-gates.md`** — canonical A/B/C gates
+  contract replacing the phase-oriented `quality-gates.md`.
+- **`references/red-flags-catalog.md`** — shared rationalization →
+  reality table consumed by every action skill.
 
 ### Deprecated
-- `skills/design-workflow/SKILL.md` is now a compatibility shim (30 lines). All legacy action files under `skills/design-workflow/references/actions/` have been deleted. The shim will be removed in v4.0.0.
+- `skills/design-workflow/SKILL.md` is now a 27-line compatibility shim.
+  All legacy action files under `skills/design-workflow/references/actions/`
+  have been deleted. The shim will be removed in v4.0.0.
+
+### Notes
+- **No behavior change.** All `/design-workflow <command>` invocations
+  continue to work via the `using-bridge` command map.
+- The `knowledge-base/` directory layout is unchanged.
 
 ## [3.2.2] — 2026-04-15
 

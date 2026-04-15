@@ -41,21 +41,37 @@ Read `skills/design-workflow/SKILL.md` for the full workflow definition.
 
 ## Skills
 
-Bridge uses a **two-layer** Claude Code skill architecture:
+Bridge uses a **multi-skill** Claude Code architecture (v3.3.0+):
 
 - **`skills/using-bridge/`** — Force-loaded via `hooks/session-start` on
   every Claude Code session. Owns the command map, non-negotiable hard
   rules (compiler-only, semantic-tokens-only, verification-before-ship),
-  and the Red Flags rationalization catalog. Small (~400 tokens) to
-  keep the fixed per-session context cost low.
+  the Red Flags pointer, the inline `drop` procedure, and the inline
+  `status` logic. Small (~500 tokens) to keep the fixed per-session
+  context cost low.
 
-- **`skills/design-workflow/`** — Action layer. Executes the workflows
-  (`make`, `fix`, `done`, `setup`, `drop`) through its `references/actions/*.md`
-  files.
+- **`skills/generating-figma-design/`** — `make` command. CSpec → scene
+  graph → compile → execute → verify. Owns the CSpec templates.
 
-The SessionStart hook script at `hooks/session-start` reads
-`skills/using-bridge/SKILL.md`, strips YAML frontmatter, and emits the
-Claude Code hook JSON payload. Registered in `hooks/hooks.json`.
+- **`skills/learning-from-corrections/`** — `fix` command. Diffs Figma
+  state against the last snapshot, classifies corrections, persists
+  learnings, patches recipes.
+
+- **`skills/shipping-and-archiving/`** — `done` command. Final Gate B
+  verification, archive CSpec, update history, extract recipes.
+
+- **`skills/extracting-design-system/`** — `setup` command. Extracts the
+  DS from Figma (interactive MCP path in V3.3.0; headless REST path in
+  V4.0.0).
+
+- **`skills/design-workflow/`** — Compatibility shim only. Will be
+  removed in V4.0.0.
+
+Shared references live at the repo root under `references/`:
+- `compiler-reference.md`
+- `transport-adapter.md`
+- `verification-gates.md`
+- `red-flags-catalog.md`
 
 ## Compiler
 
@@ -96,7 +112,8 @@ knowledge-base/
 
 | Reference | Path |
 |-----------|------|
-| Compiler reference | `skills/design-workflow/references/compiler-reference.md` |
-| Transport adapter | `skills/design-workflow/references/transport-adapter.md` |
-| Quality gates | `skills/design-workflow/references/quality-gates.md` |
-| CSpec templates | `skills/design-workflow/references/templates/` |
+| Compiler reference | `references/compiler-reference.md` |
+| Transport adapter | `references/transport-adapter.md` |
+| Verification gates | `references/verification-gates.md` |
+| Red Flags catalog | `references/red-flags-catalog.md` |
+| CSpec templates | `skills/generating-figma-design/references/templates/` |
