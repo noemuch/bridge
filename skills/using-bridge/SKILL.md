@@ -18,14 +18,14 @@ deliberately small (~400 tokens) to keep the fixed per-session cost low.
 
 ## Command Map
 
-| User intent (keywords) | Route to |
-|---|---|
-| "make", "design", "create", "build", "generate", "new component", "new screen" | `skills/design-workflow/` → `references/actions/make.md` |
-| "fix", "correct", "learn", "diff", "what changed", "I adjusted" | `skills/design-workflow/` → `references/actions/fix.md` |
-| "done", "ship", "ship it", "finish", "complete" | `skills/design-workflow/` → `references/actions/done.md` |
-| "setup", "extract", "extract DS", "onboard" | `skills/design-workflow/` → `references/actions/setup.md` |
-| "drop", "abandon", "cancel" | `skills/design-workflow/` → `references/actions/drop.md` |
-| "status", "what's next", "workflow" | inline status logic in `skills/design-workflow/SKILL.md` |
+| User intent (keywords)                                         | Route to                          |
+|----------------------------------------------------------------|-----------------------------------|
+| "make", "design", "create", "build", "generate", "new component", "new screen" | `generating-figma-design`         |
+| "fix", "correct", "learn", "diff", "what changed", "I adjusted" | `learning-from-corrections`       |
+| "done", "ship", "ship it", "finish", "complete"                 | `shipping-and-archiving`          |
+| "setup", "extract", "extract DS", "onboard"                     | `extracting-design-system`        |
+| "drop", "abandon", "cancel"                                     | inline `Drop Procedure` (this skill) |
+| "status", "what's next", "workflow"                             | inline status logic (this skill)  |
 
 ---
 
@@ -66,7 +66,7 @@ Output template:
 2. **Verification before completion.** No "done" without evidence
    (see Hard Rules below).
 3. **Minimal context.** Load only the references needed for the current
-   action. See `skills/design-workflow/SKILL.md` "Context Loading Rules".
+   action. See each action skill's `## Verification` section.
 
 ---
 
@@ -107,10 +107,10 @@ NEVER reuse a Figma `nodeId` from a previous session.
 
 ## References
 
-- Compiler reference: `skills/design-workflow/references/compiler-reference.md`
-- Transport adapter (console vs official MCP): `skills/design-workflow/references/transport-adapter.md`
-- Quality gates: `skills/design-workflow/references/quality-gates.md`
-- CSpec templates: `skills/design-workflow/references/templates/`
+- Compiler reference: `references/compiler-reference.md` (repo-root)
+- Transport adapter: `references/transport-adapter.md` (repo-root)
+- Verification gates: `references/verification-gates.md` (repo-root)
+- Red Flags catalog: `references/red-flags-catalog.md` (repo-root)
 
 ---
 

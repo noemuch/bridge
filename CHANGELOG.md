@@ -16,6 +16,7 @@ All notable changes to Bridge DS are documented here.
 - New skill `skills/shipping-and-archiving/` (migrated from `done.md`); marks the v4.0.0 cascade trigger point.
 - New skill `skills/extracting-design-system/` (migrated from `setup.md`).
 - `drop` action folded inline into `using-bridge/SKILL.md` (too small to warrant its own skill).
+- `using-bridge` command map rewritten to route at the new action skills (was: legacy `skills/design-workflow/` → `references/actions/*.md`).
 
 ### Deprecated
 - `skills/design-workflow/SKILL.md` is now a compatibility shim (30 lines). All legacy action files under `skills/design-workflow/references/actions/` have been deleted. The shim will be removed in v4.0.0.
