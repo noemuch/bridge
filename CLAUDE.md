@@ -12,7 +12,7 @@ Claude Code ──CSpec YAML──> Compiler (local) ──Plugin API──> MCP
 
 ## MCP Transports
 
-Two transports, auto-detected. See `skills/design-workflow/references/transport-adapter.md` for full mapping.
+Two transports, auto-detected. See `references/transport-adapter.md` for full mapping.
 
 | Operation | Console (preferred) | Official (fallback) |
 |-----------|-------------------|-------------------|
@@ -37,7 +37,7 @@ The `/design-workflow` skill handles everything:
 | `status` | Show current state, suggest next |
 | `drop` | Abandon with preserved learnings |
 
-Read `skills/design-workflow/SKILL.md` for the full workflow definition.
+Read the relevant action skill (`skills/generating-figma-design/`, `skills/learning-from-corrections/`, `skills/shipping-and-archiving/`, `skills/extracting-design-system/`) for the full procedure of each command.
 
 ## Skills
 
@@ -80,7 +80,7 @@ Invocation:
 node lib/compiler/compile.js --input <json> --kb <kb-path> --transport <console|official>
 ```
 
-The compiler takes a scene graph JSON with `$token` references and outputs executable code chunks. See `skills/design-workflow/references/compiler-reference.md` for the JSON format.
+The compiler takes a scene graph JSON with `$token` references and outputs executable code chunks. See `references/compiler-reference.md` for the JSON format.
 
 ## Scene Graph (summary)
 

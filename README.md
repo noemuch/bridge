@@ -122,7 +122,7 @@ node lib/compiler/compile.js --input scene.json --kb <kb-path> --transport <cons
 
 Errors are caught at compile time, before anything touches Figma. The 26 rules — the ones that would trip up hand-written Plugin API scripts — are enforced by code generation, not by memory.
 
-[Compiler reference →](skills/design-workflow/references/compiler-reference.md) · [Transport adapter →](skills/design-workflow/references/transport-adapter.md) · [Quality gates →](skills/design-workflow/references/quality-gates.md)
+[Compiler reference →](references/compiler-reference.md) · [Transport adapter →](references/transport-adapter.md) · [Verification gates →](references/verification-gates.md)
 
 ## Commands
 
