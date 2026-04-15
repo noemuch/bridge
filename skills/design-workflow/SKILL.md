@@ -1,10 +1,7 @@
 ---
 name: design-system
 version: 3.1.0
-description: >
-  Design system expertise — component creation, token management, Figma workflow.
-  Compiler-driven: Claude produces scene graph JSON, the compiler generates Figma code.
-  Covers components and full interfaces/screens.
+description: Use when designer invokes make/fix/done/setup/drop/docs, or requests to design/create/build/generate/fix a Figma component or screen, or asks about Bridge workflow, tokens, components, recipes, or the design system.
 triggers:
   - make
   - design
