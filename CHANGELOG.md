@@ -2,57 +2,36 @@
 
 All notable changes to Bridge DS are documented here.
 
-## [Unreleased] — v4.0.0 Bridge Docs V0.1 (in progress)
+## [4.0.0] — 2026-04-15
 
 ### Added
-- `lib/cli/main.ts` + `bin/bridge.js` updated — single-bin router dispatching legacy (init/update) and V4.0.0 (init-docs/doctor/extract/docs/cron) commands.
-- `lib/cli/extract.ts` — `bridge-ds extract --headless` writes registries from Figma REST.
-- `lib/cli/doctor.ts` — `bridge-ds doctor` diagnostic (env, config, connectivity, docs health, cron).
-- `lib/cli/init-docs.ts` — `bridge-ds init-docs` interactive wizard (@clack/prompts + figlet, 4 steps).
-- `lib/cli/{ui,banner}.ts` — brand helpers (picocolors + RGB) and figlet banner.
-- TypeScript build infrastructure scaffolded for Bridge Docs V0.1
-  (`tsconfig.json`, `tsc` → `dist/`, strict mode, NodeNext modules).
-  New runtime deps (`handlebars`, `picocolors`, `figlet`,
-  `@clack/prompts`, `zod`, `@modelcontextprotocol/sdk`, `ajv`,
-  `ajv-formats`, `js-yaml`) and dev deps (`typescript`, `@types/node`,
-  `@types/figlet`, `@types/handlebars`, `@types/js-yaml`). Placeholder
-  directories under `lib/` for `cli/`, `extractors/`, `kb/`,
-  `docs/{generators,cascade,templates}/`, `cron/`. CI gains a
-  `TypeScript build` step. Existing JS codebase (`lib/compiler/*.js`,
-  `lib/cli.js`, `bin/bridge.js`) is untouched and keeps working.
-- `lib/kb/hash.ts` — deterministic SHA256 over KB artifacts.
-- `lib/kb/registry-io.ts` — typed registry reader/writer with shape validation.
-- `lib/kb/index-builder.ts` — `_index.json` relationship graph (buildFromScratch + patch).
-- `lib/extractors/figma-rest.ts` — Figma REST API headless extractor (variables + components + text styles).
-- `lib/extractors/figma-mcp.ts` — interactive MCP extraction contract (throws with guidance for V0.1).
-- `lib/config/docs-config.ts` — Zod-validated `docs.config.yaml` parser.
-- `lib/docs/templates/helpers.ts` + `renderer.ts` — Handlebars renderer and shared helpers (eq/not/join/upper/lower/formatDate/resolveToken/provenanceMarker/manualRegion/concat/lookup).
-- 6 Handlebars templates (component, foundation, pattern, changelog, migration, llms.txt) + integration test.
-- `lib/docs/preservation.ts` — extract + re-inject `<!-- manual:id -->` regions across regens (orphans preserved with warning).
-- `lib/docs/cascade/{diff-engine,rename-detector}.ts` — KB diff with persistent-key rename detection (spec §6.5).
-- `lib/docs/linter.ts` — doc linter (frontmatter required fields + token ref resolution + Figma deeplink shape).
-- `lib/docs/generators/foundation.ts` — foundation (color/spacing/radius/text) page generator.
-- `lib/docs/generators/pattern.ts` — pattern page generator.
-- `lib/docs/generators/changelog.ts` — per-component changelog generator.
-- `lib/docs/generators/migration.ts` — migration guide generator (per spec §6.4).
-- `lib/docs/generators/llms-txt.ts` — llms.txt index + llms-full.txt concatenator (Answer.AI spec).
-- `lib/docs/generators/component.ts` — component page generator with preservation merge.
-- `lib/docs/cascade/impact-analyzer.ts` — changeset → impact computation (components/foundations/patterns/changelogs/migrations).
-- `lib/docs/cascade/regen-planner.ts` — impact → ordered planned writes (foundations → components → patterns → changelogs → migrations).
-- `lib/docs/state.ts` — `.bridge/docs-state.json` read/write (hashes + timestamps for no-diff fast-path).
-- `lib/docs/mcp-server.ts` — local MCP server over stdio exposing `ds://component/<name>`, `ds://foundation/<name>`, `ds://index` resources.
-- `lib/docs/generate.ts` — build/sync/check orchestrator end-to-end (registries → index → cascade → planned regens → linter).
-- `skills/generating-ds-docs/` — 6th skill exposing 6 modes (init, full-build, sync, check, mcp, headless-sync).
-- `using-bridge` command map + `shipping-and-archiving` cascade hook wired to `generating-ds-docs`.
-- `lib/cron/orchestrator.ts` + `.github/workflows/bridge-docs-cron.yml` — daily cron that extracts Figma via REST, syncs docs, opens a PR on diff (no-op on no-diff).
-- Seed Bridge itself as a meta-DS (6 skills as components) for V0.1 dogfood.
-- First dogfood run of Bridge Docs on Bridge's own repo — regenerates skill docs + `llms.txt`.
+- **Bridge Docs V0.1** — complete docs generation pipeline.
+- **`generating-ds-docs` skill** (6 modes: init / full-build / sync / check / mcp / headless-sync).
+- **TypeScript build** (`tsc` → `dist/`); existing JS untouched.
+- **REST extractor** `lib/extractors/figma-rest.ts` — headless Figma extraction via `FIGMA_TOKEN`.
+- **KB layer** `lib/kb/{hash,registry-io,index-builder}.ts`.
+- **6 Handlebars templates** (component / foundation / pattern / changelog / migration / llms.txt) + shared helpers + renderer.
+- **Cascade engine** `lib/docs/cascade/{diff-engine,impact-analyzer,regen-planner,rename-detector}.ts`.
+- **Preservation layer** `lib/docs/preservation.ts` — inline `<!-- manual:id -->` regions preserved across regens.
+- **Linter** `lib/docs/linter.ts` — frontmatter required fields + token ref resolution + Figma deeplink shape.
+- **Orchestrator** `lib/docs/generate.ts` — build / sync / check.
+- **MCP server** `lib/docs/mcp-server.ts` — local stdio server exposing `ds://component/<name>`, `ds://foundation/<name>`, `ds://index`.
+- **Cron** `lib/cron/orchestrator.ts` + `.github/workflows/bridge-docs-cron.yml` — daily Figma REST extract + docs sync + PR on diff.
+- **CLI** — `bridge-ds init-docs` wizard (@clack/prompts + figlet), `doctor`, `extract --headless`, `docs {build,sync,check,mcp}`, `cron`. Single-bin router (`bin/bridge.js`) dispatches legacy + V4 commands.
+- **JSON Schemas** under `references/schemas/` for component / foundation / pattern frontmatter and `_index.json`.
+- **Dogfood** — Bridge's own repo uses Bridge Docs to document its 6 skills.
 
-### Fixed
-- `lib/docs/generate.ts` — inverted the `oldSnapshot` ternary so that a fresh run with no prior state treats everything as "added" (was treating current as old, producing an empty changeset).
+### Changed
+- `shipping-and-archiving` cascades to `generating-ds-docs sync` on done.
+- `using-bridge` command map includes the `docs` keyword; description frontmatter updated.
 
 ### Removed
-- `skills/design-workflow/` compatibility shim (Phase 4 of restructure). Legacy `/design-workflow <command>` invocations no longer route — users migrate to the specialized skills directly via the `using-bridge` command map.
+- `skills/design-workflow/` compatibility shim (Phase 4 of restructure). Legacy `/design-workflow <command>` invocations no longer route.
+
+### Notes
+- Tier 1 CLI entry: `npx @noemuch/bridge-ds init-docs`.
+- Node 18+ required.
+- `skills/generating-ds-docs/` integrates interactively via Claude Code and non-interactively via the cron.
 
 ## [3.3.0] — 2026-04-15
 

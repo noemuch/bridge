@@ -124,6 +124,21 @@ Errors are caught at compile time, before anything touches Figma. The 26 rules �
 
 [Compiler reference →](references/compiler-reference.md) · [Transport adapter →](references/transport-adapter.md) · [Verification gates →](references/verification-gates.md)
 
+## Bridge Docs (V0.1)
+
+Bridge auto-generates and maintains your design system's documentation in the same repo:
+
+- `bridge-ds init-docs` — scaffold `design-system/` + `docs.config.yaml` + cron.
+- `bridge-ds docs build` — full regeneration from your knowledge base.
+- `bridge-ds docs sync` — incremental cascade when Figma drifts.
+- `bridge-ds docs check` — lint only.
+- `bridge-ds docs mcp` — launch the local MCP server (`ds://` URIs over stdio).
+- `bridge-ds doctor` — diagnose config, connectivity, docs health, cron.
+- `bridge-ds extract --headless` — Figma REST extraction (CI-friendly, `FIGMA_TOKEN` required).
+- Daily cron (`.github/workflows/bridge-docs-cron.yml`) keeps Figma and docs in sync automatically.
+
+See [CHANGELOG.md](CHANGELOG.md) for the full V0.1 feature list.
+
 ## Commands
 
 | Command | Purpose |
