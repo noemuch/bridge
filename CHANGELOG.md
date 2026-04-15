@@ -2,6 +2,16 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [3.2.0] — (Unreleased)
+
+### Added
+- **Hard Rules section** in `SKILL.md` — Five non-negotiable rules enforced prompt-side:
+  - No raw Plugin API code (use compiler)
+  - No hardcoded primitives (use semantic tokens)
+  - No 'done' without compiler+screenshot+user-confirmation
+  - Never read `figma-api-rules.md` (compiler handles everything)
+  - Never reuse nodeIds across sessions
+
 ## [3.1.0] — 2026-04-03
 
 ### Added

@@ -106,6 +106,32 @@ setup:
 
 ---
 
+## Hard Rules (Non-Negotiable)
+
+<HARD-GATE>
+NEVER write raw Figma Plugin API code. All scene graph JSON must pass
+through `lib/compiler/compile.js`. The compiler enforces all 26 Figma
+API rules automatically.
+
+NEVER use hardcoded primitive values (hex colors, px sizes, rgb, raw font
+names). Only semantic DS tokens: `$color/...`, `$spacing/...`, `$text/...`,
+`$comp/...`.
+
+NEVER claim "done" or "ready to ship" without all three of:
+  (a) compiler ran to completion (exit code 0)
+  (b) screenshot taken in this turn
+  (c) user confirmation of visual correctness
+
+NEVER read `figma-api-rules.md` — it does not exist here and the compiler
+handles every rule it would encode.
+
+NEVER reuse a Figma `nodeId` from a previous session. Node IDs are
+session-scoped; always re-search via `figma_search_components` or the
+official MCP equivalent.
+</HARD-GATE>
+
+---
+
 ## Knowledge Base Location
 
 The knowledge base is project-specific. Resolve its path in this order:
