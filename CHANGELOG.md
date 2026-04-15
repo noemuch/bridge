@@ -28,6 +28,7 @@ All notable changes to Bridge DS are documented here.
 - `lib/docs/linter.ts` — doc linter (frontmatter required fields + token ref resolution + Figma deeplink shape).
 - `lib/docs/generators/foundation.ts` — foundation (color/spacing/radius/text) page generator.
 - `lib/docs/generators/pattern.ts` — pattern page generator.
+- `lib/docs/generators/changelog.ts` — per-component changelog generator.
 
 ## [3.3.0] — 2026-04-15
 
