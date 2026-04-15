@@ -5,6 +5,7 @@ All notable changes to Bridge DS are documented here.
 ## [Unreleased] — v4.0.0 Bridge Docs V0.1 (in progress)
 
 ### Added
+- `lib/cli/{ui,banner}.ts` — brand helpers (picocolors + RGB) and figlet banner.
 - TypeScript build infrastructure scaffolded for Bridge Docs V0.1
   (`tsconfig.json`, `tsc` → `dist/`, strict mode, NodeNext modules).
   New runtime deps (`handlebars`, `picocolors`, `figlet`,
