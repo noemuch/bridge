@@ -46,5 +46,8 @@ jobs:
       - name: Skills validation
         run: node scripts/validate-skills.js
 
+      - name: TypeScript build
+        run: npm run build
+
       - name: SessionStart hook executes
         run: bash hooks/session-start | node -e "let s=''; process.stdin.on('data',d=>s+=d); process.stdin.on('end',()=>{ const o=JSON.parse(s); if(!o.hookSpecificOutput) process.exit(1); })"

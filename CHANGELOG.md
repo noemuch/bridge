@@ -2,6 +2,20 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [Unreleased] — v4.0.0 Bridge Docs V0.1 (in progress)
+
+### Added
+- TypeScript build infrastructure scaffolded for Bridge Docs V0.1
+  (`tsconfig.json`, `tsc` → `dist/`, strict mode, NodeNext modules).
+  New runtime deps (`handlebars`, `picocolors`, `figlet`,
+  `@clack/prompts`, `zod`, `@modelcontextprotocol/sdk`, `ajv`,
+  `ajv-formats`, `js-yaml`) and dev deps (`typescript`, `@types/node`,
+  `@types/figlet`, `@types/handlebars`, `@types/js-yaml`). Placeholder
+  directories under `lib/` for `cli/`, `extractors/`, `kb/`,
+  `docs/{generators,cascade,templates}/`, `cron/`. CI gains a
+  `TypeScript build` step. Existing JS codebase (`lib/compiler/*.js`,
+  `lib/cli.js`, `bin/bridge.js`) is untouched and keeps working.
+
 ## [3.3.0] — 2026-04-15
 
 ### Changed

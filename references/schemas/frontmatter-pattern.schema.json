@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bridge-ds.dev/schemas/frontmatter-pattern.schema.json",
+  "title": "Bridge DS — Pattern .md Frontmatter",
+  "description": "YAML frontmatter for generated pattern .md files (design-system/patterns/<slug>.md).",
+  "type": "object",
+  "required": ["name", "kind", "components", "generated-from", "last-regenerated"],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable pattern name, e.g. 'Form submit', 'Confirmation dialog'."
+    },
+    "kind": {
+      "type": "string",
+      "const": "pattern"
+    },
+    "components": {
+      "type": "array",
+      "description": "Components that compose this pattern (must exist in componentIndex).",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" }
+    },
+    "recipes": {
+      "type": "array",
+      "description": "Recipe IDs that implement this pattern.",
+      "items": { "type": "string", "pattern": "^r-[a-z0-9-]+$" },
+      "uniqueItems": true
+    },
+    "since": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["stable", "beta", "experimental"]
+    },
+    "generated-from": {
+      "type": "object",
+      "required": ["kb-version"],
+      "additionalProperties": false,
+      "properties": {
+        "kb-version": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?$"
+        },
+        "recipes-hash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{6,64}$"
+        }
+      }
+    },
+    "last-regenerated": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "manual": { "type": "boolean" }
+  }
+}

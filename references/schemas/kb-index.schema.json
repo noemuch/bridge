@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bridge-ds.dev/schemas/kb-index.schema.json",
+  "title": "Bridge DS — Knowledge Base _index.json",
+  "description": "Relationship graph used by the cascade engine. Lives at bridge-ds/knowledge-base/_index.json.",
+  "type": "object",
+  "required": ["version", "generatedAt", "tokenIndex", "componentIndex"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "KB schema version (semver).",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "tokenIndex": {
+      "type": "object",
+      "description": "Keyed by $token path, e.g. '$color/bg/primary'.",
+      "propertyNames": { "pattern": "^\\$[a-z]+/[a-zA-Z0-9/_.-]+$" },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["category", "valuesByMode", "usedBy"],
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": ["color", "spacing", "radius", "text", "shadow", "border", "opacity", "motion"]
+          },
+          "valuesByMode": {
+            "type": "object",
+            "description": "Map of mode name → resolved primitive value. Keys are mode ids from the Figma variable collection.",
+            "minProperties": 1,
+            "additionalProperties": { "type": ["string", "number", "boolean", "object"] }
+          },
+          "resolvedType": {
+            "type": "string",
+            "enum": ["COLOR", "FLOAT", "STRING", "BOOLEAN"]
+          },
+          "scopes": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true
+          },
+          "variableKey": {
+            "type": "string",
+            "description": "Figma's persistent variable key (used by the rename detector)."
+          },
+          "usedBy": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "componentIndex": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[A-Z][A-Za-z0-9]*$" },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["category", "status", "uses"],
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": ["actions", "forms", "data-display", "feedback", "navigation", "layout", "overlay", "surface"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["stable", "beta", "deprecated", "experimental"]
+          },
+          "componentKey": {
+            "type": "string",
+            "description": "Figma's persistent component-set key (used by the rename detector)."
+          },
+          "uses": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "tokens": {
+                "type": "array",
+                "items": { "type": "string" },
+                "uniqueItems": true
+              },
+              "components": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+                "uniqueItems": true
+              }
+            }
+          },
+          "usedBy": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+            "uniqueItems": true
+          },
+          "alternatives": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+            "uniqueItems": true
+          },
+          "composesWith": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+            "uniqueItems": true
+          },
+          "supersedes": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+            "uniqueItems": true
+          },
+          "deprecatedBy": {
+            "type": ["string", "null"],
+            "pattern": "^[A-Z][A-Za-z0-9]*$"
+          }
+        }
+      }
+    },
+    "learningIndex": {
+      "type": "object",
+      "propertyNames": { "pattern": "^L\\d{3,}$" },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["scope", "frequency"],
+        "additionalProperties": false,
+        "properties": {
+          "scope": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true
+          },
+          "frequency": { "type": "integer", "minimum": 1 },
+          "agreedBy": { "type": "integer", "minimum": 0 },
+          "promoted": { "type": "boolean" },
+          "promotedAt": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          }
+        }
+      }
+    },
+    "patternIndex": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z0-9-]+$" },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["components"],
+        "additionalProperties": false,
+        "properties": {
+          "components": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+            "minItems": 2,
+            "uniqueItems": true
+          },
+          "recipes": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^r-[a-z0-9-]+$" },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "textStyleIndex": {
+      "type": "object",
+      "description": "Keyed by $text token path, e.g. '$text/heading/xl'.",
+      "propertyNames": { "pattern": "^\\$text/[a-zA-Z0-9/_.-]+$" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "styleKey": { "type": "string" },
+          "fontFamily": { "type": "string" },
+          "fontSize": { "type": "number" },
+          "lineHeight": { "type": ["number", "string"] },
+          "fontWeight": { "type": ["number", "string"] },
+          "usedBy": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true
+          }
+        }
+      }
+    }
+  }
+}
