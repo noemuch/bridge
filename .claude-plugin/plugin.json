@@ -1,7 +1,7 @@
 {
   "name": "bridge-ds",
-  "version": "3.0.1",
-  "description": "Compiler-driven design generation in Figma — declarative scene graphs compiled into DS-native Figma designs. Extracts your real design system, generates CSpec specifications, and compiles them into production-ready Figma output with recipes that improve over time.",
+  "version": "3.2.0",
+  "description": "Compiler-driven design generation in Figma — 100% design system compliant. Compiles component specs into verified Figma output via MCP.",
   "author": {
     "name": "noemuch",
     "url": "https://github.com/noemuch"
