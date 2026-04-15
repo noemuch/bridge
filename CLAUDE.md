@@ -52,7 +52,7 @@ Bridge uses a **two-layer** Claude Code skill architecture:
 - **`skills/design-workflow/`** — Action layer. Executes the workflows
   (`make`, `fix`, `done`, `setup`, `drop`) through its `references/actions/*.md`
   files. Will be split into five focused action skills in v4.0.0 (see the
-  Bridge Docs + restructure spec in `docs/specs/`).
+  Bridge Docs + restructure spec in `docs/superpowers/specs/`).
 
 The SessionStart hook script at `hooks/session-start` reads
 `skills/using-bridge/SKILL.md`, strips YAML frontmatter, and emits the

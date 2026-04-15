@@ -174,7 +174,7 @@ Both use the same MCP transport and compiler infrastructure.
 
 ## Author
 
-Built by [Noe Chague](https://github.com/noemuch).
+Built by [Noe Chague](https://www.linkedin.com/in/noechague/) — Design System @ [Finary](https://finary.com)
 
 ## License
 

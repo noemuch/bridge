@@ -1,14 +1,14 @@
 # Phase 0+1: Fortify Monolith + Using-Bridge Skill Implementation Plan
 
-> **For agentic workers:** REQUIRED PATTERN: Use subagent-driven execution (recommended) or inline plan execution to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Harden the existing `skills/design-workflow/SKILL.md` monolith with discipline-oriented skill patterns (triggers-only description, HARD-GATE markers, Red Flags table), extract the discipline/routing layer into a new force-loaded `using-bridge` skill, and install a SessionStart hook so it auto-injects on every Claude Code session.
+**Goal:** Harden the existing `skills/design-workflow/SKILL.md` monolith with superpowers-inspired patterns (triggers-only description, HARD-GATE markers, Red Flags table), extract the discipline/routing layer into a new force-loaded `using-bridge` skill, and install a SessionStart hook so it auto-injects on every Claude Code session.
 
 **Architecture:** Additive only. The existing monolith stays fully functional and keeps routing `make/fix/done/setup/drop` through `references/actions/*.md`. The new `using-bridge` skill is thin (~400 tokens) and owns the command map + hard rules + rationalization-prevention content. A `hooks/session-start` shell script injects `using-bridge` into every session's system prompt. At the end of this phase Bridge ships as v3.2.0 with zero breaking changes, dogfooded on Bridge's own repo.
 
 **Tech Stack:** Markdown (skill files), POSIX shell (hook script), JSON (plugin manifest + hook config), git (branching + PR flow).
 
-**Reference spec:** `docs/specs/2026-04-15-bridge-docs-and-restructure-design.md` §9 (skill architecture) and §14.1 (phases P0 + P1).
+**Reference spec:** `docs/superpowers/specs/2026-04-15-bridge-docs-and-restructure-design.md` §9 (skill architecture) and §14.1 (phases P0 + P1).
 
 **Target version:** `3.2.0` (from current `3.1.0`).
 
@@ -20,7 +20,7 @@ Files created:
 - `skills/using-bridge/SKILL.md` — new force-loaded skill body (discipline + command map + red flags)
 - `hooks/session-start` — POSIX shell script that emits the hook JSON payload
 - `hooks/hooks.json` — hook registration for Claude Code
-- `docs/plans/2026-04-15-phase-0-1-using-bridge-skill.md` — this plan (already created)
+- `docs/superpowers/plans/2026-04-15-phase-0-1-using-bridge-skill.md` — this plan (already created)
 
 Files modified:
 - `skills/design-workflow/SKILL.md` — description rewritten, HARD-GATE + Red Flags blocks inserted, command router slimmed (now defers to `using-bridge`)
@@ -108,9 +108,11 @@ git add skills/design-workflow/SKILL.md
 git commit -m "refactor(skill): rewrite design-workflow description as triggers-only
 
 Replaces the workflow-summary description with a 'Use when...' triggering
-conditions string. Per prior-art research, descriptions that
+conditions string. Per obra/superpowers research, descriptions that
 summarize workflow cause LLMs to shortcut and skip reading the skill body.
-Triggers-only descriptions measurably improve correct skill selection."
+Triggers-only descriptions measurably improve correct skill selection.
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 ```
 
 Expected: one-file commit, green pre-commit hooks (if any).
@@ -187,8 +189,10 @@ Five non-negotiable rules enforced prompt-side:
 - Never read figma-api-rules.md
 - Never reuse nodeIds across sessions
 
-Pattern borrowed from prior-art research. Pure prompt convention, zero
-tooling cost, measurable behavioral effect on rationalization loopholes."
+Pattern borrowed from obra/superpowers. Pure prompt convention, zero
+tooling cost, measurable behavioral effect on rationalization loopholes.
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -246,9 +250,11 @@ git add skills/design-workflow/SKILL.md
 git commit -m "feat(skill): add Red Flags rationalization table to design-workflow
 
 Eight common rationalizations explicitly enumerated with their reality
-counter. Catches classic DS-compliance loopholes (hex hardcoding, skipping
-verification, reusing nodeIds, reading forbidden references) with
-behavioral specificity."
+counter. Pattern from obra/superpowers. Catches classic DS-compliance
+loopholes (hex hardcoding, skipping verification, reusing nodeIds,
+reading forbidden references) with behavioral specificity.
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -313,7 +319,7 @@ deliberately small (~400 tokens) to keep the fixed per-session cost low.
 ## Skill Priority
 
 1. **Process first, then action.** For exploratory or ambiguous requests,
-   brainstorm the intent first before implementing. For a clear
+   use `superpowers:brainstorming` before implementing. For a clear
    directive that maps to a command in the table above, route directly.
 2. **Verification before completion.** No "done" without evidence
    (see Hard Rules below).
@@ -398,7 +404,9 @@ keep the per-session fixed context cost low.
 This is the Layer 1 (process) half of the upcoming v4.0.0 two-layer
 skill architecture. Layer 2 (actions: generating-figma-design,
 shipping-and-archiving, etc.) remains in the design-workflow monolith
-until Phase 2."
+until Phase 2.
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -500,7 +508,9 @@ frontmatter, and emits the Claude Code SessionStart JSON payload with
 the skill body as additionalContext.
 
 Silent no-op if the skill file is missing or python3 is unavailable
-(portable failure mode for CI environments)."
+(portable failure mode for CI environments).
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -532,7 +542,7 @@ Create `hooks/hooks.json` with exactly:
 ```
 
 > Note: `$CLAUDE_PLUGIN_ROOT` is the Claude Code convention for the plugin's
-> installation directory. This follows established open-source conventions.
+> installation directory. This is equivalent to superpowers' own pattern.
 
 - [ ] **Step 2: Verify JSON validity**
 
@@ -551,7 +561,9 @@ git add hooks/hooks.json
 git commit -m "feat(hooks): register SessionStart hook in hooks.json
 
 Standard Claude Code plugin hooks manifest. Points at
-\$CLAUDE_PLUGIN_ROOT/hooks/session-start."
+\$CLAUDE_PLUGIN_ROOT/hooks/session-start.
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -618,7 +630,9 @@ SessionStart). design-workflow retains a minimal action-file map so the
 skill stays self-sufficient when invoked directly.
 
 Net effect: no behavior change, ~40 lines saved from per-invocation
-context when design-workflow is loaded."
+context when design-workflow is loaded.
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -687,7 +701,9 @@ git commit -m "chore: bump to 3.2.0, align package.json and plugin.json
 Fixes pre-existing version drift (package.json was at 3.1.0, plugin.json
 at 3.0.1). Both now at 3.2.0 for the using-bridge / hooks release.
 
-Also syncs plugin.json description with package.json."
+Also syncs plugin.json description with package.json.
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -724,7 +740,7 @@ Bridge uses a **two-layer** Claude Code skill architecture:
 - **`skills/design-workflow/`** — Action layer. Executes the workflows
   (`make`, `fix`, `done`, `setup`, `drop`) through its `references/actions/*.md`
   files. Will be split into five focused action skills in v4.0.0 (see the
-  Bridge Docs + restructure spec in `docs/specs/`).
+  Bridge Docs + restructure spec in `docs/superpowers/specs/`).
 
 The SessionStart hook script at `hooks/session-start` reads
 `skills/using-bridge/SKILL.md`, strips YAML frontmatter, and emits the
@@ -784,7 +800,7 @@ Edit `CHANGELOG.md`. At the top (below the title, above the current latest versi
 ### Changed
 
 - `skills/design-workflow/SKILL.md` — description rewritten as
-  triggers-only (was a workflow summary). Per prior-art research,
+  triggers-only (was a workflow summary). Per `obra/superpowers` research,
   this improves correct skill selection by Claude.
 - `skills/design-workflow/SKILL.md` — the Action Router section slimmed
   to a pointer; full routing logic now lives in `using-bridge`.
@@ -795,7 +811,7 @@ Edit `CHANGELOG.md`. At the top (below the title, above the current latest versi
 
 This release is the Phase 0+1 increment of the larger Bridge Docs +
 restructure work (spec:
-`docs/specs/2026-04-15-bridge-docs-and-restructure-design.md`).
+`docs/superpowers/specs/2026-04-15-bridge-docs-and-restructure-design.md`).
 No breaking changes. Phase 2 (action skill split) ships in 3.5.0; Bridge
 Docs V0.1 lands in 4.0.0.
 
@@ -824,7 +840,9 @@ git commit -m "docs: update CLAUDE.md, CHANGELOG, README for 3.2.0 using-bridge
 
 - CLAUDE.md: new Skills section explaining the two-layer architecture
 - CHANGELOG.md: [3.2.0] entry with Added/Changed/Notes
-- README.md: short mention of the two-layer skill architecture"
+- README.md: short mention of the two-layer skill architecture
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
@@ -876,7 +894,7 @@ context.
 
 If the hook is not being picked up: verify `.claude-plugin/plugin.json`
 exists and does NOT have a `hooks` field (discovery is by directory
-convention per prior-art analysis). If still failing, fall back to
+convention per the superpowers audit). If still failing, fall back to
 declaring hooks explicitly in `plugin.json`:
 
 ```json
@@ -920,14 +938,14 @@ Run:
 gh pr create --title "feat: v3.2.0 — using-bridge skill + SessionStart hook (Phase 0+1)" --body "$(cat <<'EOF'
 ## Summary
 
-- Adds a force-loaded `using-bridge` skill: small discipline layer
-  (~400 tokens) auto-injected at every Claude Code session via a
-  `SessionStart` hook.
+- Adds a force-loaded `using-bridge` skill mirroring the `obra/superpowers`
+  pattern: small discipline layer (~400 tokens) auto-injected at every
+  Claude Code session via a `SessionStart` hook.
 - Fortifies the existing `design-workflow` monolith with a `<HARD-GATE>`
   block (five non-negotiable rules) and a Red Flags rationalization
   table — zero tooling cost, pure prompt convention.
 - Rewrites the `design-workflow` description as triggers-only per
-  prior-art research (workflow-summary descriptions cause LLMs to
+  the superpowers research (workflow-summary descriptions cause LLMs to
   shortcut).
 - Aligns `package.json` and `.claude-plugin/plugin.json` at `3.2.0`
   (fixes pre-existing version drift).
@@ -939,7 +957,7 @@ No breaking changes. The action layer (`make` / `fix` / `done` /
 
 This is Phase 0 + Phase 1 of the larger Bridge Docs + restructure work.
 Spec:
-\`docs/specs/2026-04-15-bridge-docs-and-restructure-design.md\`.
+\`docs/superpowers/specs/2026-04-15-bridge-docs-and-restructure-design.md\`.
 
 Next: Phase 2 (action skill split → 3.5.0), then Bridge Docs V0.1 (→ 4.0.0).
 
@@ -954,6 +972,8 @@ Next: Phase 2 (action skill split → 3.5.0), then Bridge Docs V0.1 (→ 4.0.0).
       content in system context (manual check).
 - [ ] "What's the hard rule about hex values?" answered with the
       HARD-GATE content (manual check).
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
 EOF
 )"
 ```
@@ -1021,10 +1041,16 @@ executor. If any row fails, fix inline and re-check only that row.
 
 ## Execution Handoff
 
-**Plan complete and saved to `docs/plans/2026-04-15-phase-0-1-using-bridge-skill.md`. Two execution options:**
+**Plan complete and saved to `docs/superpowers/plans/2026-04-15-phase-0-1-using-bridge-skill.md`. Two execution options:**
 
-**1. Subagent-Driven (recommended)** — dispatch a fresh subagent per task, review between tasks, fast iteration.
+**1. Subagent-Driven (recommended)** — I dispatch a fresh subagent per
+task, with a spec-compliance review + code-quality review between tasks.
+Fast iteration, catches rationalizations early. Best fit for this plan
+because each task is small and well-isolated.
 
-**2. Inline Execution** — execute tasks inline, batch execution with checkpoints.
+**2. Inline Execution** — Execute tasks in this session using
+`superpowers:executing-plans`, with batch execution and checkpoint
+reviews between task groups. Slower per-task but preserves full
+conversational context.
 
 **Which approach?**

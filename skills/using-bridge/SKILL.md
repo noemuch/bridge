@@ -39,8 +39,8 @@ deliberately small (~400 tokens) to keep the fixed per-session cost low.
 ## Skill Priority
 
 1. **Process first, then action.** For exploratory or ambiguous requests,
-   brainstorm the intent first before implementing. For a clear directive
-   that maps to a command in the table above, route directly.
+   use `superpowers:brainstorming` before implementing. For a clear
+   directive that maps to a command in the table above, route directly.
 2. **Verification before completion.** No "done" without evidence
    (see Hard Rules below).
 3. **Minimal context.** Load only the references needed for the current
