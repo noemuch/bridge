@@ -24,7 +24,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node bin/bridge.js help"
+    "test": "node bin/bridge.js help",
+    "test:skills": "node scripts/validate-skills.js"
   },
   "keywords": [
     "claude-code",
