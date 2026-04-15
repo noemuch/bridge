@@ -38,6 +38,7 @@ All notable changes to Bridge DS are documented here.
 - `lib/docs/mcp-server.ts` — local MCP server over stdio exposing `ds://component/<name>`, `ds://foundation/<name>`, `ds://index` resources.
 - `lib/docs/generate.ts` — build/sync/check orchestrator end-to-end (registries → index → cascade → planned regens → linter).
 - `skills/generating-ds-docs/` — 6th skill exposing 6 modes (init, full-build, sync, check, mcp, headless-sync).
+- `using-bridge` command map + `shipping-and-archiving` cascade hook wired to `generating-ds-docs`.
 
 ## [3.3.0] — 2026-04-15
 
