@@ -1,0 +1,43 @@
+name: Bridge Docs — Daily Sync
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Run Bridge Docs cron
+        env:
+          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
+        run: node dist/lib/cron/orchestrator.js --config docs.config.yaml
+
+      - name: Open PR if changes
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "docs: Bridge Docs daily sync"
+          branch: bridge-docs/cron-sync
+          title: "🤖 Bridge Docs — DS sync"
+          body-path: .bridge/last-sync-report.md
+          delete-branch: true
+          labels: bridge-docs, automated

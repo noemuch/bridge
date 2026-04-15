@@ -39,6 +39,7 @@ All notable changes to Bridge DS are documented here.
 - `lib/docs/generate.ts` — build/sync/check orchestrator end-to-end (registries → index → cascade → planned regens → linter).
 - `skills/generating-ds-docs/` — 6th skill exposing 6 modes (init, full-build, sync, check, mcp, headless-sync).
 - `using-bridge` command map + `shipping-and-archiving` cascade hook wired to `generating-ds-docs`.
+- `lib/cron/orchestrator.ts` + `.github/workflows/bridge-docs-cron.yml` — daily cron that extracts Figma via REST, syncs docs, opens a PR on diff (no-op on no-diff).
 
 ## [3.3.0] — 2026-04-15
 
