@@ -15,6 +15,7 @@ All notable changes to Bridge DS are documented here.
   `docs/{generators,cascade,templates}/`, `cron/`. CI gains a
   `TypeScript build` step. Existing JS codebase (`lib/compiler/*.js`,
   `lib/cli.js`, `bin/bridge.js`) is untouched and keeps working.
+- `lib/kb/hash.ts` — deterministic SHA256 over KB artifacts.
 
 ## [3.3.0] — 2026-04-15
 
