@@ -17,6 +17,9 @@ All notable changes to Bridge DS are documented here.
 - New skill `skills/extracting-design-system/` (migrated from `setup.md`).
 - `drop` action folded inline into `using-bridge/SKILL.md` (too small to warrant its own skill).
 
+### Deprecated
+- `skills/design-workflow/SKILL.md` is now a compatibility shim (30 lines). All legacy action files under `skills/design-workflow/references/actions/` have been deleted. The shim will be removed in v4.0.0.
+
 ## [3.2.2] — 2026-04-15
 
 ### Changed
