@@ -1,8 +1,23 @@
-# Action: done
-
-> Archive the CSpec, extract recipes if eligible, and close the work.
-
 ---
+name: shipping-and-archiving
+description: Use when the user says "done", "ship it", "finish", "complete", "archive", or otherwise indicates the current design is ready to be shipped. Runs final verification (Gate B), archives the CSpec, updates history, extracts a recipe when eligible, and cleans up temp files.
+---
+
+# Shipping And Archiving
+
+## Overview
+
+Formal completion of a design session. Verifies visual correctness one last time (Gate B), moves the CSpec to `specs/shipped/`, appends a history entry, and — when the design qualifies — extracts a reusable recipe back into the knowledge base. In V4.0.0 this skill will also trigger `generating-ds-docs sync` for cascade updates; the trigger point is marked in the procedure.
+
+## When to Use
+
+Invoke when the user:
+- says "done", "ship it", "ship", "finish", "complete", "archive"
+- has an active CSpec with a snapshot
+
+Do NOT use if:
+- the user is still iterating — use `generating-figma-design` or `learning-from-corrections`
+- the user is abandoning the work — route to `drop` (handled by `using-bridge` command map)
 
 ## Procedure
 
@@ -11,14 +26,14 @@
 Check if the snapshot has been updated since the last `fix` run, or if `fix` was never run:
 
 - If snapshot exists (`specs/active/{name}-snapshot.json`) AND no learnings reference this spec in `learnings.json`:
-  - Re-extract current Figma state (same extraction as `fix` step 2)
+  - Re-extract current Figma state (same extraction as the `learning-from-corrections` skill, step 2)
   - Compare against snapshot
   - If changes detected:
     ```
     Changes detected since last generation/fix.
     Running auto-fix to capture corrections before archiving...
     ```
-    -> Execute the full `fix` flow (steps 2-10 from `actions/fix.md`)
+    -> Execute the full fix flow via the `learning-from-corrections` skill (steps 2-10 of its procedure)
   - If no changes: proceed
 
 - If no snapshot exists: skip (design was never generated, spec-only work)
@@ -84,6 +99,8 @@ If a snapshot exists:
 mv specs/active/{name}-snapshot.json specs/shipped/{name}-snapshot.json
 ```
 
+<!-- TODO(v4.0.0): trigger generating-ds-docs sync -->
+
 ### 6. Update history log
 
 Append to `specs/history.log`:
@@ -125,3 +142,36 @@ Recipe: {extracted as r-{archetype}-{nnn} | updated {recipe} confidence to {scor
 
 Ready for the next design!
 ```
+
+<HARD-GATE>
+NEVER archive a spec without Gate B evidence from the current or
+previous turn (fresh screenshot + explicit user confirmation).
+
+NEVER claim "shipped" without the history.log entry being written.
+</HARD-GATE>
+
+## Red Flags
+
+See the full catalog at `references/red-flags-catalog.md` (repo-root).
+
+Top flags for this skill:
+- "User said 'nice', I'll mark it done" → **Confirmation must be explicit (`done`, `ship it`).**
+- "I'll skip the recipe extraction, it's a one-off" → **Eligibility is deterministic (screen + ≤2 corrections). Let the check run.**
+
+## Verification
+
+This skill is gated by `references/verification-gates.md` (repo-root):
+
+- **Gate B** — mandatory. Fresh screenshot this turn OR in the immediately
+  preceding turn + explicit confirmation text.
+- **Gate C** — not applicable in V3.3.0; becomes mandatory for docs
+  cascade in V4.0.0.
+
+Evidence to surface: screenshot tool result, confirmation text, archive
+path, recipe extraction decision.
+
+## Hooks into other skills
+
+- After archive, V4.0.0+ will invoke `generating-ds-docs` in Mode 3
+  (sync / cascade). Marked as `<!-- TODO(v4.0.0): trigger ds-docs sync -->` in
+  the procedure.

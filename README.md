@@ -122,7 +122,7 @@ node lib/compiler/compile.js --input scene.json --kb <kb-path> --transport <cons
 
 Errors are caught at compile time, before anything touches Figma. The 26 rules — the ones that would trip up hand-written Plugin API scripts — are enforced by code generation, not by memory.
 
-[Compiler reference →](skills/design-workflow/references/compiler-reference.md) · [Transport adapter →](skills/design-workflow/references/transport-adapter.md) · [Quality gates →](skills/design-workflow/references/quality-gates.md)
+[Compiler reference →](references/compiler-reference.md) · [Transport adapter →](references/transport-adapter.md) · [Verification gates →](references/verification-gates.md)
 
 ## Commands
 
@@ -140,31 +140,31 @@ Errors are caught at compile time, before anything touches Figma. The 26 rules �
 ```
 bin/                                 CLI entry point
 lib/
-  cli.js                             init / update / help / version
-  scaffold.js                        Project scaffolding
-  mcp-setup.js                       Transport detection + setup
+  cli.js
+  scaffold.js
+  mcp-setup.js
   compiler/                          Scene graph compiler
-    compile.js                       Entry point
-    resolve.js                       Token resolution
-    validate.js                      Schema + structural validation
-    plan.js                          Chunk planning
-    codegen.js                       Plugin API code generation
-    wrap.js                          Transport-aware wrapping
-    schema.js                        Scene graph schema
-    SPEC.md                          Compiler specification
+
+references/                          Shared, repo-level
+  compiler-reference.md
+  transport-adapter.md
+  verification-gates.md
+  red-flags-catalog.md
 
 skills/
-  using-bridge/SKILL.md              Force-loaded process-layer skill (~400 tokens)
-  design-workflow/                   Action-layer skill
-    SKILL.md                         Workflow definition
-    references/
-      actions/                       make / fix / done / setup / drop
-      templates/                     CSpec YAML templates
-      knowledge-base/                Schemas + KB README
+  using-bridge/SKILL.md              Force-loaded process skill
+  generating-figma-design/SKILL.md   make
+  learning-from-corrections/SKILL.md fix
+  shipping-and-archiving/SKILL.md    done
+  extracting-design-system/SKILL.md  setup
+  design-workflow/SKILL.md           Compatibility shim (removed in v4.0.0)
 
 hooks/
-  session-start                      POSIX script: injects using-bridge at SessionStart
-  hooks.json                         Claude Code hook registration
+  session-start
+  hooks.json
+
+scripts/
+  validate-skills.js                 Skill/reference validation harness
 
 .claude-plugin/                      Claude Code plugin manifest
 .cursor-plugin/                      Cursor plugin manifest

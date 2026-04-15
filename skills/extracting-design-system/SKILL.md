@@ -1,18 +1,35 @@
-# Action: setup
-
-> Extract the design system from Figma and build the knowledge base.
-> Replaces the old `onboarding.md` STEP 0 with a streamlined setup flow.
->
-> **Before starting, read:**
-> - `references/transport-adapter.md` — transport detection and DS extraction strategy
-
 ---
+name: extracting-design-system
+description: Use when the user says "setup", "extract", "extract DS", "onboard", "build knowledge base", or is starting Bridge in a project for the first time. Extracts the user's design system from Figma (variables, components, text styles, icons, logos), validates registries, and builds the initial knowledge base with guides and a recipe index.
+---
+
+# Extracting Design System
+
+## Overview
+
+Bridge's onboarding skill. Connects to the user's Figma DS library via the active MCP transport, extracts variables / components / text styles / icons, validates that every entry has a reusable `key` (not a session-scoped `id`), writes per-domain registries under `knowledge-base/registries/`, generates human-readable guides under `knowledge-base/guides/`, and initializes an empty recipe index.
+
+In V4.0.0 this skill will also support a **headless** mode invoked by `bridge-ds extract --headless` (cron) using the Figma REST API, but in V3.3.0 only the interactive MCP path is implemented.
+
+## When to Use
+
+Invoke when the user:
+- says "setup", "extract", "extract DS", "onboard", "build KB", "refresh registries"
+- has installed Bridge in a new project and has no `knowledge-base/`
+- wants to re-extract after an upstream Figma change
+
+Do NOT use if:
+- a recent registry already exists and the user wants incremental sync — V4.0.0 `generating-ds-docs sync` handles this
+- the user is designing — they need `generating-figma-design`
 
 ## Procedure
 
+**Before starting, load:**
+- `references/transport-adapter.md` (repo-root) — for transport detection and composite extraction strategy
+
 ### 1. Transport detection
 
-Detect which transport is available (see `references/transport-adapter.md` Section A):
+Detect which transport is available (see `references/transport-adapter.md` (repo-root) Section A):
 
 1. **Check console transport:** Is `figma_execute` available? Try `figma_get_status()`.
 2. **Check official transport:** Is `use_figma` available? Try `whoami()`.
@@ -22,7 +39,7 @@ Detect which transport is available (see `references/transport-adapter.md` Secti
 | Console available | Use console transport |
 | Official only | Use official transport |
 | Both available | Use console (preferred) |
-| Neither available | **Block.** Show setup instructions from transport-adapter.md Section A |
+| Neither available | **Block.** Show setup instructions from `references/transport-adapter.md` (repo-root) Section A |
 
 Report:
 ```
@@ -47,7 +64,7 @@ figma_get_variables({ file_key: "{fileKey}" })
 figma_get_styles({ file_key: "{fileKey}" })
 ```
 
-**Official transport** (composite strategy — see transport-adapter.md Section D):
+**Official transport** (composite strategy — see `references/transport-adapter.md` (repo-root) Section D):
 ```
 get_variable_defs({ fileKey: "{fileKey}" })
 search_design_system({ query: "*", includeComponents: true })
@@ -200,4 +217,30 @@ Ready to design. Run: `make <description>`
 
 ## Transition
 
-When setup is complete -> suggest: "Run: `make <description>` to start designing"
+When setup is complete -> suggest: "Run: `make <description>` to start designing" (handled by `generating-figma-design`)
+
+<HARD-GATE>
+NEVER write a registry entry without a `key` field (hex hash for
+components/icons/logos; name path for variables). NodeId-only entries
+are a gate failure.
+
+NEVER mark setup complete without validating a sample of keys
+(3–5 per registry) via a live import probe.
+</HARD-GATE>
+
+## Red Flags
+
+See the full catalog at `references/red-flags-catalog.md` (repo-root).
+
+Top flags for this skill:
+- "I'll skip the key validation, the names look fine" → **Names are not keys. Validate by import.**
+- "I'll use nodeIds — they're easier to copy from the API" → **NodeIds are session-scoped. Keys are persistent.**
+
+## Verification
+
+- **Gate A / B / C** — not applicable in V3.3.0 (setup does not compile,
+  execute, or generate docs). Internal gates are key-validation and
+  schema conformance, defined inline in the procedure.
+
+Evidence to surface: per-registry entry counts, key-validation probe
+results.

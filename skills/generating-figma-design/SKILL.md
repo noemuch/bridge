@@ -1,18 +1,36 @@
-# Action: make <description>
-
-> Unified flow: CSpec + compile + execute + verify.
-> Replaces the old spec -> design -> review cycle with a single compiler-driven action.
->
-> **Before starting, read:**
-> - `references/compiler-reference.md` — scene graph JSON format and rules
-> - `references/transport-adapter.md` — active transport detection and tool mapping
-
 ---
+name: generating-figma-design
+description: Use when the user requests to design, create, build, generate, or make a new Figma component or screen — including phrases like "make a button", "design a settings page", "build a new card", "generate X". Produces a CSpec, compiles it to a scene graph, executes it in Figma via MCP, and verifies the output.
+---
+
+# Generating Figma Design
+
+## Overview
+
+Unified `make` flow: CSpec → scene graph → compiler → Figma execute → screenshot → verify. Replaces the legacy `spec → design → review` cycle with a single compiler-driven action. All tokens resolve against the knowledge base; all Figma API rules are enforced by the compiler.
+
+## When to Use
+
+Invoke when the user:
+- says `make`, `design`, `create`, `build`, `generate`, or asks for a "new component" / "new screen"
+- has already run `setup` (knowledge base exists)
+- has an MCP transport available (console or official)
+
+Do NOT use if:
+- the user is adjusting an existing design that is already in Figma — use `learning-from-corrections` instead
+- the user is archiving or shipping — use `shipping-and-archiving`
+- the knowledge base is missing — run `extracting-design-system` first
+
+## Procedure
+
+**Before starting, load:**
+- `references/compiler-reference.md` (repo-root) — scene graph JSON format and rules
+- `references/transport-adapter.md` (repo-root) — transport detection and tool mapping
 
 ## Prerequisites
 
 - Knowledge base exists (registries populated) — if not: "Run `setup` first"
-- MCP transport available (see transport-adapter.md Section A)
+- MCP transport available (see `references/transport-adapter.md` (repo-root) Section A)
 
 ---
 
@@ -20,7 +38,7 @@
 
 ### A1. Detect transport
 
-Read `references/transport-adapter.md` Section A. Determine console vs official transport.
+Read `references/transport-adapter.md` (repo-root) Section A. Determine console vs official transport.
 
 ```
 Console: figma_get_status() -> setup.valid: true
@@ -93,8 +111,8 @@ For each recipe in `_index.json`, compute a match score:
 ### C1. Generate CSpec YAML
 
 Choose the appropriate template:
-- **Screen mode**: `references/templates/screen-cspec.yaml`
-- **Component mode**: `references/templates/component-cspec.yaml`
+- **Screen mode**: `skills/generating-figma-design/references/templates/screen-cspec.yaml`
+- **Component mode**: `skills/generating-figma-design/references/templates/component-cspec.yaml`
 
 Fill the CSpec based on:
 - User description (intent, sections, components)
@@ -187,7 +205,7 @@ Save the CSpec YAML to `specs/active/{name}.cspec.yaml`.
 
 ### D1. Convert CSpec to scene graph JSON
 
-Transform the CSpec's `layout` tree into the scene graph JSON format defined in `compiler-reference.md`:
+Transform the CSpec's `layout` tree into the scene graph JSON format defined in `references/compiler-reference.md` (repo-root):
 
 - CSpec `layout` nodes map directly to scene graph `nodes`
 - All `$token` references are preserved (the compiler resolves them)
@@ -237,7 +255,7 @@ The compiler outputs a JSON array of `{ id, code, description }` chunks to stdou
 If the compiler returns errors to stderr:
 
 1. Read the error messages and suggestions
-2. Fix the scene graph JSON based on the suggestions (see `compiler-reference.md` Section 8 for common errors)
+2. Fix the scene graph JSON based on the suggestions (see `references/compiler-reference.md` (repo-root) Section 8 for common errors)
 3. Re-write the temp file and re-run the compiler
 4. **Maximum 3 attempts.** If still failing after 3, report errors to user and ask for guidance.
 
@@ -345,11 +363,11 @@ Looks good? Options:
 
 ### User says "I adjusted in Figma"
 
-Trigger the `fix` flow: read `references/actions/fix.md` and execute it.
+Trigger the `fix` flow via the `learning-from-corrections` skill.
 
 ### User says "done" / "ship it"
 
-Trigger the `done` flow: read `references/actions/done.md` and execute it.
+Trigger the `done` flow via the `shipping-and-archiving` skill.
 
 ---
 
@@ -391,3 +409,38 @@ This means:
 The only time Claude touches raw Plugin API code is:
 1. Snapshot extraction scripts (small, standardized)
 2. Emergency fixes when the compiler cannot handle an edge case (rare)
+
+<HARD-GATE>
+Every Figma execution MUST pass Gate A (compile) before execute and
+Gate B (visual) before claiming the iteration is complete. See
+`references/verification-gates.md` (repo-root).
+
+NEVER write raw Figma Plugin API code. All scene graphs go through
+`lib/compiler/compile.js`.
+
+NEVER use hardcoded primitive values in the scene graph. Only
+`$token` references.
+</HARD-GATE>
+
+## Red Flags
+
+See the full catalog at `references/red-flags-catalog.md` (repo-root).
+
+Top flags for this skill:
+- "I'll hardcode this hex once, it's faster" → **Always use a semantic token.**
+- "The compiler is overkill for this tiny thing" → **The compiler is the only path.**
+- "I remember this nodeId from my last session" → **NodeIds are session-scoped, re-search.**
+
+## Verification
+
+This skill is gated by `references/verification-gates.md` (repo-root):
+
+- **Gate A (Compile)** — mandatory before any `figma_execute` / `use_figma`.
+- **Gate B (Visual)** — mandatory at the end of each iteration. Fresh screenshot in this turn + user confirmation.
+
+Evidence to surface: compiler stdout, scene graph JSON, screenshot tool result, user confirmation text.
+
+## Skill-specific references
+
+- `./references/templates/component-cspec.yaml` — CSpec template for components
+- `./references/templates/screen-cspec.yaml` — CSpec template for screens

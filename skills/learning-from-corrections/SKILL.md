@@ -1,22 +1,38 @@
-# Action: fix
-
-> Diff the generated design against the current Figma state, extract user corrections as learnings, and optionally iterate.
-> Replaces the old `review` + `learn` cycle with a single correction-driven action.
->
-> **Before starting, read:**
-> - `references/transport-adapter.md` — active transport detection and tool mapping
-
 ---
+name: learning-from-corrections
+description: Use when the user says they adjusted the design in Figma, mentions "fix", "correct", "learn from", "I changed", "diff", "what changed", or wants the system to incorporate manual Figma edits back into the spec. Diffs the current Figma state against the last snapshot, classifies each change as a DS learning or a hardcoded flag, persists learnings, and patches the active recipe.
+---
+
+# Learning From Corrections
+
+## Overview
+
+Closes the feedback loop from manual Figma edits back into Bridge's knowledge base. Diffs the live Figma state against the saved snapshot, classifies each correction as a **LEARNING** (DS-compliant → persisted) or a **FLAG** (hardcoded → surfaced), updates `learnings.json`, and auto-patches the active recipe when eligible.
+
+## When to Use
+
+Invoke when the user:
+- says "I adjusted it", "I fixed it in Figma", "fix", "correct", or "learn from what I changed"
+- has an active CSpec in `specs/active/` with a snapshot
+
+Do NOT use if:
+- there is no active CSpec — the user should `make` first (use `generating-figma-design`)
+- the user wants to start fresh — use `generating-figma-design` with a new description
+- the user wants to ship — use `shipping-and-archiving`
+
+## Procedure
+
+**Before starting, load:**
+- `references/transport-adapter.md` (repo-root) — for Figma state re-read
+- `references/compiler-reference.md` (repo-root) — for scene graph recompile (if re-executing after fix)
 
 ## Prerequisites
 
 - Active CSpec in `specs/active/` (abort if missing: "No active CSpec. Run: `make <description>`")
 - Snapshot file exists at `specs/active/{name}-snapshot.json` (abort if missing: "No snapshot found. The design must have been generated with `make`. Run `make` first.")
-- Figma MCP transport available (see transport-adapter.md Section F)
+- Figma MCP transport available (see `references/transport-adapter.md` (repo-root) Section F)
 
 ---
-
-## Procedure
 
 ### 1. Load artifacts
 
@@ -181,4 +197,32 @@ Options:
 ## Transition
 
 - If user wants to continue editing -> they can run `fix` again after more changes
-- When satisfied -> suggest: "Run: `done`"
+- When satisfied -> suggest: "Run: `done`" (handled by `shipping-and-archiving`)
+
+<HARD-GATE>
+Every correction MUST be classified before `learnings.json` is written.
+Unclassified changes are a gate failure.
+
+Every LEARNING MUST reference a token from the current
+`registries/variables.json` / `registries/text-styles.json`. A
+LEARNING that points to a non-existent token is a gate failure.
+
+Every FLAG MUST be surfaced to the user before saving the snapshot.
+</HARD-GATE>
+
+## Red Flags
+
+See the full catalog at `references/red-flags-catalog.md` (repo-root).
+
+Top flags for this skill:
+- "I'll store this hardcoded hex as a LEARNING for later" → **Flags are for DS gaps; hardcoded values are FLAGs, not learnings.**
+- "I can tell what changed without re-reading Figma" → **Always re-read Figma. Memory is not a snapshot.**
+
+## Verification
+
+This skill is gated by `references/verification-gates.md` (repo-root):
+
+- **Gate A** — only applies if the fix recompiles the scene graph (rare, optional).
+- **Gate B** — applies if the fix re-executes in Figma.
+
+Evidence to surface: diff summary, classification table, updated `learnings.json` diff.
