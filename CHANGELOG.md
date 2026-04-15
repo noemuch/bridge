@@ -13,6 +13,7 @@ All notable changes to Bridge DS are documented here.
   - Never reuse nodeIds across sessions
 - **Red Flags rationalization table** in `SKILL.md` — Eight common rationalizations with reality counters (hardcode shortcuts, compiler skepticism, screenshot skipping, stale nodeId memory, forbidden API reads, user-approval workarounds, raw Plugin API reuse, inline scripting)
 - **`skills/using-bridge/SKILL.md`** — new force-loaded process-layer skill (~400 tokens) owning Bridge's discipline, command map, hard rules, and red-flags catalog; will be auto-injected at every session via SessionStart hook (Task 6)
+- **SessionStart hook** (`hooks/session-start` + `hooks/hooks.json`) — POSIX shell script that strips YAML frontmatter from `using-bridge/SKILL.md` and emits the Claude Code SessionStart JSON payload; registered via `hooks.json` so the skill is injected automatically at every session start
 
 ## [3.1.0] — 2026-04-03
 
