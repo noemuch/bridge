@@ -3,5 +3,11 @@ node_modules/
 **/.DS_Store
 .tmp/
 .claude/
-docs/
+
+# Internal design docs (specs, plans) — kept locally, not pushed.
+docs/superpowers/
+docs/plans/
+docs/specs/
+
+# Unused legacy asset.
 bridge-logo.png

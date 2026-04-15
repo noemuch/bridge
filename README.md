@@ -1,99 +1,128 @@
-# Bridge DS
+<p align="center">
+  <!-- TODO: Replace with actual Bridge banner/logo -->
+  <img src="docs/assets/banner-placeholder.png" alt="Bridge" width="600" />
+</p>
 
-Compiler-driven design generation for Figma — 100% design system compliant.
+<p align="center">
+  <strong>Compiler-driven design generation for Figma. Zero hardcoded values.</strong>
+</p>
 
-Bridge turns [Claude Code](https://claude.ai/download) into a designer that knows your design system inside out. Instead of writing raw Figma Plugin API scripts, Claude produces declarative scene graph JSON with token references. A local compiler resolves tokens, validates structure, enforces all Figma API rules, and generates correct executable code — then executes it in Figma via MCP.
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
+  <a href="https://www.npmjs.com/package/@noemuch/bridge-ds"><img src="https://img.shields.io/npm/v/@noemuch/bridge-ds?color=0183ff" alt="npm version" /></a>
+  <a href="https://github.com/noemuch/bridge/stargazers"><img src="https://img.shields.io/github/stars/noemuch/bridge?color=0183ff" alt="Stars" /></a>
+  <a href="https://github.com/noemuch/bridge/actions"><img src="https://github.com/noemuch/bridge/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="#"><img src="https://img.shields.io/badge/figma--api--rules-26%2F26-success" alt="26/26 Figma API rules enforced" /></a>
+</p>
 
-The result: production-ready Figma designs that use your real components, bound variables, and text styles. Zero hardcoded values.
+<div align="center">
+
+[Discussions](https://github.com/noemuch/bridge/discussions) · [Issues](https://github.com/noemuch/bridge/issues) · [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
+
+</div>
+
+<br />
+
+<!-- TODO: Replace with actual GIF/screenshot of Bridge generating a screen in Figma -->
+<p align="center">
+  <img src="docs/assets/demo-placeholder.png" alt="Bridge generating a Figma screen from a description" width="800" />
+</p>
+
+## What is Bridge?
+
+Bridge turns Claude Code into a designer that knows your design system inside out. You describe a component or a screen in natural language — Bridge consults your documented DS, writes a structured CSpec, compiles it into a scene graph, and executes it in Figma via MCP.
+
+No raw Figma Plugin API scripting. No hardcoded hex codes or magic pixels. Every output uses your real components, bound variables, and text styles. The compiler is the single enforcement path: 26 Figma API rules, token resolution, validation, code generation, transport adaptation — all automatic.
+
+## Key Features
+
+- **Scene Graph Compiler** — The LLM produces declarative JSON with `$token` references. A local compiler (`lib/compiler/compile.js`) resolves tokens, validates structure, enforces all 26 Figma Plugin API rules, and generates correct executable code. Claude never writes raw Plugin API scripts.
+
+- **CSpec — Compilable Specifications** — Structured YAML that describes what to build: layout tree, components, tokens, variants. Human-readable, machine-parseable. Templates exist for screens and components.
+
+- **Recipe System** — Proven layouts captured as parameterized scene graph templates. High-scoring recipes pre-fill the CSpec, accelerating generation. Recipes evolve: `fix` and `done` flows extract learnings and patch recipes from user corrections.
+
+- **Fix Loop** — "I adjusted it in Figma" triggers a snapshot diff. Corrections are classified (DS token vs. hardcoded flag), persisted as learnings, and used to auto-patch recipes. The DS knowledge deepens with every iteration.
+
+- **Dual MCP Transport** — Supports [figma-console-mcp](https://github.com/southleft/figma-console-mcp) (preferred, full capabilities via Figma Desktop plugin) and the official Figma MCP server (simpler, cloud-based). Auto-detection picks the best available transport.
 
 ## Architecture
 
-```
-You describe what you want
-  → Claude consults the knowledge base (your DS, documented)
-  → Claude writes a CSpec (structured YAML specification)
-  → Claude converts CSpec to a scene graph JSON
-  → Compiler resolves tokens, validates, generates code
-  → Code executes in Figma via MCP
-  → You review, iterate, ship
-```
+| Layer | Technology | Description |
+|-------|-----------|-------------|
+| **Workflow** | Claude Code Skills | Two-layer skill (`using-bridge` process + `design-workflow` actions) |
+| **Spec** | CSpec YAML | Structured, human-readable compilable specifications |
+| **Compiler** | Node.js | Scene graph JSON → Figma Plugin API code (26 rules enforced) |
+| **Transport** | MCP | `figma-console-mcp` (preferred) or official Figma MCP server |
+| **Target** | Figma Desktop / Cloud | Production-ready designs in your real DS library |
+| **Memory** | Knowledge Base | Registries, guides, recipes, learnings — per-project |
 
 ```
-Claude Code ──CSpec YAML──> Scene Graph JSON ──> Compiler ──Plugin API──> MCP ──> Figma
+You describe → Claude writes CSpec → Compiler resolves tokens → MCP → Figma
 ```
-
-Bridge supports two MCP transports:
-
-```
-Claude Code  ──MCP──>  figma-console-mcp  ──WebSocket──>  Figma Desktop  (preferred)
-Claude Code  ──MCP──>  Figma MCP Server   ──Cloud──>      Figma Cloud    (official, fallback)
-```
-
-Auto-detection picks the best available transport. See [transport-adapter.md](skills/design-workflow/references/transport-adapter.md) for details.
-
-## Prerequisites
-
-- [Claude Code](https://claude.ai/download) installed
-- [Node.js 18+](https://nodejs.org)
-- A Figma file with a published design system library
-- One of:
-  - [figma-console-mcp](https://github.com/southleft/figma-console-mcp) + [Figma Desktop](https://www.figma.com/downloads/) (recommended, full capabilities)
-  - Official Figma MCP server (simpler setup, cloud-based)
 
 ## Quick Start
 
-### 1. Install figma-console-mcp
-
 ```bash
+# 1. Install figma-console-mcp (recommended transport)
 claude mcp add figma-console -s user \
   -e FIGMA_ACCESS_TOKEN=figd_YOUR_TOKEN \
   -- npx -y figma-console-mcp@latest
-```
 
-Get your token from [Figma Settings > Personal access tokens](https://help.figma.com/hc/en-us/articles/8085703771159-Manage-personal-access-tokens).
+# 2. Connect Figma Desktop plugin
+npx figma-console-mcp@latest --print-path
+# Then in Figma Desktop: Plugins > Development > Import plugin from manifest...
+# Select the manifest.json inside the printed directory.
 
-### 2. Connect Figma Desktop
-
-1. Run `npx figma-console-mcp@latest --print-path` to find the figma-console-mcp plugin directory
-2. In Figma Desktop: **Plugins > Development > Import plugin from manifest...**
-3. Select the `manifest.json` inside that directory
-4. Run the plugin in your Figma file
-
-### 3. Initialize your project
-
-```bash
+# 3. Initialize your project
 cd your-project
 npx @noemuch/bridge-ds init
-```
 
-This scaffolds into your project:
-- `.claude/skills/design-workflow/` — the workflow skill + references + compiler
-- `.claude/commands/design-workflow.md` — the `/design-workflow` slash command
-- `specs/` — directory for active, backlog, shipped, and dropped specs
-
-### 4. Build your knowledge base
-
-Open Claude Code in your project:
-
-```
+# 4. Extract your DS (first-time only)
+# In Claude Code:
 /design-workflow setup
-```
 
-Claude will extract your entire DS from Figma, analyze every component, token, and style, and generate intelligent guides and a recipe index.
-
-### 5. Start designing
-
-```
+# 5. Start designing
 /design-workflow make a settings page for account information
 ```
 
-Claude consults the knowledge base, matches recipes, generates a CSpec, compiles it to a scene graph, and executes it in Figma. Then:
+Full prerequisites: [Claude Code](https://claude.ai/download), [Node.js 18+](https://nodejs.org), a Figma file with a published DS library.
 
+## Build Your Own Recipe
+
+Recipes are parameterized scene graph templates that the compiler can reuse across sessions. The fastest way to create one: generate a screen with `make`, then `done` to archive it — Bridge auto-extracts a recipe when the layout is reusable.
+
+Manually:
+
+```bash
+# Recipes live in: knowledge-base/recipes/
+# Schema: { id, name, archetype, tags, scene_graph, confidence }
 ```
-- Describe changes -> Claude modifies and recompiles
-- "I adjusted in Figma" -> triggers fix flow (diff + learn)
-- "done" / "ship it" -> triggers done flow (archive + recipe extraction)
+
+Each recipe gets scored against the user's description on four axes: archetype match, tag overlap, structural similarity, and confidence. High-scoring recipes pre-fill the CSpec and shortcut the generation flow.
+
+See [`skills/design-workflow/references/knowledge-base/recipes/README.md`](skills/design-workflow/references/knowledge-base/recipes/README.md) for the full schema.
+
+## The Compiler
+
+The compiler is the single enforcement path. Every scene graph JSON goes through a deterministic pipeline:
+
+```bash
+node lib/compiler/compile.js --input scene.json --kb <kb-path> --transport <console|official>
 ```
+
+| Stage | Purpose |
+|-------|---------|
+| **Parse** | Load scene graph JSON, validate schema |
+| **Resolve** | Look up every `$token` reference against the knowledge base registries (variables, components, text styles, icons) |
+| **Validate** | Check structure, detect missing tokens with fuzzy suggestions, flag hardcoded values |
+| **Plan** | Chunk large graphs for transport limits; bridge nodeIds across chunks |
+| **Generate** | Emit Figma Plugin API code that respects all 26 rules (FILL after appendChild, resize before sizing, setBoundVariableForPaint, async component imports, …) |
+| **Wrap** | Adapt output for the target transport (console IIFE vs. official top-level await) |
+
+Errors are caught at compile time, before anything touches Figma. The 26 rules — the ones that would trip up hand-written Plugin API scripts — are enforced by code generation, not by memory.
+
+[Compiler reference →](skills/design-workflow/references/compiler-reference.md) · [Transport adapter →](skills/design-workflow/references/transport-adapter.md) · [Quality gates →](skills/design-workflow/references/quality-gates.md)
 
 ## Commands
 
@@ -106,76 +135,60 @@ Claude consults the knowledge base, matches recipes, generates a CSpec, compiles
 | `/design-workflow status` | Show current state, suggest next action |
 | `/design-workflow drop` | Abandon with preserved learnings |
 
-## Skills
-
-Bridge uses a **two-layer** Claude Code skill architecture:
-
-- **Two-layer skill architecture**: a small force-loaded `using-bridge`
-  skill sets discipline + command map at SessionStart; `design-workflow`
-  executes the action layer (`make` / `fix` / `done` / `setup` / `drop`).
-  See `CLAUDE.md` for details.
-
-## How It Works
-
-### CSpec (Compilable Specification)
-
-A structured YAML format that describes what to build: layout tree, components, tokens, variants. Human-readable and machine-parseable. Templates exist for screens and components.
-
-### Scene Graph Compiler
-
-The compiler (`lib/compiler/compile.js`) takes a declarative JSON scene graph with `$token` references and produces correct Figma Plugin API code:
-
-```bash
-node lib/compiler/compile.js --input scene.json --kb <kb-path> --transport <console|official>
-```
-
-Pipeline: `Parse > Resolve tokens > Validate structure > Plan chunks > Generate code > Wrap for transport`
-
-The compiler enforces all 26 Figma API rules automatically (FILL after appendChild, resize before sizing, setBoundVariableForPaint, etc.). Claude never needs to remember them.
-
-### Recipe System
-
-Recipes are pre-built scene graph templates stored in `knowledge-base/recipes/`. When a user requests a design, recipes are scored by archetype match, tag overlap, structural similarity, and confidence. High-scoring recipes pre-fill the CSpec, accelerating generation.
-
-Recipes evolve: the `fix` and `done` flows extract learnings and patch recipes based on user corrections.
-
-### Knowledge Base
+## Project Structure
 
 ```
-knowledge-base/
-  registries/      <- components.json, variables.json, text-styles.json, icons.json
-  guides/          <- tokens/, components/, patterns/, assets/
-  recipes/         <- _index.json + individual recipe JSON files
-  learnings.json   <- Accumulated design preferences
+bin/                                 CLI entry point
+lib/
+  cli.js                             init / update / help / version
+  scaffold.js                        Project scaffolding
+  mcp-setup.js                       Transport detection + setup
+  compiler/                          Scene graph compiler
+    compile.js                       Entry point
+    resolve.js                       Token resolution
+    validate.js                      Schema + structural validation
+    plan.js                          Chunk planning
+    codegen.js                       Plugin API code generation
+    wrap.js                          Transport-aware wrapping
+    schema.js                        Scene graph schema
+    SPEC.md                          Compiler specification
+
+skills/
+  using-bridge/SKILL.md              Force-loaded process-layer skill (~400 tokens)
+  design-workflow/                   Action-layer skill
+    SKILL.md                         Workflow definition
+    references/
+      actions/                       make / fix / done / setup / drop
+      templates/                     CSpec YAML templates
+      knowledge-base/                Schemas + KB README
+
+hooks/
+  session-start                      POSIX script: injects using-bridge at SessionStart
+  hooks.json                         Claude Code hook registration
+
+.claude-plugin/                      Claude Code plugin manifest
+.cursor-plugin/                      Cursor plugin manifest
 ```
-
-## v3.0 Highlights
-
-v3.0 is a complete architecture rewrite. Key changes from v2:
-
-- **Compiler-driven**: Claude produces scene graphs, the compiler writes Plugin API code. No more manual scripting.
-- **Unified `make` command**: Replaces the old `spec > design > review` cycle with a single continuous flow.
-- **CSpec format**: YAML-based compilable specs replace markdown templates.
-- **Recipe system**: Proven layouts captured as parameterized templates, reused and improved over time.
-- **`fix` command**: Snapshot diffing, learning extraction, recipe auto-patching.
-- **Compile-time validation**: Errors caught before Figma execution, with fuzzy suggestions.
-- **Removed**: `figma-api-rules.md`, `bundle.js`, old action files (`spec.md`, `design.md`, `review.md`, `quick.md`, `sync.md`, `learn.md`).
-
-See [CHANGELOG.md](CHANGELOG.md) for the full list.
 
 ## Plugin Support
 
 Bridge DS works as a plugin for:
 
-- **Claude Code** — Native skill via `.claude/skills/`
-- **Cursor** — Plugin via `.cursor-plugin/`
+- **Claude Code** — Native skill via `.claude/skills/` and SessionStart hook injection.
+- **Cursor** — Plugin via `.cursor-plugin/`.
 
 Both use the same MCP transport and compiler infrastructure.
 
-## Author
+## Contributing
 
-Built by [Noe Chague](https://www.linkedin.com/in/noechague/) — Design System @ [Finary](https://finary.com)
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, code guidelines, and PR process.
 
 ## License
 
-MIT
+[MIT](LICENSE)
+
+---
+
+<p align="center">
+  Built by <a href="https://www.linkedin.com/in/noechague/">Noé Chagué</a> — Design System <a href="https://finary.com">@Finary</a>
+</p>
