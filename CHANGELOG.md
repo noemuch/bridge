@@ -2,6 +2,29 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [3.2.0] — 2026-04-15
+
+### Added
+- **`skills/using-bridge/`** — Force-loaded process-layer skill (~400 tokens) owning Bridge's discipline, command map, non-negotiable hard rules, and Red Flags rationalization catalog. Injected at every Claude Code session via the SessionStart hook.
+- **`hooks/session-start`** — POSIX shell script that strips YAML frontmatter from `skills/using-bridge/SKILL.md` and emits the Claude Code SessionStart JSON payload.
+- **`hooks/hooks.json`** — Claude Code hook registration; binds `session-start` to the SessionStart event so `using-bridge` is injected automatically.
+- **`<HARD-GATE>` block** in `skills/design-workflow/SKILL.md` — Five non-negotiable rules enforced prompt-side: no raw Plugin API code, no hardcoded primitives, no ship without compiler+screenshot+user-confirmation, never read `figma-api-rules.md`, never reuse nodeIds across sessions.
+- **Red Flags rationalization table** in `skills/design-workflow/SKILL.md` — Eight common rationalizations with reality counters (hardcode shortcuts, compiler skepticism, screenshot skipping, stale nodeId memory, forbidden API reads, user-approval workarounds, raw Plugin API reuse, inline scripting).
+
+### Changed
+- **`skills/design-workflow/SKILL.md` description** rewritten as triggers-only (per `obra/superpowers` research — workflow-summary descriptions cause LLM shortcutting).
+- **Action Router slimmed** in `skills/design-workflow/SKILL.md` — keyword→action routing delegated to `skills/using-bridge/SKILL.md`; design-workflow retains the minimal action→file map for self-sufficiency when invoked directly (~40 lines saved).
+- **`package.json` + `.claude-plugin/plugin.json`** version aligned at `3.2.0` (fixes pre-existing drift from `3.1.0` / `3.0.1`).
+- **`package.json` `files` array** now includes `hooks/` for npm distribution.
+
+### Notes
+
+This release is the Phase 0+1 increment of the larger Bridge Docs +
+restructure work (spec:
+`docs/superpowers/specs/2026-04-15-bridge-docs-and-restructure-design.md`).
+No breaking changes. Phase 2 (action skill split) ships in 3.5.0; Bridge
+Docs V0.1 lands in 4.0.0.
+
 ## [3.1.0] — 2026-04-03
 
 ### Added

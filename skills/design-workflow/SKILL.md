@@ -1,10 +1,7 @@
 ---
 name: design-system
 version: 3.1.0
-description: >
-  Design system expertise — component creation, token management, Figma workflow.
-  Compiler-driven: Claude produces scene graph JSON, the compiler generates Figma code.
-  Covers components and full interfaces/screens.
+description: Use when designer invokes make/fix/done/setup/drop/docs, or requests to design/create/build/generate/fix a Figma component or screen, or asks about Bridge workflow, tokens, components, recipes, or the design system.
 triggers:
   - make
   - design
@@ -109,6 +106,47 @@ setup:
 
 ---
 
+## Hard Rules (Non-Negotiable)
+
+<HARD-GATE>
+NEVER write raw Figma Plugin API code. All scene graph JSON must pass
+through `lib/compiler/compile.js`. The compiler enforces all 26 Figma
+API rules automatically.
+
+NEVER use hardcoded primitive values (hex colors, px sizes, rgb, raw font
+names). Only semantic DS tokens: `$color/...`, `$spacing/...`, `$text/...`,
+`$comp/...`.
+
+NEVER claim "done" or "ready to ship" without all three of:
+  (a) compiler ran to completion (exit code 0)
+  (b) screenshot taken in this turn
+  (c) user confirmation of visual correctness
+
+NEVER read `figma-api-rules.md` — it does not exist here and the compiler
+handles every rule it would encode.
+
+NEVER reuse a Figma `nodeId` from a previous session. Node IDs are
+session-scoped; always re-search via `figma_search_components` or the
+official MCP equivalent.
+</HARD-GATE>
+
+### Red Flags — Rationalization → Reality
+
+These thoughts mean STOP. Each row is a real rationalization from real sessions.
+
+| Rationalization | Reality |
+|---|---|
+| "I'll just hardcode this hex once — it's faster" | Every hardcode breaks DS compliance. Always use a semantic token. |
+| "The compiler is overkill for this tiny thing" | The compiler is the only path. No exceptions, including tiny things. |
+| "Skip the screenshot, the change is obviously right" | 'Looks right' ≠ 'is right'. Gate B is mandatory. |
+| "I remember this nodeId from my last session" | Node IDs are session-scoped. Re-search every time. |
+| "I'll read figma-api-rules.md to double-check" | That file is forbidden. The compiler enforces all 26 rules. |
+| "The user approved the design, I can skip compile exit check" | Compile exit code 0 is Gate A. Independent of user approval. |
+| "I'll use the nodeId from the compiler output directly in a second script" | Raw Plugin API is banned. Route everything through the compiler. |
+| "Let me just write a small inline script to fix this one thing" | No inline scripts. Always: edit scene graph → recompile → execute. |
+
+---
+
 ## Knowledge Base Location
 
 The knowledge base is project-specific. Resolve its path in this order:
@@ -137,16 +175,17 @@ The `recipes/` directory is always inside the knowledge base directory.
 
 ## Action Router
 
-Detect intent from user input and **read the action file BEFORE executing**:
+> **Routing lives in `skills/using-bridge/SKILL.md` (force-loaded at
+> SessionStart).** This skill handles the action-layer execution for the
+> routes defined there. The action files referenced below are unchanged.
 
-| User says | Route to |
-|-----------|----------|
-| "make", "design", "create", "build", "generate", "new component", "new screen" | `references/actions/make.md` |
-| "fix", "correct", "learn", "diff", "corrections", "what changed", "I adjusted" | `references/actions/fix.md` |
-| "done", "ship", "ship it", "finish", "complete", "close" | `references/actions/done.md` |
-| "setup", "extract", "extract DS", "build knowledge base", "onboard" | `references/actions/setup.md` |
-| "status", "workflow", "what's next", "what now" | *(status logic below)* |
-| "drop", "abandon", "cancel" | `references/actions/drop.md` |
+| Action | Action File |
+|--------|-------------|
+| `make` | `references/actions/make.md` |
+| `fix` | `references/actions/fix.md` |
+| `done` | `references/actions/done.md` |
+| `setup` | `references/actions/setup.md` |
+| `drop` | `references/actions/drop.md` |
 
 ---
 

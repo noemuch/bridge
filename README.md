@@ -106,6 +106,15 @@ Claude consults the knowledge base, matches recipes, generates a CSpec, compiles
 | `/design-workflow status` | Show current state, suggest next action |
 | `/design-workflow drop` | Abandon with preserved learnings |
 
+## Skills
+
+Bridge uses a **two-layer** Claude Code skill architecture:
+
+- **Two-layer skill architecture**: a small force-loaded `using-bridge`
+  skill sets discipline + command map at SessionStart; `design-workflow`
+  executes the action layer (`make` / `fix` / `done` / `setup` / `drop`).
+  See `CLAUDE.md` for details.
+
 ## How It Works
 
 ### CSpec (Compilable Specification)
