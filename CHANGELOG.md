@@ -25,6 +25,7 @@ All notable changes to Bridge DS are documented here.
 - 6 Handlebars templates (component, foundation, pattern, changelog, migration, llms.txt) + integration test.
 - `lib/docs/preservation.ts` — extract + re-inject `<!-- manual:id -->` regions across regens (orphans preserved with warning).
 - `lib/docs/cascade/{diff-engine,rename-detector}.ts` — KB diff with persistent-key rename detection (spec §6.5).
+- `lib/docs/linter.ts` — doc linter (frontmatter required fields + token ref resolution + Figma deeplink shape).
 
 ## [3.3.0] — 2026-04-15
 
