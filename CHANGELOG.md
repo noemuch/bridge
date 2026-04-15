@@ -2,6 +2,14 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [Unreleased] — v3.3.0 skill-split refactor (in progress)
+
+### Changed
+- **Verification contract** restructured around three canonical gates
+  (A/Compile, B/Visual, C/Lint). New `references/verification-gates.md`
+  is gate-oriented (with a per-action mandatory-gates table) and
+  replaces the phase-oriented `skills/design-workflow/references/quality-gates.md`.
+
 ## [3.2.2] — 2026-04-15
 
 ### Changed
