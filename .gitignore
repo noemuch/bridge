@@ -11,3 +11,7 @@ docs/specs/
 
 # Unused legacy asset.
 bridge-logo.png
+
+# TypeScript build output
+dist/
+*.tsbuildinfo

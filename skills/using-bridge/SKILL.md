@@ -1,6 +1,6 @@
 ---
 name: using-bridge
-description: Use when any Bridge command is invoked (make, fix, done, setup, drop, status) or any Figma / design-system / compiler / Bridge workflow topic is raised. Sets command priorities and non-negotiable hard rules (compiler-only, semantic tokens only, verification-before-ship).
+description: Use when any Bridge command is invoked (make, fix, done, setup, drop, status, docs) or any Figma / design-system / compiler / Bridge workflow topic is raised. Sets command priorities and non-negotiable hard rules (compiler-only, semantic tokens only, verification-before-ship).
 ---
 
 # Using Bridge
@@ -26,6 +26,7 @@ deliberately small (~400 tokens) to keep the fixed per-session cost low.
 | "setup", "extract", "extract DS", "onboard"                     | `extracting-design-system`        |
 | "drop", "abandon", "cancel"                                     | inline `Drop Procedure` (this skill) |
 | "status", "what's next", "workflow"                             | inline status logic (this skill)  |
+| "docs", "documentation", "sync docs", "generate docs" | `generating-ds-docs` |
 
 ---
 

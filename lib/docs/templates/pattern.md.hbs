@@ -1,0 +1,24 @@
+---
+name: {{name}}
+kind: pattern
+components: [{{join components ", "}}]
+last-regenerated: {{last-regenerated}}
+---
+
+# {{title}}
+
+{{{provenanceMarker "ai-inferred + recipe + learnings"}}}
+
+{{description}}
+
+## Components used
+
+{{#each components}}- [{{this}}](../components/{{this}}.md)
+{{/each}}
+
+## Recipes
+
+{{#each recipes}}- `{{this}}`
+{{/each}}
+
+{{{manualRegion (concat "pattern-" name "-body")}}}

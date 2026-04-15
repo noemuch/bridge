@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bridge-ds.dev/schemas/frontmatter-component.schema.json",
+  "title": "Bridge DS — Component .md Frontmatter",
+  "description": "YAML frontmatter schema for generated component .md files (design-system/components/<category>/<Name>.md).",
+  "type": "object",
+  "required": [
+    "name",
+    "category",
+    "status",
+    "since",
+    "figma",
+    "tokens",
+    "generated-from",
+    "last-regenerated"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "PascalCase component name, must match the Figma componentSet name.",
+      "pattern": "^[A-Z][A-Za-z0-9]*$"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "actions",
+        "forms",
+        "data-display",
+        "feedback",
+        "navigation",
+        "layout",
+        "overlay",
+        "surface"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["stable", "beta", "deprecated", "experimental"]
+    },
+    "since": {
+      "type": "string",
+      "description": "Semver of the DS release that introduced the component.",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "figma": {
+      "type": "string",
+      "format": "uri",
+      "description": "Deeplink to the component in Figma (file + node-id).",
+      "pattern": "^https://(www\\.)?figma\\.com/(file|design)/[A-Za-z0-9]+.*node-id=.+$"
+    },
+    "a11y": {
+      "type": "string",
+      "description": "WCAG level and audit date, e.g. 'WCAG 2.2 AA · audited 2026-04-09'.",
+      "pattern": "^WCAG\\s+\\d\\.\\d\\s+(A|AA|AAA)(\\s+\\S+\\s+\\d{4}-\\d{2}-\\d{2})?$"
+    },
+    "related": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "alternatives": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+          "uniqueItems": true
+        },
+        "composes-with": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+          "uniqueItems": true
+        },
+        "supersedes": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+          "uniqueItems": true
+        },
+        "deprecated-by": {
+          "type": ["string", "null"],
+          "pattern": "^[A-Z][A-Za-z0-9]*$"
+        }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "description": "Semantic tokens consumed by this component, grouped by category.",
+      "additionalProperties": false,
+      "properties": {
+        "color": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "spacing": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "radius": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "text": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "shadow": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "border": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "opacity": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "generated-from": {
+      "type": "object",
+      "required": ["kb-version", "registries-hash", "learnings-hash"],
+      "additionalProperties": false,
+      "properties": {
+        "kb-version": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?$"
+        },
+        "registries-hash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{6,64}$"
+        },
+        "learnings-hash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{6,64}$"
+        },
+        "last-ship": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        }
+      }
+    },
+    "last-regenerated": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "ships": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "learnings-applied": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "manual": {
+      "type": "boolean",
+      "description": "If true, the file is treated as human-authored and skipped by regen."
+    }
+  }
+}

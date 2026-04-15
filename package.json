@@ -1,6 +1,6 @@
 {
   "name": "@noemuch/bridge-ds",
-  "version": "3.3.0",
+  "version": "4.0.0",
   "description": "Compiler-driven design generation in Figma — 100% design system compliant. Compiles component specs into verified Figma output via MCP.",
   "main": "lib/cli.js",
   "bin": {
@@ -9,6 +9,7 @@
   "files": [
     "bin/",
     "lib/",
+    "dist/",
     "skills/",
     "commands/",
     "hooks/",
@@ -24,6 +25,8 @@
     "node": ">=18"
   },
   "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
     "test": "node bin/bridge.js help",
     "test:skills": "node scripts/validate-skills.js"
   },
@@ -44,5 +47,23 @@
     "type": "git",
     "url": "https://github.com/noemuch/bridge.git"
   },
-  "homepage": "https://github.com/noemuch/bridge"
+  "homepage": "https://github.com/noemuch/bridge",
+  "dependencies": {
+    "@clack/prompts": "^0.7.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "ajv": "^8.17.0",
+    "ajv-formats": "^3.0.1",
+    "figlet": "^1.7.0",
+    "handlebars": "^4.7.8",
+    "js-yaml": "^4.1.0",
+    "picocolors": "^1.0.1",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/figlet": "^1.5.8",
+    "@types/handlebars": "^4.1.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.12.0",
+    "typescript": "^5.5.0"
+  }
 }

@@ -10,6 +10,7 @@ const REQUIRED_SKILLS = [
   'learning-from-corrections',
   'shipping-and-archiving',
   'extracting-design-system',
+  'generating-ds-docs',
 ];
 const REQUIRED_REFERENCES = [
   'references/compiler-reference.md',
@@ -24,9 +25,6 @@ const REQUIRED_SKILL_SECTIONS = [
   '## Red Flags',
   '## Verification',
 ];
-const SHIM_MAX_LINES = 40;
-const SHIM_PATH = 'skills/design-workflow/SKILL.md';
-
 const failures = [];
 
 function fail(msg) { failures.push(msg); }
@@ -67,12 +65,7 @@ for (const ref of REQUIRED_REFERENCES) {
   if (!fs.existsSync(p)) fail(`Missing reference: ${ref}`);
 }
 
-// 3. Compatibility shim exists and is short.
-if (fs.existsSync(path.join(ROOT, SHIM_PATH))) {
-  const src = fs.readFileSync(path.join(ROOT, SHIM_PATH), 'utf8');
-  const lines = src.split('\n').length;
-  if (lines > SHIM_MAX_LINES) fail(`${SHIM_PATH}: ${lines} lines > ${SHIM_MAX_LINES} max (should be a shim)`);
-}
+// v4.0.0: design-workflow shim removed (Phase 4 complete).
 
 // 4. No broken internal links to old action paths inside new skills.
 const deadPaths = [

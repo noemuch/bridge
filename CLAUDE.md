@@ -64,8 +64,9 @@ Bridge uses a **multi-skill** Claude Code architecture (v3.3.0+):
   DS from Figma (interactive MCP path in V3.3.0; headless REST path in
   V4.0.0).
 
-- **`skills/design-workflow/`** — Compatibility shim only. Will be
-  removed in V4.0.0.
+- **`skills/generating-ds-docs/`** — `docs` command. 6 modes (init, full-build,
+  sync, check, mcp, headless-sync). Orchestrates the docs pipeline against the
+  knowledge base.
 
 Shared references live at the repo root under `references/`:
 - `compiler-reference.md`

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "generatedAt": "2026-04-15T10:00:00Z",
+  "styles": [
+    {
+      "key": "TextStyle:42",
+      "name": "label/md",
+      "fontFamily": "Inter",
+      "fontStyle": "Medium",
+      "fontSize": 14,
+      "lineHeight": 20,
+      "letterSpacing": 0
+    }
+  ]
+}

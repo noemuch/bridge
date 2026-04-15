@@ -2,6 +2,37 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [4.0.0] — 2026-04-15
+
+### Added
+- **Bridge Docs V0.1** — complete docs generation pipeline.
+- **`generating-ds-docs` skill** (6 modes: init / full-build / sync / check / mcp / headless-sync).
+- **TypeScript build** (`tsc` → `dist/`); existing JS untouched.
+- **REST extractor** `lib/extractors/figma-rest.ts` — headless Figma extraction via `FIGMA_TOKEN`.
+- **KB layer** `lib/kb/{hash,registry-io,index-builder}.ts`.
+- **6 Handlebars templates** (component / foundation / pattern / changelog / migration / llms.txt) + shared helpers + renderer.
+- **Cascade engine** `lib/docs/cascade/{diff-engine,impact-analyzer,regen-planner,rename-detector}.ts`.
+- **Preservation layer** `lib/docs/preservation.ts` — inline `<!-- manual:id -->` regions preserved across regens.
+- **Linter** `lib/docs/linter.ts` — frontmatter required fields + token ref resolution + Figma deeplink shape.
+- **Orchestrator** `lib/docs/generate.ts` — build / sync / check.
+- **MCP server** `lib/docs/mcp-server.ts` — local stdio server exposing `ds://component/<name>`, `ds://foundation/<name>`, `ds://index`.
+- **Cron** `lib/cron/orchestrator.ts` + `.github/workflows/bridge-docs-cron.yml` — daily Figma REST extract + docs sync + PR on diff.
+- **CLI** — `bridge-ds init-docs` wizard (@clack/prompts + figlet), `doctor`, `extract --headless`, `docs {build,sync,check,mcp}`, `cron`. Single-bin router (`bin/bridge.js`) dispatches legacy + V4 commands.
+- **JSON Schemas** under `references/schemas/` for component / foundation / pattern frontmatter and `_index.json`.
+- **Dogfood** — Bridge's own repo uses Bridge Docs to document its 6 skills.
+
+### Changed
+- `shipping-and-archiving` cascades to `generating-ds-docs sync` on done.
+- `using-bridge` command map includes the `docs` keyword; description frontmatter updated.
+
+### Removed
+- `skills/design-workflow/` compatibility shim (Phase 4 of restructure). Legacy `/design-workflow <command>` invocations no longer route.
+
+### Notes
+- Tier 1 CLI entry: `npx @noemuch/bridge-ds init-docs`.
+- Node 18+ required.
+- `skills/generating-ds-docs/` integrates interactively via Claude Code and non-interactively via the cron.
+
 ## [3.3.0] — 2026-04-15
 
 ### Changed

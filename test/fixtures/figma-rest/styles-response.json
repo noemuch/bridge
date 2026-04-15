@@ -1,0 +1,9 @@
+{
+  "status": 200,
+  "error": false,
+  "meta": {
+    "styles": [
+      { "key": "STYLE_TEXT_1", "name": "label/md", "description": "", "style_type": "TEXT", "sort_position": "a" }
+    ]
+  }
+}

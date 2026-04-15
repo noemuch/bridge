@@ -1,0 +1,8 @@
+dsName: "Bridge (meta)"
+tagline: "Bridge is self-documented via Bridge Docs."
+figmaFileKey: "N/A"
+docsPath: "design-system"
+kbPath: "bridge-ds"
+cron:
+  cadence: "daily"
+  time: "06:00"
