@@ -12,6 +12,7 @@ All notable changes to Bridge DS are documented here.
   (A/Compile, B/Visual, C/Lint). New `references/verification-gates.md`
   is gate-oriented (with a per-action mandatory-gates table) and
   replaces the phase-oriented `skills/design-workflow/references/quality-gates.md`.
+- New skill `skills/learning-from-corrections/` (migrated from `fix.md`).
 
 ## [3.2.2] — 2026-04-15
 
