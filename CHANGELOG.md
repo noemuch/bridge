@@ -51,6 +51,9 @@ All notable changes to Bridge DS are documented here.
 ### Fixed
 - `lib/docs/generate.ts` — inverted the `oldSnapshot` ternary so that a fresh run with no prior state treats everything as "added" (was treating current as old, producing an empty changeset).
 
+### Removed
+- `skills/design-workflow/` compatibility shim (Phase 4 of restructure). Legacy `/design-workflow <command>` invocations no longer route — users migrate to the specialized skills directly via the `using-bridge` command map.
+
 ## [3.3.0] — 2026-04-15
 
 ### Changed
