@@ -19,6 +19,7 @@ All notable changes to Bridge DS are documented here.
 - `lib/kb/registry-io.ts` — typed registry reader/writer with shape validation.
 - `lib/kb/index-builder.ts` — `_index.json` relationship graph (buildFromScratch + patch).
 - `lib/extractors/figma-rest.ts` — Figma REST API headless extractor (variables + components + text styles).
+- `lib/extractors/figma-mcp.ts` — interactive MCP extraction contract (throws with guidance for V0.1).
 
 ## [3.3.0] — 2026-04-15
 
