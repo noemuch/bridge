@@ -1,0 +1,25 @@
+# Bridge (meta)
+
+> Bridge is self-documented via Bridge Docs. For all docs inlined: [llms-full.txt](./llms-full.txt).
+
+## Components
+
+- [using-bridge](./design-system/components/layout/using-bridge.md): 
+- [generating-figma-design](./design-system/components/actions/generating-figma-design.md): 
+- [learning-from-corrections](./design-system/components/actions/learning-from-corrections.md): 
+- [shipping-and-archiving](./design-system/components/actions/shipping-and-archiving.md): 
+- [extracting-design-system](./design-system/components/actions/extracting-design-system.md): 
+- [generating-ds-docs](./design-system/components/actions/generating-ds-docs.md): 
+
+## Foundations
+
+- [color](./design-system/foundations/color.md): 
+- [spacing](./design-system/foundations/spacing.md): 
+- [radius](./design-system/foundations/radius.md): 
+- [text](./design-system/foundations/text.md): 
+
+
+## Optional
+
+- [Changelog](./design-system/changelog/README.md)
+- [Migration guides](./design-system/changelog/migrations/)

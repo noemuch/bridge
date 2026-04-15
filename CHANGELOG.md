@@ -46,6 +46,10 @@ All notable changes to Bridge DS are documented here.
 - `using-bridge` command map + `shipping-and-archiving` cascade hook wired to `generating-ds-docs`.
 - `lib/cron/orchestrator.ts` + `.github/workflows/bridge-docs-cron.yml` — daily cron that extracts Figma via REST, syncs docs, opens a PR on diff (no-op on no-diff).
 - Seed Bridge itself as a meta-DS (6 skills as components) for V0.1 dogfood.
+- First dogfood run of Bridge Docs on Bridge's own repo — regenerates skill docs + `llms.txt`.
+
+### Fixed
+- `lib/docs/generate.ts` — inverted the `oldSnapshot` ternary so that a fresh run with no prior state treats everything as "added" (was treating current as old, producing an empty changeset).
 
 ## [3.3.0] — 2026-04-15
 

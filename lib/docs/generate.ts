@@ -53,9 +53,10 @@ export async function sync(opts: SyncOptions): Promise<SyncReport> {
   const idx = buildFromScratch({ components, variables, textStyles, learnings, recipes });
 
   // For V0.1, build a "fake" old snapshot for the initial run that has no previous state.
-  // If perFileHashes is empty, treat all current entries as "modified" to trigger full regen.
+  // If there's no prior state, treat the old snapshot as empty so every current entry
+  // shows up as "added" and triggers a full regen.
   const hasPriorState = Object.keys(state.perFileHashes).length > 0 || state.registriesHash !== "";
-  const oldSnapshot = { components: hasPriorState ? [] : components.components, variables: hasPriorState ? [] : variables.variables, textStyles: hasPriorState ? [] : textStyles.styles };
+  const oldSnapshot = { components: hasPriorState ? components.components : [], variables: hasPriorState ? variables.variables : [], textStyles: hasPriorState ? textStyles.styles : [] };
   const newSnapshot = { components: components.components, variables: variables.variables, textStyles: textStyles.styles };
   const changeset = diffKb(oldSnapshot as any, newSnapshot as any);
   const impact = computeImpact(changeset, idx);
