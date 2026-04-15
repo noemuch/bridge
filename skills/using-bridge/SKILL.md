@@ -29,6 +29,35 @@ deliberately small (~400 tokens) to keep the fixed per-session cost low.
 
 ---
 
+## Drop Procedure (inline)
+
+`drop` is handled inline here — it is small enough not to warrant its
+own skill. Invoke when the user says "drop", "abandon", or "cancel".
+
+1. **Confirm.** Ask: "Sure you want to drop {name}?"
+2. **Capture learnings.** If a snapshot exists, offer to run `fix` first to
+   capture corrections before archiving.
+3. **Document drop reason.** Append a `drop:` block to the CSpec with
+   `date`, `reason`, and `learnings`.
+4. **Archive.** Move `specs/active/{name}.cspec.yaml` →
+   `specs/dropped/{name}.cspec.yaml`. Move the snapshot JSON too if it
+   exists.
+5. **Update history.** Append `{ISO date} | {name} | DROPPED | {reason}`
+   to `specs/history.log`.
+6. **Cleanup.** Remove `/tmp/bridge-scene-{name}.json` if present.
+
+Output template:
+
+    ## Dropped: {name}
+
+    Reason: {reason}
+    CSpec archived: specs/dropped/{name}.cspec.yaml
+    Learnings: {captured | skipped}
+
+    Ready for the next design. Run: `make <description>`.
+
+---
+
 ## Skill Priority
 
 1. **Process first, then action.** For exploratory or ambiguous requests,
