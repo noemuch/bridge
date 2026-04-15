@@ -39,6 +39,25 @@ The `/design-workflow` skill handles everything:
 
 Read `skills/design-workflow/SKILL.md` for the full workflow definition.
 
+## Skills
+
+Bridge uses a **two-layer** Claude Code skill architecture:
+
+- **`skills/using-bridge/`** — Force-loaded via `hooks/session-start` on
+  every Claude Code session. Owns the command map, non-negotiable hard
+  rules (compiler-only, semantic-tokens-only, verification-before-ship),
+  and the Red Flags rationalization catalog. Small (~400 tokens) to
+  keep the fixed per-session context cost low.
+
+- **`skills/design-workflow/`** — Action layer. Executes the workflows
+  (`make`, `fix`, `done`, `setup`, `drop`) through its `references/actions/*.md`
+  files. Will be split into five focused action skills in v4.0.0 (see the
+  Bridge Docs + restructure spec in `docs/superpowers/specs/`).
+
+The SessionStart hook script at `hooks/session-start` reads
+`skills/using-bridge/SKILL.md`, strips YAML frontmatter, and emits the
+Claude Code hook JSON payload. Registered in `hooks/hooks.json`.
+
 ## Compiler
 
 Invocation:
