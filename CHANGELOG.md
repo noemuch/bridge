@@ -12,6 +12,7 @@ All notable changes to Bridge DS are documented here.
   - Never read `figma-api-rules.md` (compiler handles everything)
   - Never reuse nodeIds across sessions
 - **Red Flags rationalization table** in `SKILL.md` — Eight common rationalizations with reality counters (hardcode shortcuts, compiler skepticism, screenshot skipping, stale nodeId memory, forbidden API reads, user-approval workarounds, raw Plugin API reuse, inline scripting)
+- **`skills/using-bridge/SKILL.md`** — new force-loaded process-layer skill (~400 tokens) owning Bridge's discipline, command map, hard rules, and red-flags catalog; will be auto-injected at every session via SessionStart hook (Task 6)
 
 ## [3.1.0] — 2026-04-03
 
