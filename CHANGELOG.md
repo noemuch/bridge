@@ -13,6 +13,7 @@ All notable changes to Bridge DS are documented here.
   is gate-oriented (with a per-action mandatory-gates table) and
   replaces the phase-oriented `skills/design-workflow/references/quality-gates.md`.
 - New skill `skills/learning-from-corrections/` (migrated from `fix.md`).
+- New skill `skills/shipping-and-archiving/` (migrated from `done.md`); marks the v4.0.0 cascade trigger point.
 
 ## [3.2.2] — 2026-04-15
 
