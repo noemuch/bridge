@@ -1,0 +1,24 @@
+# {{dsName}}
+
+> {{tagline}} For all docs inlined: [llms-full.txt](./llms-full.txt).
+
+## Components
+
+{{#each components}}- [{{name}}]({{path}}): {{summary}}
+{{/each}}
+
+## Foundations
+
+{{#each foundations}}- [{{name}}]({{path}}): {{summary}}
+{{/each}}
+
+{{#if patterns}}## Patterns
+
+{{#each patterns}}- [{{name}}]({{path}})
+{{/each}}
+{{/if}}
+
+## Optional
+
+- [Changelog](./design-system/changelog/README.md)
+- [Migration guides](./design-system/changelog/migrations/)

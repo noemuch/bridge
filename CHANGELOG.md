@@ -22,6 +22,7 @@ All notable changes to Bridge DS are documented here.
 - `lib/extractors/figma-mcp.ts` — interactive MCP extraction contract (throws with guidance for V0.1).
 - `lib/config/docs-config.ts` — Zod-validated `docs.config.yaml` parser.
 - `lib/docs/templates/helpers.ts` + `renderer.ts` — Handlebars renderer and shared helpers (eq/not/join/upper/lower/formatDate/resolveToken/provenanceMarker/manualRegion/concat/lookup).
+- 6 Handlebars templates (component, foundation, pattern, changelog, migration, llms.txt) + integration test.
 
 ## [3.3.0] — 2026-04-15
 
