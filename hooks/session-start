@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Bridge SessionStart hook — injects using-bridge/SKILL.md into the
+# Claude Code system prompt at session start.
+#
+# Output: JSON per the Claude Code SessionStart hook spec.
+# Silent (exit 0 with empty output) if the skill file is missing.
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SKILL_FILE="$SCRIPT_DIR/../skills/using-bridge/SKILL.md"
+
+if [[ ! -f "$SKILL_FILE" ]]; then
+  # No skill file → silent no-op.
+  exit 0
+fi
+
+# Strip YAML frontmatter (between the first two `---` fences).
+# awk approach: skip content between first two `---` lines.
+SKILL_BODY=$(awk '
+  BEGIN { in_fm = 0; past_fm = 0 }
+  /^---[[:space:]]*$/ {
+    if (past_fm == 0 && in_fm == 0) { in_fm = 1; next }
+    if (in_fm == 1) { in_fm = 0; past_fm = 1; next }
+  }
+  { if (in_fm == 0) print }
+' "$SKILL_FILE")
+
+# Emit a JSON payload using python (portable JSON escaping).
+if ! command -v python3 >/dev/null 2>&1; then
+  # Fallback: no python → emit nothing rather than risk malformed JSON.
+  exit 0
+fi
+
+python3 - "$SKILL_BODY" <<'PY'
+import json, sys
+body = sys.argv[1]
+payload = {
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": body
+  }
+}
+print(json.dumps(payload))
+PY
