@@ -35,6 +35,7 @@ All notable changes to Bridge DS are documented here.
 - `lib/docs/cascade/impact-analyzer.ts` — changeset → impact computation (components/foundations/patterns/changelogs/migrations).
 - `lib/docs/cascade/regen-planner.ts` — impact → ordered planned writes (foundations → components → patterns → changelogs → migrations).
 - `lib/docs/state.ts` — `.bridge/docs-state.json` read/write (hashes + timestamps for no-diff fast-path).
+- `lib/docs/mcp-server.ts` — local MCP server over stdio exposing `ds://component/<name>`, `ds://foundation/<name>`, `ds://index` resources.
 
 ## [3.3.0] — 2026-04-15
 
