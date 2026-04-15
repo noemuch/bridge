@@ -175,16 +175,17 @@ The `recipes/` directory is always inside the knowledge base directory.
 
 ## Action Router
 
-Detect intent from user input and **read the action file BEFORE executing**:
+> **Routing lives in `skills/using-bridge/SKILL.md` (force-loaded at
+> SessionStart).** This skill handles the action-layer execution for the
+> routes defined there. The action files referenced below are unchanged.
 
-| User says | Route to |
-|-----------|----------|
-| "make", "design", "create", "build", "generate", "new component", "new screen" | `references/actions/make.md` |
-| "fix", "correct", "learn", "diff", "corrections", "what changed", "I adjusted" | `references/actions/fix.md` |
-| "done", "ship", "ship it", "finish", "complete", "close" | `references/actions/done.md` |
-| "setup", "extract", "extract DS", "build knowledge base", "onboard" | `references/actions/setup.md` |
-| "status", "workflow", "what's next", "what now" | *(status logic below)* |
-| "drop", "abandon", "cancel" | `references/actions/drop.md` |
+| Action | Action File |
+|--------|-------------|
+| `make` | `references/actions/make.md` |
+| `fix` | `references/actions/fix.md` |
+| `done` | `references/actions/done.md` |
+| `setup` | `references/actions/setup.md` |
+| `drop` | `references/actions/drop.md` |
 
 ---
 

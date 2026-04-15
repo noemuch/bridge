@@ -15,6 +15,9 @@ All notable changes to Bridge DS are documented here.
 - **`skills/using-bridge/SKILL.md`** — new force-loaded process-layer skill (~400 tokens) owning Bridge's discipline, command map, hard rules, and red-flags catalog; will be auto-injected at every session via SessionStart hook (Task 6)
 - **SessionStart hook** (`hooks/session-start` + `hooks/hooks.json`) — POSIX shell script that strips YAML frontmatter from `using-bridge/SKILL.md` and emits the Claude Code SessionStart JSON payload; registered via `hooks.json` so the skill is injected automatically at every session start
 
+### Changed
+- **Action Router slimmed** in `skills/design-workflow/SKILL.md` — keyword→action routing now delegated to `skills/using-bridge/SKILL.md` (force-loaded at SessionStart); design-workflow retains minimal action→file map for self-sufficiency when invoked directly (~40 lines saved)
+
 ## [3.1.0] — 2026-04-03
 
 ### Added
