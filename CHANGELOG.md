@@ -30,6 +30,7 @@ All notable changes to Bridge DS are documented here.
 - `lib/docs/generators/pattern.ts` — pattern page generator.
 - `lib/docs/generators/changelog.ts` — per-component changelog generator.
 - `lib/docs/generators/migration.ts` — migration guide generator (per spec §6.4).
+- `lib/docs/generators/llms-txt.ts` — llms.txt index + llms-full.txt concatenator (Answer.AI spec).
 
 ## [3.3.0] — 2026-04-15
 
