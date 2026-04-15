@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "generatedAt": "2026-04-15T00:00:00Z",
+  "components": [
+    { "key": "skill:using-bridge",            "name": "using-bridge",            "category": "layout",  "status": "stable", "variants": [], "properties": [], "description": "Force-loaded process-layer skill: command map + hard rules + drop procedure + status logic." },
+    { "key": "skill:generating-figma-design", "name": "generating-figma-design", "category": "actions", "status": "stable", "variants": [], "properties": [], "description": "make — CSpec + compile + execute + verify." },
+    { "key": "skill:learning-from-corrections","name": "learning-from-corrections","category": "actions","status": "stable","variants": [], "properties": [], "description": "fix — diff Figma corrections, extract learnings, patch recipes." },
+    { "key": "skill:shipping-and-archiving",  "name": "shipping-and-archiving",  "category": "actions", "status": "stable", "variants": [], "properties": [], "description": "done — archive CSpec, extract recipes, cascade docs." },
+    { "key": "skill:extracting-design-system","name": "extracting-design-system","category": "actions","status": "stable","variants": [], "properties": [], "description": "setup — extract DS from Figma, build knowledge base." },
+    { "key": "skill:generating-ds-docs",      "name": "generating-ds-docs",      "category": "actions", "status": "stable", "variants": [], "properties": [], "description": "docs — generate and cascade design system documentation." }
+  ]
+}
