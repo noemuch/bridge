@@ -4,6 +4,9 @@ All notable changes to Bridge DS are documented here.
 
 ## [Unreleased] — v3.3.0 skill-split refactor (in progress)
 
+### Added
+- New skill `skills/generating-figma-design/` (migrated from `make.md`), with CSpec templates co-located under the skill.
+
 ### Changed
 - **Verification contract** restructured around three canonical gates
   (A/Compile, B/Visual, C/Lint). New `references/verification-gates.md`
