@@ -11,8 +11,9 @@ All notable changes to Bridge DS are documented here.
   files. Replaced placeholder company/product names in examples with
   generic `Acme` / `acme-design-system` / `acme-corp/` for clarity and
   neutrality.
-- **Docs reorganised.** Spec and plan documents live at `docs/specs/`
-  and `docs/plans/` for a cleaner top-level structure.
+- **Docs reorganised.** Moved `docs/superpowers/specs/` → `docs/specs/`
+  and `docs/superpowers/plans/` → `docs/plans/` for a cleaner top-level
+  structure.
 
 ### Fixed
 
