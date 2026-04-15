@@ -130,6 +130,21 @@ session-scoped; always re-search via `figma_search_components` or the
 official MCP equivalent.
 </HARD-GATE>
 
+### Red Flags — Rationalization → Reality
+
+These thoughts mean STOP. Each row is a real rationalization from real sessions.
+
+| Rationalization | Reality |
+|---|---|
+| "I'll just hardcode this hex once — it's faster" | Every hardcode breaks DS compliance. Always use a semantic token. |
+| "The compiler is overkill for this tiny thing" | The compiler is the only path. No exceptions, including tiny things. |
+| "Skip the screenshot, the change is obviously right" | 'Looks right' ≠ 'is right'. Gate B is mandatory. |
+| "I remember this nodeId from my last session" | Node IDs are session-scoped. Re-search every time. |
+| "I'll read figma-api-rules.md to double-check" | That file is forbidden. The compiler enforces all 26 rules. |
+| "The user approved the design, I can skip compile exit check" | Compile exit code 0 is Gate A. Independent of user approval. |
+| "I'll use the nodeId from the compiler output directly in a second script" | Raw Plugin API is banned. Route everything through the compiler. |
+| "Let me just write a small inline script to fix this one thing" | No inline scripts. Always: edit scene graph → recompile → execute. |
+
 ---
 
 ## Knowledge Base Location

@@ -11,6 +11,7 @@ All notable changes to Bridge DS are documented here.
   - No 'done' without compiler+screenshot+user-confirmation
   - Never read `figma-api-rules.md` (compiler handles everything)
   - Never reuse nodeIds across sessions
+- **Red Flags rationalization table** in `SKILL.md` — Eight common rationalizations with reality counters (hardcode shortcuts, compiler skepticism, screenshot skipping, stale nodeId memory, forbidden API reads, user-approval workarounds, raw Plugin API reuse, inline scripting)
 
 ## [3.1.0] — 2026-04-03
 
