@@ -46,7 +46,7 @@
     "test": "npm run test:all",
     "test:smoke": "node bin/bridge.js help",
     "test:skills": "node scripts/validate-skills.js",
-    "test:all": "npm run build && node --test dist/lib/**/*.test.js dist/test/**/*.test.js",
+    "test:all": "npm run build && node --test dist/lib dist/test",
     "test:security": "npm run build && node --test dist/test/security/*.test.js",
     "version:sync": "node scripts/bump-version.js",
     "prepublishOnly": "npm run typecheck && npm run build && npm run lint && npm run test:skills && npm run test:security"
