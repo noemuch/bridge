@@ -31,7 +31,12 @@ function writeTempKb(): TempKb {
       version: 1,
       generatedAt: new Date().toISOString(),
       variables: [
-        { name: "color/bg/primary", key: "VariableID:1:1", resolvedType: "COLOR", valuesByMode: {} },
+        {
+          name: "color/bg/primary",
+          key: "VariableID:1:1",
+          resolvedType: "COLOR",
+          valuesByMode: {},
+        },
         { name: "spacing/md", key: "VariableID:1:2", resolvedType: "FLOAT", valuesByMode: {} },
         { name: "radius/md", key: "VariableID:1:3", resolvedType: "FLOAT", valuesByMode: {} },
       ],
@@ -61,7 +66,15 @@ function writeTempKb(): TempKb {
     JSON.stringify({
       version: 1,
       generatedAt: new Date().toISOString(),
-      styles: [{ name: "text/label/md", key: "TextStyle:42", fontFamily: "Inter", fontStyle: "Regular", fontSize: 14 }],
+      styles: [
+        {
+          name: "text/label/md",
+          key: "TextStyle:42",
+          fontFamily: "Inter",
+          fontStyle: "Regular",
+          fontSize: 14,
+        },
+      ],
     })
   );
 

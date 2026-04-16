@@ -40,7 +40,9 @@ function flattenComponents(legacy: LegacyComponents): {
   };
 }
 
-function stampVersion<T extends Record<string, unknown>>(parsed: T): T & { version: number; generatedAt: string } {
+function stampVersion<T extends Record<string, unknown>>(
+  parsed: T
+): T & { version: number; generatedAt: string } {
   return {
     ...parsed,
     version: CURRENT_KB_SCHEMA_VERSION,

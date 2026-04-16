@@ -15,35 +15,74 @@ function makeFixture(shape: "current" | "legacy-grouped" | "newer"): string {
   const regDir = path.join(dir, "knowledge-base", "registries");
   mkdirSync(regDir, { recursive: true });
   if (shape === "current") {
-    writeFileSync(path.join(regDir, "components.json"), JSON.stringify({
-      version: 1, generatedAt: "2026-04-16T00:00:00Z", components: [],
-    }));
-    writeFileSync(path.join(regDir, "variables.json"), JSON.stringify({
-      version: 1, generatedAt: "2026-04-16T00:00:00Z", variables: [],
-    }));
-    writeFileSync(path.join(regDir, "text-styles.json"), JSON.stringify({
-      version: 1, generatedAt: "2026-04-16T00:00:00Z", styles: [],
-    }));
+    writeFileSync(
+      path.join(regDir, "components.json"),
+      JSON.stringify({
+        version: 1,
+        generatedAt: "2026-04-16T00:00:00Z",
+        components: [],
+      })
+    );
+    writeFileSync(
+      path.join(regDir, "variables.json"),
+      JSON.stringify({
+        version: 1,
+        generatedAt: "2026-04-16T00:00:00Z",
+        variables: [],
+      })
+    );
+    writeFileSync(
+      path.join(regDir, "text-styles.json"),
+      JSON.stringify({
+        version: 1,
+        generatedAt: "2026-04-16T00:00:00Z",
+        styles: [],
+      })
+    );
   } else if (shape === "legacy-grouped") {
-    writeFileSync(path.join(regDir, "components.json"), JSON.stringify({
-      components: { forms: [], actions: [] },
-    }));
-    writeFileSync(path.join(regDir, "variables.json"), JSON.stringify({
-      variables: [],
-    }));
-    writeFileSync(path.join(regDir, "text-styles.json"), JSON.stringify({
-      styles: [],
-    }));
+    writeFileSync(
+      path.join(regDir, "components.json"),
+      JSON.stringify({
+        components: { forms: [], actions: [] },
+      })
+    );
+    writeFileSync(
+      path.join(regDir, "variables.json"),
+      JSON.stringify({
+        variables: [],
+      })
+    );
+    writeFileSync(
+      path.join(regDir, "text-styles.json"),
+      JSON.stringify({
+        styles: [],
+      })
+    );
   } else {
-    writeFileSync(path.join(regDir, "components.json"), JSON.stringify({
-      version: 999, generatedAt: "2030-01-01T00:00:00Z", components: [],
-    }));
-    writeFileSync(path.join(regDir, "variables.json"), JSON.stringify({
-      version: 999, generatedAt: "2030-01-01T00:00:00Z", variables: [],
-    }));
-    writeFileSync(path.join(regDir, "text-styles.json"), JSON.stringify({
-      version: 999, generatedAt: "2030-01-01T00:00:00Z", styles: [],
-    }));
+    writeFileSync(
+      path.join(regDir, "components.json"),
+      JSON.stringify({
+        version: 999,
+        generatedAt: "2030-01-01T00:00:00Z",
+        components: [],
+      })
+    );
+    writeFileSync(
+      path.join(regDir, "variables.json"),
+      JSON.stringify({
+        version: 999,
+        generatedAt: "2030-01-01T00:00:00Z",
+        variables: [],
+      })
+    );
+    writeFileSync(
+      path.join(regDir, "text-styles.json"),
+      JSON.stringify({
+        version: 999,
+        generatedAt: "2030-01-01T00:00:00Z",
+        styles: [],
+      })
+    );
   }
   return dir;
 }

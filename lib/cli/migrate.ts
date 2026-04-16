@@ -22,7 +22,9 @@ async function exists(file: string): Promise<boolean> {
   }
 }
 
-async function detectShape(kbPath: string): Promise<"legacy-grouped" | "current" | "corrupt" | "newer"> {
+async function detectShape(
+  kbPath: string
+): Promise<"legacy-grouped" | "current" | "corrupt" | "newer"> {
   const file = path.join(kbPath, "knowledge-base", "registries", "components.json");
   if (!(await exists(file))) return "corrupt";
   const raw = await readFile(file, "utf8");

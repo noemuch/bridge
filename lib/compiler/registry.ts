@@ -179,7 +179,9 @@ function buildComponentIndex(data: RawComponentsFile | null): ComponentIndex {
       name: comp.name,
       key: comp.key,
       type: comp.type ?? "COMPONENT",
-      properties: Array.isArray(comp.properties) ? {} : (comp.properties as Record<string, unknown> ?? {}),
+      properties: Array.isArray(comp.properties)
+        ? {}
+        : ((comp.properties as Record<string, unknown>) ?? {}),
     };
     byName.set(comp.name.toLowerCase(), entry);
   }

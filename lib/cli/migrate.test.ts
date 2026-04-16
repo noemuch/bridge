@@ -68,10 +68,7 @@ test("migrate() refuses a KB newer than CLI supports", async () => {
     JSON.stringify({ version: 999, generatedAt: "2030-01-01T00:00:00Z", styles: [] })
   );
   try {
-    await assert.rejects(
-      () => migrate({ kbPath: dir }),
-      /newer/i
-    );
+    await assert.rejects(() => migrate({ kbPath: dir }), /newer/i);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

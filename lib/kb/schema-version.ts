@@ -47,20 +47,14 @@ export function readKBSchemaVersion(kbPath: string): number | null {
 export function assertKBCompatible(kbPath: string): void {
   const componentsFile = path.join(registriesDir(kbPath), "components.json");
   if (!existsSync(componentsFile)) {
-    throw new KBSchemaError(
-      `No KB found at ${kbPath}. Run \`setup bridge\` first.`,
-      "missing"
-    );
+    throw new KBSchemaError(`No KB found at ${kbPath}. Run \`setup bridge\` first.`, "missing");
   }
   const raw = readFileSync(componentsFile, "utf8");
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
   } catch {
-    throw new KBSchemaError(
-      `KB registries/components.json is not valid JSON.`,
-      "corrupt"
-    );
+    throw new KBSchemaError(`KB registries/components.json is not valid JSON.`, "corrupt");
   }
   const shape = probeComponentsShape(parsed);
   if (shape === "legacy-grouped") {
@@ -70,10 +64,7 @@ export function assertKBCompatible(kbPath: string): void {
     );
   }
   if (shape === "corrupt") {
-    throw new KBSchemaError(
-      `KB registries/components.json has an unrecognized shape.`,
-      "corrupt"
-    );
+    throw new KBSchemaError(`KB registries/components.json has an unrecognized shape.`, "corrupt");
   }
   const version = (parsed as { version?: number }).version ?? 1;
   if (version > CURRENT_KB_SCHEMA_VERSION) {
