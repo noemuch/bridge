@@ -4,41 +4,115 @@ All notable changes to Bridge DS are documented here.
 
 ## [Unreleased]
 
-### Changed
-- Compiler migrated from CommonJS JavaScript to strict TypeScript
-  (`lib/compiler/*.js` → `lib/compiler/*.ts`). Public API
-  (`compile()` signature, `CompilerError` shape, CLI flags, generated
-  code output) is unchanged. Staged migration across several commits:
-  errors/helpers/wrap, then registry/plan/schema, validate/resolve,
-  codegen, and finally the `compile` orchestrator.
-- New `lib/compiler/types.ts` module exposes shared pipeline types
-  (`SceneGraph`, `SceneNode`, `ResolvedToken`, `ImportBundle`, …)
-  consumed by every compiler stage.
-- `resolve` and `validate` stages are fully typed against the shared
-  types module; token resolution, component resolution, REPEAT/
-  CONDITIONAL expansion, and structural rule checks remain behaviorally
-  identical to the pre-migration implementation.
-- `codegen` stage (Figma Plugin API emitter) fully typed against the
-  resolved scene graph. Generated code output is byte-identical to the
-  pre-migration implementation.
-- `compile` orchestrator ported to TypeScript; exposes
-  `compile(options: CompileOptions): CompileResult`. All legacy
-  `lib/compiler/*.js` shims removed. `lib/compiler/cli.ts` now imports
-  `compile` and `formatErrors` as native TypeScript modules (no more
-  `require()` interop).
-- `tsconfig.json`: removed the now-obsolete `"lib/**/*.js"` entry from
-  the `exclude` list.
+## [5.0.0] — 2026-04-16
+
+Major cleanup + pro-grade tooling release. The skill workflow (`make`,
+`fix`, `done`, `setup bridge`, `docs`) is unchanged — v5.0.0 is about
+the foundations: TypeScript everywhere, zero `any` in production, a
+strict lint/format/typecheck pipeline, an automated release, and a
+repo free of dead code and dogfood cruft.
+
+### Breaking changes
+
+- **`bridge-ds init` and `bridge-ds update` CLI commands removed.** The
+  legacy interactive wizard retired in favour of `setup bridge` in
+  Claude Code (single-entry flow). Typing `init`/`update` now prints a
+  deprecation notice pointing to the supported path.
+- **Package entrypoints repointed at compiled output.** `package.json`
+  `main`/`types`/`exports` now resolve to `dist/lib/cli/main.js` (and
+  `./compiler` → `dist/lib/compiler/compile.js`). Consumers that
+  imported source paths directly must switch to the `@noemuch/bridge-ds`
+  package entry or `@noemuch/bridge-ds/compiler`.
+- **`commands/` slash-command directory dropped.** The only file in it
+  (`design-workflow.md`) referenced a skill removed in v3.3. The
+  directory is gone, and `commands` entries removed from
+  `package.json`, `.claude-plugin/plugin.json`, `.cursor-plugin/plugin.json`.
+- **`figlet` and `ajv` + `ajv-formats` dependencies removed.** `figlet`
+  replaced by an inlined ANSI banner; `ajv` was unused in-tree (Zod
+  covers config validation).
+- **Compiler source is TypeScript.** Any consumer requiring
+  `./lib/compiler/compile.js` directly will break — use the public
+  `@noemuch/bridge-ds/compiler` entry or `dist/lib/compiler/compile.js`.
 
 ### Added
-- Regression test suite for the compile pipeline
-  (`lib/compiler/compile.test.ts`): success path, unknown-token resolve
-  error, `official` transport missing fileKey, and malformed JSON input.
 
-### Docs
-- `references/compiler-reference.md` and
-  `references/transport-adapter.md`: invocation examples updated to the
-  official `bridge-ds compile` CLI surface (the `lib/compiler/compile.js`
-  script no longer exists after the TS migration).
+- **Compiler migration to strict TypeScript** (`lib/compiler/*.js` →
+  `lib/compiler/*.ts`). Public API unchanged. New
+  `lib/compiler/types.ts` exposes `SceneGraph`, `SceneNode`,
+  `ResolvedSceneGraph`, `ResolvedToken`, `ImportBundle`, `Chunk`,
+  `CompileOptions`, `CompileResult`, `CompilerError`, `ErrorCode`.
+- **Compiler regression test suite** (`lib/compiler/compile.test.ts`):
+  success path, unknown-token resolve error, `official` transport
+  missing fileKey, malformed JSON input.
+- **Bridge Docs CLI `bridge-ds compile`** — official public entry point
+  for the compiler pipeline. Previously buried at
+  `node lib/compiler/compile.js`.
+- **Hardening (security):**
+  - MCP server (`lib/docs/mcp-server.ts`) restricts `ds://` URI names to
+    `[A-Za-z0-9_-]+` and asserts the resolved path stays inside
+    `docsPath` — `ds://component/..` now rejected.
+  - YAML config parsing (`lib/config/docs-config.ts`) locked to
+    `JSON_SCHEMA` — custom tags (`!!js/function`, etc.) rejected at
+    parse time.
+  - Handlebars `provenanceMarker`/`manualRegion` helpers sanitise inputs
+    to a safe alphabet; dropped the `globalThis.__bridgeHandlebars`
+    escape hatch.
+- **ESLint 9 (flat config) + Prettier 3.** Run `npm run lint`,
+  `npm run format`, `npm run format:check`, `npm run typecheck` locally.
+- **Release pipeline** `.github/workflows/release.yml`: tagged pushes
+  (`vX.Y.Z`) trigger typecheck + build + lint + tests + `npm publish
+  --provenance`. Verifies the tag matches `package.json`.
+- **CI refactor**: lint-typecheck + full-test-suite jobs separated,
+  `cache: "npm"` enabled on every job, dropped the stale legacy-compiler
+  require.
+- **`scripts/bump-version.js`**: sync version across `package.json`,
+  the three plugin manifests, and `lib/cli/main.ts` VERSION in one
+  shot.
+- **`scripts/validate-skills.js`**: auto-discovers skills via `readdir`
+  instead of a hard-coded list; still flags dead paths.
+- **+19 tests** across `lib/cli/main.test.ts` (8), `lib/cli/setup-orchestrator.test.ts` (6),
+  `lib/cron/orchestrator.test.ts` (+1 integration), `lib/config/docs-config.test.ts` (+1),
+  `lib/docs/mcp-server.test.ts` (+2), plus the compiler suite.
+- `.nvmrc` (`20`), `.npmignore`, `.prettierrc.json`, `.prettierignore`.
+
+### Changed
+
+- `package.json` scripts: `typecheck`, `lint`, `format`, `format:check`,
+  `version:sync`, `test:smoke`. `prepublishOnly` hardened to run
+  typecheck + build + lint + test:skills + test:security.
+- `@clack/prompts` bumped `0.7.x` → `1.2.x`.
+- Doc overhaul: `README.md`, `CONTRIBUTING.md`, `CLAUDE.md`, and all
+  skill markdown files refreshed for the v5 reality (TS compiler, 6
+  skills, no `/design-workflow`). `MIGRATION.md` adds the v4.x → v5.0.0
+  section.
+- `tsconfig.json`: removed the now-obsolete `"lib/**/*.js"` exclusion.
+
+### Removed / cleanup
+
+- **Dogfood cruft** (21 files, ~72 KB): `docs.config.yaml`, `.bridge/`,
+  `bridge-ds/knowledge-base/*`, `design-system/*`, `llms.txt`. Bridge is
+  a CLI tool, not a real DS; the template for *user* repos still lives
+  inside `lib/cli/setup-orchestrator.ts`.
+- Orphan `.github/workflows/bridge-docs-cron.yml` (daily cron on
+  Bridge's own repo with no `FIGMA_TOKEN` — it was failing every
+  morning since v4.0.0).
+- Legacy CLI layer: `lib/cli.js`, `lib/scaffold.js`, `lib/mcp-setup.js`
+  (~390 LOC). `bin/bridge.js` now routes every command through
+  `dist/lib/cli/main.js`.
+- `lib/compiler/SPEC.md` (1498 lines of obsolete CommonJS
+  implementation spec).
+- `commands/` directory and its dead `design-workflow.md`.
+- All explicit `any` in production code (23 occurrences). Replaced with
+  narrow types (`FigmaExtractResult`, `LearningsFile`/`RecipesFile`,
+  `CheckReport`, Handlebars context shapes).
+
+### Notes on stability
+
+- 76/76 tests pass.
+- Zero ESLint errors and warnings in production code (`any` allowed in
+  test fixtures only, via an explicit override).
+- Zero Prettier diffs (`format:check` green).
+- Full CI matrix green on Node 18, 20, 22.
 
 ## [4.1.0] — 2026-04-15
 
