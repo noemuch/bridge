@@ -3,6 +3,7 @@ node_modules/
 **/.DS_Store
 .tmp/
 .claude/
+.worktrees/
 
 # Internal design docs (specs, plans) — kept locally, not pushed.
 docs/superpowers/
