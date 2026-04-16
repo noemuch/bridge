@@ -72,7 +72,7 @@ Point your AI client at the DS repo's `llms.txt` or the MCP server. Your generat
 **In Claude Code, any session (one-time install):**
 
 ```
-/plugin marketplace add github:noemuch/bridge
+/plugin marketplace add noemuch/bridge
 /plugin install bridge-ds
 ```
 
