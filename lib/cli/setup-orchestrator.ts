@@ -1,6 +1,5 @@
 // lib/cli/setup-orchestrator.ts
 import { mkdir, writeFile } from "node:fs/promises";
-import { ProgressReporter } from "./progress-reporter.js";
 import { detectFigmaFileKey, detectGitRemote } from "../kb/auto-detect.js";
 import {
   setGitHubSecret,
@@ -18,7 +17,6 @@ export interface SetupOrchestratorOptions {
   githubRepo?: string;
   cronCadence?: "daily" | "weekly";
   cronTime?: string;
-  reporter?: ProgressReporter;
 }
 
 export interface SetupResult {

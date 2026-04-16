@@ -113,6 +113,14 @@ touch your knowledge base or generated docs.
 
 ### Removed / cleanup
 
+- **Dead code pass**: `lib/extractors/figma-mcp.ts` (stub that only
+  threw), `lib/cli/progress-reporter.ts` + `reporter` field on
+  `SetupOrchestratorOptions` (class never called outside its own test),
+  `references/schemas/*.json` (4 JSON Schemas not wired to any
+  runtime — the real contracts live in `lib/docs/linter.ts` and Zod),
+  and 6 stale `.gitkeep` markers.
+- **`MIGRATION.md`**: merged into the CHANGELOG as
+  `### Upgrading from vX` subsections under the major-version entries.
 - **Dogfood cruft** (21 files, ~72 KB): `docs.config.yaml`, `.bridge/`,
   `bridge-ds/knowledge-base/*`, `design-system/*`, `llms.txt`. Bridge is
   a CLI tool, not a real DS; the template for *user* repos still lives
