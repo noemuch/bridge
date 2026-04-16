@@ -112,6 +112,21 @@ export async function sync(opts: SyncOptions): Promise<SyncReport> {
     }
     await writeFile(w.path, content, "utf8");
     regenerated.push(w.path);
+
+    // V4.1.0: emit per-component .llm.txt sidecar alongside .md
+    if (w.kind === "component") {
+      const llmPath = w.path.replace(/\.md$/, ".llm.txt");
+      const { generateComponentLlmTxt } = await import("./generators/llm-txt.js");
+      const compEntry = idx.componentIndex[w.target];
+      if (compEntry) {
+        const llmTxt = await generateComponentLlmTxt({
+          entry: { ...compEntry, name: w.target },
+          docs: {},
+        });
+        await writeFile(llmPath, llmTxt, "utf8");
+        regenerated.push(llmPath);
+      }
+    }
   }
 
   // Regenerate llms.txt
