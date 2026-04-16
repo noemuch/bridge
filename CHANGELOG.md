@@ -2,39 +2,75 @@
 
 All notable changes to Bridge DS are documented here.
 
-## [Unreleased] — v4.1.0 (UX polish)
+## [4.1.0] — 2026-04-15
 
 ### Added
-- **`lib/kb/auto-detect.ts`** — auto-detect git remote and Figma file key
-  by scanning README.md, CLAUDE.md, and `package.json` `figma.url` field.
-  Powers setup pre-fill so users confirm rather than type.
-- **`lib/docs/templates/component.llm.txt.hbs`** — Handlebars template for
-  per-component `.llm.txt` sidecars (shadcn-inspired, <500 tokens each).
-- **`lib/docs/generators/llm-txt.ts`** — generator that renders per-component
-  `.llm.txt` sidecars via the Handlebars template.
-- **`.llm.txt` sidecar wiring in `lib/docs/generate.ts`** — every component
-  regeneration now writes the `.llm.txt` sidecar alongside the `.md`.
-- **`lib/cli/setup-orchestrator.ts`** — shared orchestration: preflight,
-  scaffold, token storage with optional variables-API probe.
-- **SessionStart hook health line** — `hooks/session-start` now appends
-  a one-line live status (`◆ Bridge: KB synced Xh ago · N components` or
-  `not set up yet`) to the emitted context.
-- **`bridge-ds setup` CLI subcommand** — headless scaffold dispatch for the
-  `extracting-design-system` skill (via Bash tool). Accepts `--ds-name`,
-  `--figma-key`, `--docs-path`, `--kb-path` flags.
+- `@noemuch/bridge-ds` published to npm (first real publication; v4.0.0
+  was GitHub-only).
+- Per-component `.llm.txt` sidecars for ultra-compressed LLM consumption
+  (shadcn/ui pattern). Generated alongside `.md` + `.json` via the new
+  `lib/docs/generators/llm-txt.ts` module and the
+  `lib/docs/templates/component.llm.txt.hbs` Handlebars template.
+- SessionStart hook emits a live health status line
+  (`◆ Bridge: KB synced 2h ago · N components`) appended to
+  `hooks/session-start`'s `additionalContext`.
+- Auto-detection of git remote (via `.git/config`) and Figma URL
+  (via README.md / CLAUDE.md / package.json) — `lib/kb/auto-detect.ts`.
+- Progress reporter (`lib/cli/progress-reporter.ts`) emitting
+  `[progress]` JSON event lines during multi-minute MCP extract.
+- Setup orchestrator `lib/cli/setup-orchestrator.ts` — shared module
+  used by the `extracting-design-system` skill (via Bash) for
+  pre-flight + scaffold + token-storage.
+- `bridge-ds setup` CLI subcommand — headless scaffold dispatch for the
+  skill. Flags: `--ds-name`, `--figma-key`, `--docs-path`, `--kb-path`.
+- `SECURITY.md` with disclosure policy, scope minimization notes, and
+  supply-chain guidance.
+- `MIGRATION.md` at repo root — one-page v4.0.0 → v4.1.0 upgrade
+  notes.
+- Token-handling module `lib/cli/token-handling.ts` — stdin-only pipe
+  to `gh secret set`, `maskToken` for safe logging, `validateFigmaToken`
+  against `/v1/me`, `probeVariablesEndpoint` for Enterprise-plan probing.
+- `npm run test:security` + `npm run test:all` + `prepublishOnly`
+  scripts; security test suite at `test/security/token-leak.test.ts`.
+- New CI jobs (added in F2): `security` (token-leak regression + grep
+  `dist/` scan) and `integration-smoke` (headless scaffold in temp dir).
 
 ### Changed
-- **`using-bridge` command map** expanded with "setup bridge", "bootstrap",
+- `extracting-design-system` skill absorbs scaffolding responsibilities.
+  `setup bridge` in Claude Code is now the single-entry-point flow
+  (replaces the legacy CLI wizard as the recommended path).
+- Token handling rewritten: stdin-only paste, direct pipe to
+  `gh secret set` via `spawn` stdio `pipe`. Token never enters
+  `process.env`, `argv`, shell history, or log files. Token values
+  logged as `figd_***<last4>`.
+- README repositioned: compiler-first lead, docs as a secondary
+  audience-specific section with For designers / For DS teams /
+  For engineers.
+- `using-bridge` command map expanded with "setup bridge", "bootstrap",
   "initialize" keywords routing to `extracting-design-system`.
-- **`extracting-design-system` skill extended** to orchestrate the
-  complete setup flow (pre-flight → scaffold → token → extract →
-  build → commit). Replaces the legacy CLI wizard as the primary
-  entry point.
+- `lib/docs/generate.ts`: first-run regen logic formalized (inverted
+  ternary fixed, regression tests added).
+
+### Fixed
+- `lib/docs/generate.ts` first-run: previously returned empty
+  `regenerated` list on a fresh KB due to inverted ternary in the
+  "fake old snapshot" logic. Now correctly triggers full regen on
+  first run. Locked in by 2 new regression tests.
+
+### Security
+- FIGMA_TOKEN handling rewritten: stdin-only pipe to `gh secret set`
+  eliminates five leak surfaces (env, argv, ps-visible args, shell
+  history, log files).
+- Graceful fallback on Figma REST `/variables/local` 403 for
+  non-Enterprise plans (cron proceeds with components + text styles
+  only, logs warning).
+- `SECURITY.md` added with disclosure policy and scope-minimization
+  notes.
 
 ### Deprecated
-- **`bridge-ds init-docs` CLI wizard** emits a yellow DeprecationWarning
-  on startup. Still functional (legacy contract preserved for v4.x).
-  Removal planned for v5.0.0. Migrate to `setup bridge` in Claude Code.
+- `bridge-ds init-docs` CLI wizard emits DeprecationWarning on startup.
+  Still functional (legacy contract preserved for v4.x). Removal
+  planned for v5.0.0. Migrate to `setup bridge` in Claude Code.
 
 ## [4.0.0] — 2026-04-15
 
