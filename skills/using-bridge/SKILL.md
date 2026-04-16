@@ -23,7 +23,7 @@ deliberately small (~400 tokens) to keep the fixed per-session cost low.
 | "make", "design", "create", "build", "generate", "new component", "new screen" | `generating-figma-design`         |
 | "fix", "correct", "learn", "diff", "what changed", "I adjusted" | `learning-from-corrections`       |
 | "done", "ship", "ship it", "finish", "complete"                 | `shipping-and-archiving`          |
-| "setup", "extract", "extract DS", "onboard"                     | `extracting-design-system`        |
+| "setup", "setup bridge", "extract", "extract DS", "onboard", "initialize", "bootstrap" | `extracting-design-system`        |
 | "drop", "abandon", "cancel"                                     | inline `Drop Procedure` (this skill) |
 | "status", "what's next", "workflow"                             | inline status logic (this skill)  |
 | "docs", "documentation", "sync docs", "generate docs" | `generating-ds-docs` |

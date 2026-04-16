@@ -21,6 +21,8 @@ All notable changes to Bridge DS are documented here.
   `not set up yet`) to the emitted context.
 
 ### Changed
+- **`using-bridge` command map** expanded with "setup bridge", "bootstrap",
+  "initialize" keywords routing to `extracting-design-system`.
 - **`extracting-design-system` skill extended** to orchestrate the
   complete setup flow (pre-flight → scaffold → token → extract →
   build → commit). Replaces the legacy CLI wizard as the primary
