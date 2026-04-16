@@ -14,6 +14,10 @@ All notable changes to Bridge DS are documented here.
 - New `lib/compiler/types.ts` module exposes shared pipeline types
   (`SceneGraph`, `SceneNode`, `ResolvedToken`, `ImportBundle`, …)
   consumed by every compiler stage.
+- `resolve` and `validate` stages are fully typed against the shared
+  types module; token resolution, component resolution, REPEAT/
+  CONDITIONAL expansion, and structural rule checks remain behaviorally
+  identical to the pre-migration implementation.
 
 ## [4.1.0] — 2026-04-15
 
