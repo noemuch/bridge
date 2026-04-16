@@ -21,6 +21,13 @@ All notable changes to Bridge DS are documented here.
 - `codegen` stage (Figma Plugin API emitter) fully typed against the
   resolved scene graph. Generated code output is byte-identical to the
   pre-migration implementation.
+- `compile` orchestrator ported to TypeScript; exposes
+  `compile(options: CompileOptions): CompileResult`. All legacy
+  `lib/compiler/*.js` shims removed. `lib/compiler/cli.ts` now imports
+  `compile` and `formatErrors` as native TypeScript modules (no more
+  `require()` interop).
+- `tsconfig.json`: removed the now-obsolete `"lib/**/*.js"` entry from
+  the `exclude` list.
 
 ## [4.1.0] — 2026-04-15
 
