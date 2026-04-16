@@ -265,3 +265,39 @@ Phase 2 (writing-plans) starts when:
 - ☐ Audit doc committed to `v6-cleanup` branch
 
 Phase 2 deliverable: `docs/superpowers/plans/2026-04-16-v6-cleanup.md` (subagent-driven execution plan).
+
+---
+
+## Addendum (Phase 1.5) — Superpowers borrowings
+
+Following user analogy "Bridge = superpowers of design" (2026-04-16), deep-mapped superpowers v5.0.7 source for borrowable patterns. **Verdict:** the framing is structurally accurate but the mental model is inverted — superpowers sits *above* code enforcing process discipline; Bridge sits *below* design intent enforcing DS conformity. Same spirit, opposite vectors. Bridge should borrow superpowers' **structural patterns** where they tighten existing skills, but not clone the full workflow. **External positioning stays "deterministic compiler + 3 pillars"** — "superpowers of design" lives only as an internal lens (CLAUDE.md, skill structure), not in product copy.
+
+### IN-SCOPE for v6 (3 cheap markdown wins, ~2.5 h total, zero code added)
+
+15. ☑ **Evidence-before-claims discipline** — formalize in `references/verification-gates.md`: every "done" claim requires command output. Bans "looks right" / "should pass" / "I'm confident". Aligned Pillar 1 (déterminisme).
+16. ☑ **Iron Laws markers (`<IRON-LAW>` blocks)** — mark non-negotiables in `skills/using-bridge/SKILL.md` + `references/compiler-reference.md`. Examples: "NO COMPILED CSPEC MISSING $TOKEN REFERENCES", "NO RAW PLUGIN API CODE EVER".
+17. ☑ **Decision graphviz diagrams** — add 3-4 `digraph` flowcharts to `references/verification-gates.md` and key skill SKILL.md files (CSpec generation pipeline, fix correction analysis, done gate sequence).
+
+### DEFER to v6.1 patch release (substantial skill rewrites)
+
+D1. **Phase-gated `fix` workflow** (~4 h) — adopt systematic-debugging's 4-phase structure (Diff → Pattern → Hypothesis → Patch + Test). Replaces ad-hoc "describe changes". Prevents recipe-pollution.
+
+D2. **Two-stage `done` review** (~2 h) — split into spec-reviewer (CSpec ↔ Figma fidelity) + quality-reviewer (recipe health, KB coherence). Mirrors superpowers' implementer→spec-reviewer→code-quality-reviewer.
+
+### EXPLICITLY SKIP (over-engineering risk per subtraction principle)
+
+S1. **Brainstorming → planning → execution full pipeline** — `make → fix → done` already tight. Bridge's user is in-loop at every gate via Figma. No separate planning ceremony.
+
+S2. **Receiving-code-review skill** — Bridge corrections come from user *redesigning in Figma*, not from review comments. `learning-from-corrections` is the right pattern.
+
+S3. **Writing-skills meta-skill** — skills evolve organically. Formal authoring ceremony = over-engineering at current scale.
+
+### Defer v7+ backlog (require new infrastructure)
+
+- Subagent-driven recipe refinement (needs recipe-testing framework)
+- Test-driven design / visual regression (needs gold-file storage + Playwright/Figma export)
+- Parallel correction analysis (let `fix` mature single-thread first)
+
+### Bottom line
+
+3 cheap wins added to v6 (~2.5 h total markdown). 2 substantial improvements deferred to v6.1 patch. 3 superpowers patterns explicitly skipped per subtraction. Net new code in v6: zero. Net surface complexity: improved without enlargement.
