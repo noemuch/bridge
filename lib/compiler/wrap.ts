@@ -41,7 +41,7 @@ export function wrapOfficial(
   code: string,
   fontCode: string,
   fileKey: string | null | undefined,
-  _description?: string,
+  _description?: string
 ): string {
   if (!fileKey) {
     throw new CompilerError("WRAP_MISSING_FILEKEY");
@@ -85,7 +85,7 @@ export function wrapChunk(
   code: string,
   chunk: WrapChunkDescriptor,
   transport: Transport,
-  fileKey?: string | null,
+  fileKey?: string | null
 ): string {
   // codegen already handles globalThis bridging in build chunks — no extra destructuring needed here
 

@@ -86,7 +86,7 @@ type WalkCallback = (
   node: ResolvedNode,
   path: string,
   parentChildren: ResolvedNode[],
-  index: number,
+  index: number
 ) => ResolvedNode[] | undefined;
 
 /**
@@ -97,7 +97,7 @@ type WalkCallback = (
 export function walkNodes(
   nodes: ResolvedNode[] | undefined,
   callback: WalkCallback,
-  path: string,
+  path: string
 ): void {
   if (!Array.isArray(nodes)) return;
   // Walk backwards so splice mutations don't shift unvisited indices.
@@ -155,7 +155,10 @@ interface ResolveComponentResult {
 }
 
 type RegistryIndex = {
-  byName: Map<string, { key: string; name: string; type?: string; properties?: Record<string, unknown> }>;
+  byName: Map<
+    string,
+    { key: string; name: string; type?: string; properties?: Record<string, unknown> }
+  >;
 };
 
 /**
@@ -300,9 +303,7 @@ export function resolveComponent(name: string, registry: Registry): ResolveCompo
   if (registry.components && registry.components.byName.has(lower)) {
     const entry = registry.components.byName.get(lower)!;
     const importMethod =
-      entry.type === "COMPONENT_SET"
-        ? "importComponentSetByKeyAsync"
-        : "importComponentByKeyAsync";
+      entry.type === "COMPONENT_SET" ? "importComponentSetByKeyAsync" : "importComponentByKeyAsync";
     return {
       resolved: {
         ref: name,
@@ -377,7 +378,7 @@ function validateVariants(
   variantMap: Record<string, string>,
   componentEntry: ResolvedComponent,
   nodeName: string,
-  nodePath: string,
+  nodePath: string
 ): CompilerError[] {
   const errors: CompilerError[] = [];
   const props = (componentEntry.properties ?? {}) as Record<string, unknown>;
@@ -391,15 +392,11 @@ function validateVariants(
       errors.push(
         new CompilerError("RESOLVE_VARIANT_INVALID", {
           message:
-            'Variant key "' +
-            key +
-            '" does not exist on component "' +
-            componentEntry.name +
-            '"',
+            'Variant key "' + key + '" does not exist on component "' + componentEntry.name + '"',
           node: nodeName,
           path: nodePath + ".variant." + key,
           suggestion: suggestions.length ? suggestions : null,
-        }),
+        })
       );
       return;
     }
@@ -423,7 +420,7 @@ function validateVariants(
               allowed.join(", "),
             node: nodeName,
             path: nodePath + ".variant." + key,
-          }),
+          })
         );
       }
     }
@@ -461,7 +458,7 @@ function bindPlaceholders(node: SceneNode, row: Record<string, string>): void {
  */
 function expandRepeat(node: SceneNode): SceneNode[] {
   const data = node.data;
-  const count = data ? data.length : node.count ?? 0;
+  const count = data ? data.length : (node.count ?? 0);
   const template = node.template ?? [];
   const result: SceneNode[] = [];
 
@@ -544,12 +541,13 @@ function isTokenRef(value: unknown): value is string {
  */
 function collectImports(nodes: readonly ResolvedNode[]): ImportBundle {
   const seen = new Map<string, true>();
-  const imports: Required<Pick<ImportBundle, "variables" | "components" | "textStyles" | "fonts">> = {
-    variables: [],
-    components: [],
-    textStyles: [],
-    fonts: [],
-  };
+  const imports: Required<Pick<ImportBundle, "variables" | "components" | "textStyles" | "fonts">> =
+    {
+      variables: [],
+      components: [],
+      textStyles: [],
+      fonts: [],
+    };
 
   function visit(value: unknown): void {
     if (!value || typeof value !== "object") return;
@@ -628,7 +626,7 @@ export function resolve(graph: SceneGraph, registry: Registry): ResolveResult {
       }
       return undefined;
     },
-    "nodes",
+    "nodes"
   );
 
   // ── Pass 2: Resolve token references on all nodes ────────────────────────
@@ -664,7 +662,7 @@ export function resolve(graph: SceneGraph, registry: Registry): ResolveResult {
               node.variant,
               compResult.resolved,
               nodeName,
-              nodePath,
+              nodePath
             );
             for (const ve of variantErrors) {
               if (ve.severity === "warning") {
@@ -697,7 +695,7 @@ export function resolve(graph: SceneGraph, registry: Registry): ResolveResult {
 
       return undefined;
     },
-    "nodes",
+    "nodes"
   );
 
   // ── Pass 3: Collect imports ──────────────────────────────────────────────

@@ -16,6 +16,5 @@
     "ai-design"
   ],
   "skills": "./skills/",
-  "commands": "./commands/",
   "mcpServers": "./.mcp.json"
 }

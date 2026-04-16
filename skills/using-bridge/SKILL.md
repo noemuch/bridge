@@ -7,7 +7,7 @@ description: Use when any Bridge command is invoked (make, fix, done, setup, dro
 
 Bridge is a **compiler-driven** design workflow for generating Figma designs
 and maintaining a design system via Claude Code. The compiler (at
-`lib/compiler/compile.js`) enforces all 26 Figma Plugin API rules, so Claude
+`lib/compiler/compile.ts`) enforces all 26 Figma Plugin API rules, so Claude
 NEVER writes raw Plugin API code and NEVER hardcodes primitive values.
 
 This skill is **force-loaded at every SessionStart** via `hooks/session-start`.
@@ -75,7 +75,7 @@ Output template:
 
 <HARD-GATE>
 NEVER write raw Figma Plugin API code. All scene graph JSON must pass
-through `lib/compiler/compile.js`.
+through `lib/compiler/compile.ts`.
 
 NEVER use hardcoded primitive values. Only semantic DS tokens
 (`$color/...`, `$spacing/...`, `$text/...`, `$comp/...`).

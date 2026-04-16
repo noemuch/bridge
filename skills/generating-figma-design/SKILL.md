@@ -242,7 +242,7 @@ EOF
 ### D3. Run the compiler
 
 ```bash
-node lib/compiler/compile.js \
+bridge-ds compile \
   --input /tmp/bridge-scene-{name}.json \
   --kb {kb-path} \
   --transport {console|official}
@@ -416,7 +416,7 @@ Gate B (visual) before claiming the iteration is complete. See
 `references/verification-gates.md` (repo-root).
 
 NEVER write raw Figma Plugin API code. All scene graphs go through
-`lib/compiler/compile.js`.
+`lib/compiler/compile.ts` (shipped as `bridge-ds compile`).
 
 NEVER use hardcoded primitive values in the scene graph. Only
 `$token` references.

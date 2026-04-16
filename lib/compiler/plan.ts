@@ -67,7 +67,7 @@ function estimateNodeSize(nodes: readonly ResolvedNode[]): number {
 function singleChunkPlan(
   nodes: readonly ResolvedNode[],
   imports: ImportBundle,
-  estimatedSize: number,
+  estimatedSize: number
 ): ExecutionPlan {
   const total = countImports(imports);
   const chunk: Chunk = {
@@ -93,7 +93,7 @@ function multiChunkPlan(
   nodes: readonly ResolvedNode[],
   imports: ImportBundle,
   estimatedSize: number,
-  _options: PlanOptions,
+  _options: PlanOptions
 ): ExecutionPlan {
   const total = countImports(imports);
 
@@ -176,7 +176,7 @@ function multiChunkPlan(
 export function plan(
   resolvedGraph: Pick<ResolvedSceneGraph, "nodes"> | null | undefined,
   imports: ImportBundle | null | undefined,
-  options?: PlanOptions,
+  options?: PlanOptions
 ): ExecutionPlan {
   const opts = options ?? {};
   const maxChunk = opts.maxChunkSize ?? MAX_CHUNK_SIZE;

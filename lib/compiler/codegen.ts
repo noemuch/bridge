@@ -39,7 +39,7 @@ const TYPE_PREFIX: Record<string, string> = {
 export function safeNodeVar(
   type: string,
   name: string | undefined,
-  counters: Map<string, number>,
+  counters: Map<string, number>
 ): string {
   const prefix = TYPE_PREFIX[type] ?? "node";
   const slug = (name ?? "unnamed")
@@ -57,7 +57,7 @@ export function safeNodeVar(
  */
 export function importVarName(
   entry: ImportEntry | ResolvedToken,
-  seen: Map<string, string>,
+  seen: Map<string, string>
 ): string {
   if (seen.has(entry.key)) return seen.get(entry.key)!;
   const prefix =
@@ -91,7 +91,7 @@ export function importVarName(
 export function emitImports(
   imports: ImportBundle,
   importNames: Map<string, string>,
-  bridgePrefix: string | null,
+  bridgePrefix: string | null
 ): string {
   const lines: string[] = [];
   const bp = bridgePrefix ?? "";
@@ -108,24 +108,20 @@ export function emitImports(
         vn +
         " = await figma.variables.importVariableByKeyAsync(" +
         JSON.stringify(v.key) +
-        ");",
+        ");"
     );
   }
 
   for (const c of comps) {
     const vn = importVarName(c, importNames);
     const method = c.importMethod ?? "importComponentByKeyAsync";
-    lines.push(
-      bp + "var " + vn + " = await figma." + method + "(" + JSON.stringify(c.key) + ");",
-    );
+    lines.push(bp + "var " + vn + " = await figma." + method + "(" + JSON.stringify(c.key) + ");");
   }
 
   for (const s of styles) {
     const vn = importVarName(s, importNames);
     const method = s.importMethod ?? "importStyleByKeyAsync";
-    lines.push(
-      bp + "var " + vn + " = await figma." + method + "(" + JSON.stringify(s.key) + ");",
-    );
+    lines.push(bp + "var " + vn + " = await figma." + method + "(" + JSON.stringify(s.key) + ");");
   }
 
   return lines.join("\n");
@@ -138,10 +134,7 @@ export function emitImports(
 /**
  * Get the import variable name for a resolved token object.
  */
-export function tokenVar(
-  token: unknown,
-  importNames: Map<string, string>,
-): string | null {
+export function tokenVar(token: unknown, importNames: Map<string, string>): string | null {
   if (!token || typeof token !== "object") return null;
   const key = (token as { key?: unknown }).key;
   if (typeof key !== "string") return null;
@@ -157,7 +150,7 @@ function emitFrame(
   parentVar: string,
   varName: string,
   importNames: Map<string, string>,
-  lines: string[],
+  lines: string[]
 ): void {
   lines.push("var " + varName + " = figma.createFrame();");
   lines.push(varName + ".name = " + JSON.stringify(node.name ?? "Frame") + ";");
@@ -176,10 +169,14 @@ function emitFrame(
 
   // Sizing modes (after resize — Rule 4)
   if (node.primaryAxisSizing) {
-    lines.push(varName + ".primaryAxisSizingMode = " + JSON.stringify(node.primaryAxisSizing) + ";");
+    lines.push(
+      varName + ".primaryAxisSizingMode = " + JSON.stringify(node.primaryAxisSizing) + ";"
+    );
   }
   if (node.counterAxisSizing) {
-    lines.push(varName + ".counterAxisSizingMode = " + JSON.stringify(node.counterAxisSizing) + ";");
+    lines.push(
+      varName + ".counterAxisSizingMode = " + JSON.stringify(node.counterAxisSizing) + ";"
+    );
   }
 
   // Alignment (Rule 5)
@@ -239,7 +236,7 @@ function emitText(
   parentVar: string,
   varName: string,
   importNames: Map<string, string>,
-  lines: string[],
+  lines: string[]
 ): void {
   lines.push("var " + varName + " = figma.createText();");
   lines.push(varName + ".name = " + JSON.stringify(node.name ?? "Text") + ";");
@@ -287,7 +284,7 @@ function emitInstance(
   parentVar: string,
   varName: string,
   importNames: Map<string, string>,
-  lines: string[],
+  lines: string[]
 ): void {
   const comp = node._resolvedComponent;
   if (!comp) {
@@ -304,9 +301,7 @@ function emitInstance(
   if (comp.type === "COMPONENT_SET" || comp.importMethod === "importComponentSetByKeyAsync") {
     // Build variant find expression
     if (node.variant && Object.keys(node.variant).length > 0) {
-      const variantParts = Object.keys(node.variant).map(
-        (k) => k + "=" + node.variant![k],
-      );
+      const variantParts = Object.keys(node.variant).map((k) => k + "=" + node.variant![k]);
       const findExpr = variantParts.join(", ");
       lines.push(
         "var target_" +
@@ -315,7 +310,7 @@ function emitInstance(
           compVar +
           ".findChild(function(n) { return n.name === " +
           JSON.stringify(findExpr) +
-          "; });",
+          "; });"
       );
       lines.push(
         "var " +
@@ -324,7 +319,7 @@ function emitInstance(
           varName +
           " || " +
           compVar +
-          ".defaultVariant).createInstance();",
+          ".defaultVariant).createInstance();"
       );
     } else {
       lines.push("var " + varName + " = " + compVar + ".defaultVariant.createInstance();");
@@ -363,7 +358,7 @@ function emitClone(
   varName: string,
   importNames: Map<string, string>,
   lines: string[],
-  localRefs: Map<string, string>,
+  localRefs: Map<string, string>
 ): void {
   // Rule 22: clone pattern
   if (node.sourceRef && localRefs.has(node.sourceRef)) {
@@ -372,7 +367,11 @@ function emitClone(
   } else if (node.sourceNodeId) {
     const srcVar = "src_" + varName;
     lines.push(
-      "var " + srcVar + " = await figma.getNodeByIdAsync(" + JSON.stringify(node.sourceNodeId) + ");",
+      "var " +
+        srcVar +
+        " = await figma.getNodeByIdAsync(" +
+        JSON.stringify(node.sourceNodeId) +
+        ");"
     );
     lines.push("var " + varName + " = " + srcVar + ".clone();");
   } else {
@@ -399,7 +398,7 @@ function emitRectangle(
   parentVar: string,
   varName: string,
   importNames: Map<string, string>,
-  lines: string[],
+  lines: string[]
 ): void {
   lines.push("var " + varName + " = figma.createRectangle();");
   lines.push(varName + ".name = " + JSON.stringify(node.name ?? "Rectangle") + ";");
@@ -432,7 +431,7 @@ function emitEllipse(
   parentVar: string,
   varName: string,
   importNames: Map<string, string>,
-  lines: string[],
+  lines: string[]
 ): void {
   lines.push("var " + varName + " = figma.createEllipse();");
   lines.push(varName + ".name = " + JSON.stringify(node.name ?? "Ellipse") + ";");
@@ -497,14 +496,14 @@ function emitPadding(
   node: ResolvedNode,
   varName: string,
   importNames: Map<string, string>,
-  lines: string[],
+  lines: string[]
 ): void {
   // Shorthand: padding → all four sides
   if (node.padding) {
     const pVar = tokenVar(node.padding, importNames);
     if (pVar) {
       lines.push(
-        "bindPadding(" + varName + ", " + pVar + ", " + pVar + ", " + pVar + ", " + pVar + ");",
+        "bindPadding(" + varName + ", " + pVar + ", " + pVar + ", " + pVar + ", " + pVar + ");"
       );
       return;
     }
@@ -527,7 +526,7 @@ function emitPadding(
         (bottom ?? "null") +
         ", " +
         (left ?? "null") +
-        ");",
+        ");"
     );
   }
 }
@@ -536,7 +535,7 @@ function emitRadius(
   node: ResolvedNode,
   varName: string,
   importNames: Map<string, string>,
-  lines: string[],
+  lines: string[]
 ): void {
   if (node.radius) {
     const rVar = tokenVar(node.radius, importNames);
@@ -561,7 +560,7 @@ function emitStroke(
   node: ResolvedNode,
   varName: string,
   importNames: Map<string, string>,
-  lines: string[],
+  lines: string[]
 ): void {
   if (!node.stroke) return;
 
@@ -577,7 +576,7 @@ function emitPropertyOverrides(
   properties: Record<string, unknown>,
   instVar: string,
   compSetVar: string | null,
-  lines: string[],
+  lines: string[]
 ): void {
   const keys = Object.keys(properties);
   if (!keys.length) return;
@@ -597,18 +596,10 @@ function emitPropertyOverrides(
           JSON.stringify(propName) +
           ", " +
           JSON.stringify(propType) +
-          ");",
+          ");"
       );
       lines.push(
-        "if (" +
-          keyVar +
-          ") " +
-          instVar +
-          ".setProperties({ [" +
-          keyVar +
-          "]: " +
-          valStr +
-          " });",
+        "if (" + keyVar + ") " + instVar + ".setProperties({ [" + keyVar + "]: " + valStr + " });"
       );
     }
   } else {
@@ -624,7 +615,7 @@ function emitInstanceSwaps(
   resolvedSwaps: Record<string, ResolvedToken>,
   instVar: string,
   importNames: Map<string, string>,
-  lines: string[],
+  lines: string[]
 ): void {
   const keys = Object.keys(resolvedSwaps);
   for (const slotName of keys) {
@@ -640,7 +631,7 @@ function emitInstanceSwaps(
         instVar +
         ", " +
         JSON.stringify(slotName) +
-        ', "INSTANCE_SWAP");',
+        ', "INSTANCE_SWAP");'
     );
     lines.push(
       "if (" +
@@ -651,7 +642,7 @@ function emitInstanceSwaps(
         slotKeyVar +
         "]: " +
         swapCompVar +
-        ".id });",
+        ".id });"
     );
   }
 }
@@ -660,7 +651,7 @@ function emitCloneOverrides(
   overrides: readonly CloneOverride[],
   cloneVar: string,
   importNames: Map<string, string>,
-  lines: string[],
+  lines: string[]
 ): void {
   for (let i = 0; i < overrides.length; i++) {
     const ov = overrides[i]!;
@@ -680,7 +671,7 @@ function emitCloneOverrides(
         cloneVar +
         ".findOne(function(n) { return " +
         findParts.join(" && ") +
-        "; });",
+        "; });"
     );
 
     const guard = "if (" + ovVar + ") ";
@@ -714,7 +705,7 @@ function walkAndEmit(
   importNames: Map<string, string>,
   counters: Map<string, number>,
   localRefs: Map<string, string>,
-  lines: string[],
+  lines: string[]
 ): void {
   if (!Array.isArray(nodes)) return;
 

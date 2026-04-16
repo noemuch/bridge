@@ -22,7 +22,6 @@
     "bin/",
     "dist/",
     "skills/",
-    "commands/",
     "hooks/",
     "references/",
     "README.md",

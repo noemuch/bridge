@@ -140,7 +140,7 @@ export function levenshtein(a: string, b: string): number {
 export function suggest(
   query: string,
   candidates: readonly string[],
-  maxResults: number = 3,
+  maxResults: number = 3
 ): string[] {
   const threshold = query.length * 0.6;
   const scored: Array<{ value: string; distance: number }> = [];

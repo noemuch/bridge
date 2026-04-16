@@ -136,7 +136,7 @@ export function compile(options: CompileOptions): CompileResult {
         sCount +
         " fonts=" +
         fCount +
-        "\n",
+        "\n"
     );
   }
 
@@ -185,7 +185,7 @@ export function compile(options: CompileOptions): CompileResult {
         execPlan.totalImports +
         " estimatedSize=" +
         execPlan.estimatedCodeSize +
-        "\n",
+        "\n"
     );
   }
 
@@ -215,8 +215,7 @@ export function compile(options: CompileOptions): CompileResult {
 
       // For preload and single chunks, font loading is included in the wrap.
       // For build chunks in multi-chunk mode, fonts are already loaded in preload.
-      const chunkFontCode =
-        chunk.label === "preload" || !isMultiChunk ? fontCode : "";
+      const chunkFontCode = chunk.label === "preload" || !isMultiChunk ? fontCode : "";
 
       let wrappedCode: string;
       if (isMultiChunk && chunk.bridgeImports && chunk.bridgeImports.length > 0) {

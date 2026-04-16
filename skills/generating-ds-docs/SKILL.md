@@ -26,7 +26,7 @@ Select the mode based on invocation:
 
 ### Mode 1 — init
 
-Scaffold `design-system/` tree + `docs.config.yaml` + `.github/workflows/bridge-docs-cron.yml` + `.bridge/mcp.json`. Implemented by `bridge-ds init-docs` (CLI wizard). This mode in-skill just confirms the user wants the scaffold and runs the CLI.
+Scaffold `design-system/` tree + `docs.config.yaml` + `.github/workflows/bridge-docs-cron.yml` + `.bridge/mcp.json`. Handed off to the `extracting-design-system` skill (`setup bridge` — the canonical single-entry flow in v5.x). The `bridge-ds init-docs` CLI wizard still exists as a headless fallback but is soft-deprecated.
 
 ### Mode 2 — full-build
 

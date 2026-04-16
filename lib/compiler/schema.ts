@@ -47,17 +47,9 @@ function missingField(fieldName: string, nodeName: string, path: string): Compil
   });
 }
 
-function unknownType(
-  type: string,
-  nodeName: string | undefined,
-  path: string,
-): CompilerError {
+function unknownType(type: string, nodeName: string | undefined, path: string): CompilerError {
   return new CompilerError("PARSE_UNKNOWN_NODE_TYPE", {
-    message:
-      'Unknown node type "' +
-      type +
-      '"' +
-      (nodeName ? ' on node "' + nodeName + '"' : ""),
+    message: 'Unknown node type "' + type + '"' + (nodeName ? ' on node "' + nodeName + '"' : ""),
     node: nodeName ?? "(unnamed)",
     path: path + ".type",
   });
@@ -68,7 +60,7 @@ function invalidEnum(
   value: unknown,
   allowed: readonly string[],
   nodeName: string,
-  path: string,
+  path: string
 ): CompilerError {
   return new CompilerError("PARSE_MISSING_FIELD", {
     message:
@@ -90,7 +82,7 @@ function checkEnum(
   value: unknown,
   allowed: readonly string[],
   nodeName: string,
-  path: string,
+  path: string
 ): CompilerError | null {
   if (value !== undefined && allowed.indexOf(value as string) === -1) {
     return invalidEnum(fieldName, value, allowed, nodeName, path);
@@ -102,7 +94,7 @@ function checkString(
   fieldName: string,
   value: unknown,
   nodeName: string,
-  path: string,
+  path: string
 ): CompilerError | null {
   if (value !== undefined && typeof value !== "string") {
     return new CompilerError("PARSE_MISSING_FIELD", {
@@ -118,7 +110,7 @@ function checkNumber(
   fieldName: string,
   value: unknown,
   nodeName: string,
-  path: string,
+  path: string
 ): CompilerError | null {
   if (value !== undefined && typeof value !== "number") {
     return new CompilerError("PARSE_MISSING_FIELD", {
@@ -134,7 +126,7 @@ function checkBoolean(
   fieldName: string,
   value: unknown,
   nodeName: string,
-  path: string,
+  path: string
 ): CompilerError | null {
   if (value !== undefined && typeof value !== "boolean") {
     return new CompilerError("PARSE_MISSING_FIELD", {
@@ -257,7 +249,7 @@ function validateText(node: RawNode, path: string): CompilerError[] {
         message: 'Field "characters" must be a string on node "' + name + '"',
         node: name,
         path: path + ".characters",
-      }),
+      })
     );
   }
 
@@ -297,7 +289,7 @@ function validateInstance(node: RawNode, path: string): CompilerError[] {
         message: 'Field "variant" must be an object on node "' + name + '"',
         node: name,
         path: path + ".variant",
-      }),
+      })
     );
   }
 
@@ -307,7 +299,7 @@ function validateInstance(node: RawNode, path: string): CompilerError[] {
         message: 'Field "properties" must be an object on node "' + name + '"',
         node: name,
         path: path + ".properties",
-      }),
+      })
     );
   }
 
@@ -317,7 +309,7 @@ function validateInstance(node: RawNode, path: string): CompilerError[] {
         message: 'Field "swaps" must be an object on node "' + name + '"',
         node: name,
         path: path + ".swaps",
-      }),
+      })
     );
   }
 
@@ -331,11 +323,10 @@ function validateClone(node: RawNode, path: string): CompilerError[] {
   if (!node["sourceNodeId"] && !node["sourceRef"]) {
     errors.push(
       new CompilerError("PARSE_MISSING_FIELD", {
-        message:
-          'CLONE node "' + name + '" must have either "sourceNodeId" or "sourceRef"',
+        message: 'CLONE node "' + name + '" must have either "sourceNodeId" or "sourceRef"',
         node: name,
         path: path,
-      }),
+      })
     );
   }
 
@@ -347,7 +338,7 @@ function validateClone(node: RawNode, path: string): CompilerError[] {
           message: 'Field "overrides" must be an array on node "' + name + '"',
           node: name,
           path: path + ".overrides",
-        }),
+        })
       );
     } else {
       overrides.forEach((override: unknown, i: number) => {
@@ -359,7 +350,7 @@ function validateClone(node: RawNode, path: string): CompilerError[] {
               message: "Override at " + oPath + ' must have "find.name"',
               node: name,
               path: oPath + ".find.name",
-            }),
+            })
           );
         }
         const set = field(override, "set");
@@ -369,7 +360,7 @@ function validateClone(node: RawNode, path: string): CompilerError[] {
               message: "Override at " + oPath + ' must have a "set" object',
               node: name,
               path: oPath + ".set",
-            }),
+            })
           );
         }
       });
@@ -436,7 +427,7 @@ function validateRepeat(node: RawNode, path: string): CompilerError[] {
         message: 'REPEAT node "' + name + '" must have either "count" or "data"',
         node: name,
         path: path,
-      }),
+      })
     );
   }
 
@@ -451,7 +442,7 @@ function validateRepeat(node: RawNode, path: string): CompilerError[] {
         message: 'Field "data" must be an array on node "' + name + '"',
         node: name,
         path: path + ".data",
-      }),
+      })
     );
   }
 
@@ -497,7 +488,7 @@ function validateConditional(node: RawNode, path: string): CompilerError[] {
           message: 'Field "else" must be an array on node "' + name + '"',
           node: name,
           path: path + ".else",
-        }),
+        })
       );
     } else {
       elseBranch.forEach((child: unknown, i: number) => {
@@ -537,7 +528,7 @@ function validateNode(node: unknown, path: string): CompilerError[] {
         message: "Node at " + path + " must be an object",
         node: "(invalid)",
         path: path,
-      }),
+      })
     );
     return errors;
   }
@@ -604,7 +595,7 @@ export function validateSceneGraph(json: unknown): SchemaValidationResult {
         message: "Scene graph must be a JSON object",
         node: null,
         path: "",
-      }),
+      })
     );
     return { valid: false, errors, graph: null };
   }
@@ -615,11 +606,10 @@ export function validateSceneGraph(json: unknown): SchemaValidationResult {
   if (root["version"] !== "3.0") {
     errors.push(
       new CompilerError("PARSE_MISSING_FIELD", {
-        message:
-          'Scene graph must have version "3.0", got "' + String(root["version"]) + '"',
+        message: 'Scene graph must have version "3.0", got "' + String(root["version"]) + '"',
         node: null,
         path: "version",
-      }),
+      })
     );
   }
 
@@ -631,7 +621,7 @@ export function validateSceneGraph(json: unknown): SchemaValidationResult {
         message: 'Scene graph must have a "metadata" object',
         node: null,
         path: "metadata",
-      }),
+      })
     );
   } else {
     if (!metadata["name"]) {
@@ -640,7 +630,7 @@ export function validateSceneGraph(json: unknown): SchemaValidationResult {
           message: "metadata.name is required",
           node: null,
           path: "metadata.name",
-        }),
+        })
       );
     }
     if (typeof metadata["width"] !== "number") {
@@ -649,7 +639,7 @@ export function validateSceneGraph(json: unknown): SchemaValidationResult {
           message: "metadata.width is required and must be a number",
           node: null,
           path: "metadata.width",
-        }),
+        })
       );
     }
     if (typeof metadata["height"] !== "number") {
@@ -658,7 +648,7 @@ export function validateSceneGraph(json: unknown): SchemaValidationResult {
           message: "metadata.height is required and must be a number",
           node: null,
           path: "metadata.height",
-        }),
+        })
       );
     }
   }
@@ -671,7 +661,7 @@ export function validateSceneGraph(json: unknown): SchemaValidationResult {
         message: 'Scene graph must have a "fonts" array',
         node: null,
         path: "fonts",
-      }),
+      })
     );
   } else {
     fonts.forEach((font: unknown, i: number) => {
@@ -683,7 +673,7 @@ export function validateSceneGraph(json: unknown): SchemaValidationResult {
             message: "fonts[" + i + "].family is required and must be a string",
             node: null,
             path: "fonts[" + i + "].family",
-          }),
+          })
         );
       }
       if (!style || typeof style !== "string") {
@@ -692,7 +682,7 @@ export function validateSceneGraph(json: unknown): SchemaValidationResult {
             message: "fonts[" + i + "].style is required and must be a string",
             node: null,
             path: "fonts[" + i + "].style",
-          }),
+          })
         );
       }
     });
@@ -706,7 +696,7 @@ export function validateSceneGraph(json: unknown): SchemaValidationResult {
         message: 'Scene graph must have a "nodes" array',
         node: null,
         path: "nodes",
-      }),
+      })
     );
   } else {
     nodes.forEach((node: unknown, i: number) => {

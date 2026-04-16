@@ -55,7 +55,7 @@ export function fontLoader(fonts: readonly FontRef[] | null | undefined): string
       JSON.stringify(f.family) +
       ", style: " +
       JSON.stringify(f.style) +
-      " });",
+      " });"
   );
   return lines.join("\n");
 }

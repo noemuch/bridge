@@ -146,13 +146,7 @@ export interface ResolvedSceneGraph {
 // Resolved tokens & imports
 // ---------------------------------------------------------------------------
 
-export type ResolvedKind =
-  | "variable"
-  | "textStyle"
-  | "effectStyle"
-  | "component"
-  | "icon"
-  | "logo";
+export type ResolvedKind = "variable" | "textStyle" | "effectStyle" | "component" | "icon" | "logo";
 
 export interface ResolvedToken {
   ref: string;

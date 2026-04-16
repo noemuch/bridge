@@ -16,7 +16,7 @@ function walkWithParent(
   nodes: readonly ResolvedNode[] | null | undefined,
   callback: WalkCallback,
   parent: ResolvedNode | null,
-  path: string,
+  path: string
 ): void {
   if (!nodes || !nodes.length) return;
   for (let i = 0; i < nodes.length; i++) {
@@ -109,7 +109,7 @@ export function validate(graph: ResolvedSceneGraph, registry: Registry | null): 
                   "fillV child inside VERTICAL parent with primaryAxisSizing AUTO collapses to 0px",
                 node: node.name ?? null,
                 path: path + ".fillV",
-              }),
+              })
             );
           }
           if (node.fillH && parent.counterAxisSizing === "AUTO") {
@@ -119,7 +119,7 @@ export function validate(graph: ResolvedSceneGraph, registry: Registry | null): 
                   "fillH child inside VERTICAL parent with counterAxisSizing AUTO collapses to 0px",
                 node: node.name ?? null,
                 path: path + ".fillH",
-              }),
+              })
             );
           }
         }
@@ -132,7 +132,7 @@ export function validate(graph: ResolvedSceneGraph, registry: Registry | null): 
                   "fillH child inside HORIZONTAL parent with primaryAxisSizing AUTO collapses to 0px",
                 node: node.name ?? null,
                 path: path + ".fillH",
-              }),
+              })
             );
           }
           if (node.fillV && parent.counterAxisSizing === "AUTO") {
@@ -142,7 +142,7 @@ export function validate(graph: ResolvedSceneGraph, registry: Registry | null): 
                   "fillV child inside HORIZONTAL parent with counterAxisSizing AUTO collapses to 0px",
                 node: node.name ?? null,
                 path: path + ".fillV",
-              }),
+              })
             );
           }
         }
@@ -151,16 +151,12 @@ export function validate(graph: ResolvedSceneGraph, registry: Registry | null): 
       // ------------------------------------------------------------------
       // Rule 14 — INSTANCE with children
       // ------------------------------------------------------------------
-      if (
-        node.type === "INSTANCE" &&
-        Array.isArray(node.children) &&
-        node.children.length > 0
-      ) {
+      if (node.type === "INSTANCE" && Array.isArray(node.children) && node.children.length > 0) {
         errors.push(
           new CompilerError("VALIDATE_INSTANCE_HAS_CHILDREN", {
             node: node.name ?? null,
             path: path + ".children",
-          }),
+          })
         );
       }
 
@@ -184,7 +180,7 @@ export function validate(graph: ResolvedSceneGraph, registry: Registry | null): 
               node: node.name,
               path: path,
               suggestion: [match.name],
-            }),
+            })
           );
         }
       }
@@ -205,7 +201,7 @@ export function validate(graph: ResolvedSceneGraph, registry: Registry | null): 
                 '" has real values but no state:"filled" variant — input will appear empty',
               node: node.name ?? null,
               path: path + ".variant",
-            }),
+            })
           );
         }
       }
@@ -219,7 +215,7 @@ export function validate(graph: ResolvedSceneGraph, registry: Registry | null): 
             new CompilerError("VALIDATE_TEXT_NO_STYLE", {
               node: node.name ?? null,
               path: path + ".textStyle",
-            }),
+            })
           );
         }
       }
@@ -232,18 +228,16 @@ export function validate(graph: ResolvedSceneGraph, registry: Registry | null): 
           warnings.push(
             new CompilerError("VALIDATE_ORPHAN_CLONE", {
               message:
-                'CLONE sourceRef "' +
-                node.sourceRef +
-                '" has no matching node id in the graph',
+                'CLONE sourceRef "' + node.sourceRef + '" has no matching node id in the graph',
               node: node.name ?? null,
               path: path + ".sourceRef",
-            }),
+            })
           );
         }
       }
     },
     null,
-    "nodes",
+    "nodes"
   );
 
   return {

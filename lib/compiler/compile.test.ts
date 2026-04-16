@@ -37,7 +37,7 @@ function writeTempKb(): TempKb {
           ],
         },
       },
-    }),
+    })
   );
 
   writeFileSync(
@@ -53,7 +53,7 @@ function writeTempKb(): TempKb {
           },
         ],
       },
-    }),
+    })
   );
 
   writeFileSync(
@@ -62,7 +62,7 @@ function writeTempKb(): TempKb {
       textStyles: {
         label: [{ name: "text/label/md", key: "TextStyle:42" }],
       },
-    }),
+    })
   );
 
   return {
@@ -145,7 +145,7 @@ test("compile() reports RESOLVE_TOKEN_NOT_FOUND for an unknown token", () => {
     const codes = result.errors.map((e) => e.code);
     assert.ok(
       codes.includes("RESOLVE_TOKEN_NOT_FOUND"),
-      "expected RESOLVE_TOKEN_NOT_FOUND in " + codes.join(","),
+      "expected RESOLVE_TOKEN_NOT_FOUND in " + codes.join(",")
     );
     assert.equal(result.chunks.length, 0);
     assert.equal(result.plan, null);
@@ -170,7 +170,7 @@ test("compile() rejects the official transport without a fileKey", () => {
     const codes = result.errors.map((e) => e.code);
     assert.ok(
       codes.includes("WRAP_MISSING_FILEKEY"),
-      "expected WRAP_MISSING_FILEKEY in " + codes.join(","),
+      "expected WRAP_MISSING_FILEKEY in " + codes.join(",")
     );
     assert.equal(result.chunks.length, 0);
   } finally {

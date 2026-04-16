@@ -152,7 +152,7 @@ export async function runCompileCli(argv: readonly string[]): Promise<void> {
     await writeFile(
       path.join(outDir, "plan.json"),
       JSON.stringify(planMeta, null, 2) + "\n",
-      "utf8",
+      "utf8"
     );
     if (args.verbose) {
       process.stderr.write(`[output] wrote ${chunks.length} chunk(s) to ${outDir}\n`);
