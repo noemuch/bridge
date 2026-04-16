@@ -75,7 +75,7 @@ return { success: true };
 
 ### Compiler transport flag
 
-The Bridge DS compiler (`lib/compiler/compile.js`) accepts `--transport console|official` and generates the correct script format automatically (IIFE wrapper for console, top-level await for official). Claude still needs this document for MCP tool selection (`figma_execute` vs `use_figma`, `figma_take_screenshot` vs `get_screenshot`, etc.) — the compiler only handles code wrapping, not tool invocation.
+The Bridge DS compiler (`bridge-ds compile`, sources under `lib/compiler/`) accepts `--transport console|official` and generates the correct script format automatically (IIFE wrapper for console, top-level await for official). Claude still needs this document for MCP tool selection (`figma_execute` vs `use_figma`, `figma_take_screenshot` vs `get_screenshot`, etc.) — the compiler only handles code wrapping, not tool invocation.
 
 ### Key differences
 

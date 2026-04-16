@@ -157,8 +157,10 @@ All nodes share these base properties: `type`, `name`, `id?`, `children?`, `fill
 ## 5. Compiler Invocation
 
 ```bash
-node lib/compiler/compile.js --input <json-file> --kb <kb-path> --transport <console|official> [--dry-run]
+bridge-ds compile --input <json-file> --kb <kb-path> --transport <console|official> [--dry-run]
 ```
+
+*(Equivalent: `node dist/lib/compiler/cli.js ...` after `npm run build`.)*
 
 **Output:** JSON array of `{ id, code, description }` chunks to stdout.
 **Errors:** Structured errors to stderr with fuzzy suggestions for unresolved tokens/components.
@@ -178,7 +180,7 @@ The compiler handles: JSON validation, token resolution, structural validation (
 1. **Read** CSpec YAML (from spec phase) or generate from user description.
 2. **Convert** to scene graph JSON (`nodes` array with `$token` references).
 3. **Write** JSON to a temp file.
-4. **Run** the compiler: `node lib/compiler/compile.js --input /tmp/scene.json --kb <kb-path> --transport console`.
+4. **Run** the compiler: `bridge-ds compile --input /tmp/scene.json --kb <kb-path> --transport console`.
 5. **Execute** each output chunk via `figma_execute` (console) or `use_figma` (official).
 6. **Screenshot** after the final chunk to verify the result.
 

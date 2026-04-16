@@ -34,6 +34,12 @@ All notable changes to Bridge DS are documented here.
   (`lib/compiler/compile.test.ts`): success path, unknown-token resolve
   error, `official` transport missing fileKey, and malformed JSON input.
 
+### Docs
+- `references/compiler-reference.md` and
+  `references/transport-adapter.md`: invocation examples updated to the
+  official `bridge-ds compile` CLI surface (the `lib/compiler/compile.js`
+  script no longer exists after the TS migration).
+
 ## [4.1.0] — 2026-04-15
 
 ### Added
