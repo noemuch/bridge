@@ -14,7 +14,13 @@ test("readState returns empty on missing file", async () => {
 
 test("writeState then readState roundtrip", async () => {
   const dir = path.join(os.tmpdir(), "bridge-docs-state-" + Date.now());
-  await writeState(dir, { version: 1, registriesHash: "abc", learningsHash: "def", lastSyncAt: "2026-04-15T06:00:00Z", perFileHashes: { "X.md": "h1" } });
+  await writeState(dir, {
+    version: 1,
+    registriesHash: "abc",
+    learningsHash: "def",
+    lastSyncAt: "2026-04-15T06:00:00Z",
+    perFileHashes: { "X.md": "h1" },
+  });
   const s = await readState(dir);
   assert.equal(s.registriesHash, "abc");
   assert.equal(s.learningsHash, "def");

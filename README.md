@@ -36,6 +36,7 @@ make a settings screen for account information
 ```
 
 Bridge produces:
+
 1. A structured CSpec (YAML) describing the layout + tokens
 2. A scene graph JSON (validated against your DS registries)
 3. Compiled Figma Plugin API code (all 26 rules respected)
@@ -90,14 +91,14 @@ One phrase. The skill handles pre-flight, scaffolding, extraction, docs generati
 
 ## Architecture
 
-| Layer | Technology | Description |
-|-------|-----------|-------------|
-| **Workflow** | Claude Code Skills | Six focused skills (see [Skills](#skills) below) |
-| **Spec** | CSpec YAML | Structured, human-readable compilable specifications |
-| **Compiler** | TypeScript | Scene graph JSON → Figma Plugin API code (26 rules enforced) |
-| **Transport** | MCP | `figma-console-mcp` (preferred) or official Figma MCP server |
-| **Target** | Figma Desktop / Cloud | Production-ready designs in your real DS library |
-| **Memory** | Knowledge Base | Registries, guides, recipes, learnings — per-project |
+| Layer         | Technology            | Description                                                  |
+| ------------- | --------------------- | ------------------------------------------------------------ |
+| **Workflow**  | Claude Code Skills    | Six focused skills (see [Skills](#skills) below)             |
+| **Spec**      | CSpec YAML            | Structured, human-readable compilable specifications         |
+| **Compiler**  | TypeScript            | Scene graph JSON → Figma Plugin API code (26 rules enforced) |
+| **Transport** | MCP                   | `figma-console-mcp` (preferred) or official Figma MCP server |
+| **Target**    | Figma Desktop / Cloud | Production-ready designs in your real DS library             |
+| **Memory**    | Knowledge Base        | Registries, guides, recipes, learnings — per-project         |
 
 ```
 You describe → Claude writes CSpec → Compiler resolves tokens → MCP → Figma
@@ -105,14 +106,14 @@ You describe → Claude writes CSpec → Compiler resolves tokens → MCP → Fi
 
 ## Skills
 
-| Skill | Trigger | Purpose |
-|-------|---------|---------|
-| `using-bridge` | SessionStart (auto) | Force-loaded rules, command map, drop/status procedures |
-| `generating-figma-design` | `make <description>` | Spec + compile + execute + verify |
-| `learning-from-corrections` | `fix` | Diff Figma corrections, extract learnings, patch recipes |
-| `shipping-and-archiving` | `done` | Final gate, archive, extract recipes |
-| `extracting-design-system` | `setup bridge` | Bootstrap a DS repo end-to-end |
-| `generating-ds-docs` | `docs` | Build / sync / check / MCP server / headless sync |
+| Skill                       | Trigger              | Purpose                                                  |
+| --------------------------- | -------------------- | -------------------------------------------------------- |
+| `using-bridge`              | SessionStart (auto)  | Force-loaded rules, command map, drop/status procedures  |
+| `generating-figma-design`   | `make <description>` | Spec + compile + execute + verify                        |
+| `learning-from-corrections` | `fix`                | Diff Figma corrections, extract learnings, patch recipes |
+| `shipping-and-archiving`    | `done`               | Final gate, archive, extract recipes                     |
+| `extracting-design-system`  | `setup bridge`       | Bootstrap a DS repo end-to-end                           |
+| `generating-ds-docs`        | `docs`               | Build / sync / check / MCP server / headless sync        |
 
 ## The compiler
 
@@ -122,14 +123,14 @@ Every scene graph JSON goes through a deterministic pipeline:
 bridge-ds compile --input scene.json --kb <kb-path> --transport <console|official>
 ```
 
-| Stage | Purpose |
-|-------|---------|
-| **Parse** | Load scene graph JSON, validate schema |
-| **Resolve** | Look up every `$token` reference against the knowledge base registries |
+| Stage        | Purpose                                                                              |
+| ------------ | ------------------------------------------------------------------------------------ |
+| **Parse**    | Load scene graph JSON, validate schema                                               |
+| **Resolve**  | Look up every `$token` reference against the knowledge base registries               |
 | **Validate** | Check structure, detect missing tokens with fuzzy suggestions, flag hardcoded values |
-| **Plan** | Chunk large graphs for transport limits; bridge nodeIds across chunks |
-| **Generate** | Emit Figma Plugin API code respecting all 26 rules |
-| **Wrap** | Adapt output for the target transport (console IIFE vs. official top-level await) |
+| **Plan**     | Chunk large graphs for transport limits; bridge nodeIds across chunks                |
+| **Generate** | Emit Figma Plugin API code respecting all 26 rules                                   |
+| **Wrap**     | Adapt output for the target transport (console IIFE vs. official top-level await)    |
 
 Errors are caught at compile time, before anything touches Figma.
 
@@ -139,16 +140,16 @@ Errors are caught at compile time, before anything touches Figma.
 
 Direct CLI commands (typically invoked under the hood by the skills):
 
-| Command | Purpose |
-|---------|---------|
-| `bridge-ds setup --ds-name <name> --figma-key <key>` | Headless scaffold (used by `setup bridge`) |
-| `bridge-ds docs build` | Full regeneration from the knowledge base |
-| `bridge-ds docs sync` | Incremental cascade when Figma drifts |
-| `bridge-ds docs check` | Lint without regenerating |
-| `bridge-ds docs mcp` | Launch the local MCP server (`ds://` URIs over stdio) |
-| `bridge-ds doctor` | Diagnose config, connectivity, docs health, cron |
-| `bridge-ds extract --headless` | Figma REST extraction (CI-friendly, `FIGMA_TOKEN` required) |
-| `bridge-ds cron` | Run the cron orchestrator (CI entry point) |
+| Command                                              | Purpose                                                     |
+| ---------------------------------------------------- | ----------------------------------------------------------- |
+| `bridge-ds setup --ds-name <name> --figma-key <key>` | Headless scaffold (used by `setup bridge`)                  |
+| `bridge-ds docs build`                               | Full regeneration from the knowledge base                   |
+| `bridge-ds docs sync`                                | Incremental cascade when Figma drifts                       |
+| `bridge-ds docs check`                               | Lint without regenerating                                   |
+| `bridge-ds docs mcp`                                 | Launch the local MCP server (`ds://` URIs over stdio)       |
+| `bridge-ds doctor`                                   | Diagnose config, connectivity, docs health, cron            |
+| `bridge-ds extract --headless`                       | Figma REST extraction (CI-friendly, `FIGMA_TOKEN` required) |
+| `bridge-ds cron`                                     | Run the cron orchestrator (CI entry point)                  |
 
 ## Recipes
 

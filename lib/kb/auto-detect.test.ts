@@ -39,6 +39,8 @@ test("detectGitRemote handles https remote", async () => {
 });
 
 test("detectGitRemote returns null when no remote found", async () => {
-  const result = await detectGitRemote({ gitConfigContent: "[core]\n\trepositoryformatversion = 0\n" });
+  const result = await detectGitRemote({
+    gitConfigContent: "[core]\n\trepositoryformatversion = 0\n",
+  });
   assert.equal(result, null);
 });

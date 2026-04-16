@@ -9,7 +9,13 @@ function mockFetch(responsesByUrl: Record<string, unknown>): typeof fetch {
     const key = String(url);
     const body = responsesByUrl[key];
     if (!body) throw new Error(`unmocked url: ${key}`);
-    return { ok: true, status: 200, async json() { return body; } } as Response;
+    return {
+      ok: true,
+      status: 200,
+      async json() {
+        return body;
+      },
+    } as Response;
   }) as typeof fetch;
 }
 
@@ -25,7 +31,11 @@ test("extractFromFigma normalizes REST responses", async () => {
     "https://api.figma.com/v1/files/FILEKEY/styles": s,
   });
 
-  const result = await extractFromFigma({ fileKey: "FILEKEY", token: "figd_test", fetchImpl: fetchMock });
+  const result = await extractFromFigma({
+    fileKey: "FILEKEY",
+    token: "figd_test",
+    fetchImpl: fetchMock,
+  });
 
   assert.equal(result.variables.variables.length, 1);
   assert.equal(result.variables.variables[0].name, "color/bg/primary");

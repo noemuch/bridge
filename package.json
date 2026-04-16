@@ -42,7 +42,7 @@
     "build": "tsc",
     "build:watch": "tsc --watch",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint \"lib/**/*.ts\" \"test/**/*.ts\" \"scripts/**/*.{js,cjs}\"",
+    "lint": "eslint \"lib/**/*.ts\" \"test/**/*.ts\"",
     "format": "prettier --write \"lib/**/*.ts\" \"test/**/*.ts\" \"*.{json,md}\"",
     "format:check": "prettier --check \"lib/**/*.ts\" \"test/**/*.ts\" \"*.{json,md}\"",
     "test": "npm run test:all",

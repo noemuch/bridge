@@ -11,7 +11,12 @@ test("lintDoc flags missing required frontmatter field", () => {
 
 test("lintDoc flags unresolved token ref", () => {
   const md = `---\nname: X\ncategory: actions\nstatus: stable\nlast-regenerated: 2026-04-15T10:00:00Z\n---\n\n# X\n\nUses \`$color/bg/nonexistent\`.`;
-  const res = lintDoc({ path: "X.md", content: md, kind: "component", tokenIndex: { "$color/bg/primary": {} } });
+  const res = lintDoc({
+    path: "X.md",
+    content: md,
+    kind: "component",
+    tokenIndex: { "$color/bg/primary": {} },
+  });
   assert.ok(res.issues.some((i) => i.code === "token.unresolved"));
 });
 
@@ -28,6 +33,11 @@ test("lintDoc flags figma link without node-id", () => {
 });
 
 test("lintDoc flags missing frontmatter entirely", () => {
-  const res = lintDoc({ path: "X.md", content: "# X\nNo frontmatter", kind: "component", tokenIndex: {} });
+  const res = lintDoc({
+    path: "X.md",
+    content: "# X\nNo frontmatter",
+    kind: "component",
+    tokenIndex: {},
+  });
   assert.ok(res.issues.some((i) => i.code === "frontmatter.missing"));
 });

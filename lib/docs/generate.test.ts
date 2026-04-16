@@ -12,21 +12,50 @@ test("check returns empty report for non-existent path", async () => {
   assert.equal(r.issues, 0);
 });
 
-test("sync: first run (no prior state) produces non-empty regenerated list", async (t) => {
+test("sync: first run (no prior state) produces non-empty regenerated list", async () => {
   const tmp = path.join(os.tmpdir(), "bridge-sync-firstrun-" + Date.now());
   const kbPath = path.join(tmp, "bridge-ds");
   const docsPath = path.join(tmp, "design-system");
   await mkdir(path.join(kbPath, "knowledge-base", "registries"), { recursive: true });
   await mkdir(path.join(kbPath, "knowledge-base", "recipes"), { recursive: true });
 
-  await writeFile(path.join(kbPath, "knowledge-base", "registries", "components.json"), JSON.stringify({
-    version: 1, generatedAt: "now",
-    components: [{ key: "k1", name: "TestBtn", category: "actions", status: "stable", variants: [], properties: [] }],
-  }, null, 2));
-  await writeFile(path.join(kbPath, "knowledge-base", "registries", "variables.json"), JSON.stringify({ version: 1, generatedAt: "now", variables: [] }));
-  await writeFile(path.join(kbPath, "knowledge-base", "registries", "text-styles.json"), JSON.stringify({ version: 1, generatedAt: "now", styles: [] }));
-  await writeFile(path.join(kbPath, "knowledge-base", "learnings.json"), JSON.stringify({ learnings: [], flags: [] }));
-  await writeFile(path.join(kbPath, "knowledge-base", "recipes", "_index.json"), JSON.stringify({ recipes: [] }));
+  await writeFile(
+    path.join(kbPath, "knowledge-base", "registries", "components.json"),
+    JSON.stringify(
+      {
+        version: 1,
+        generatedAt: "now",
+        components: [
+          {
+            key: "k1",
+            name: "TestBtn",
+            category: "actions",
+            status: "stable",
+            variants: [],
+            properties: [],
+          },
+        ],
+      },
+      null,
+      2
+    )
+  );
+  await writeFile(
+    path.join(kbPath, "knowledge-base", "registries", "variables.json"),
+    JSON.stringify({ version: 1, generatedAt: "now", variables: [] })
+  );
+  await writeFile(
+    path.join(kbPath, "knowledge-base", "registries", "text-styles.json"),
+    JSON.stringify({ version: 1, generatedAt: "now", styles: [] })
+  );
+  await writeFile(
+    path.join(kbPath, "knowledge-base", "learnings.json"),
+    JSON.stringify({ learnings: [], flags: [] })
+  );
+  await writeFile(
+    path.join(kbPath, "knowledge-base", "recipes", "_index.json"),
+    JSON.stringify({ recipes: [] })
+  );
 
   const cwd = process.cwd();
   process.chdir(tmp);
@@ -46,14 +75,39 @@ test("sync produces .llm.txt sidecar alongside component .md", async () => {
   await mkdir(path.join(kbPath, "knowledge-base", "registries"), { recursive: true });
   await mkdir(path.join(kbPath, "knowledge-base", "recipes"), { recursive: true });
 
-  await writeFile(path.join(kbPath, "knowledge-base", "registries", "components.json"), JSON.stringify({
-    version: 1, generatedAt: "now",
-    components: [{ key: "k1", name: "TestLlm", category: "actions", status: "stable", variants: [], properties: [] }],
-  }));
-  await writeFile(path.join(kbPath, "knowledge-base", "registries", "variables.json"), JSON.stringify({ version: 1, generatedAt: "now", variables: [] }));
-  await writeFile(path.join(kbPath, "knowledge-base", "registries", "text-styles.json"), JSON.stringify({ version: 1, generatedAt: "now", styles: [] }));
-  await writeFile(path.join(kbPath, "knowledge-base", "learnings.json"), JSON.stringify({ learnings: [], flags: [] }));
-  await writeFile(path.join(kbPath, "knowledge-base", "recipes", "_index.json"), JSON.stringify({ recipes: [] }));
+  await writeFile(
+    path.join(kbPath, "knowledge-base", "registries", "components.json"),
+    JSON.stringify({
+      version: 1,
+      generatedAt: "now",
+      components: [
+        {
+          key: "k1",
+          name: "TestLlm",
+          category: "actions",
+          status: "stable",
+          variants: [],
+          properties: [],
+        },
+      ],
+    })
+  );
+  await writeFile(
+    path.join(kbPath, "knowledge-base", "registries", "variables.json"),
+    JSON.stringify({ version: 1, generatedAt: "now", variables: [] })
+  );
+  await writeFile(
+    path.join(kbPath, "knowledge-base", "registries", "text-styles.json"),
+    JSON.stringify({ version: 1, generatedAt: "now", styles: [] })
+  );
+  await writeFile(
+    path.join(kbPath, "knowledge-base", "learnings.json"),
+    JSON.stringify({ learnings: [], flags: [] })
+  );
+  await writeFile(
+    path.join(kbPath, "knowledge-base", "recipes", "_index.json"),
+    JSON.stringify({ recipes: [] })
+  );
 
   const cwd = process.cwd();
   process.chdir(tmp);
@@ -68,7 +122,7 @@ test("sync produces .llm.txt sidecar alongside component .md", async () => {
   }
 });
 
-test("sync: second run with same registries hash returns noDiff", async (t) => {
+test("sync: second run with same registries hash returns noDiff", async () => {
   const tmp = path.join(os.tmpdir(), "bridge-sync-nodiff-" + Date.now());
   const kbPath = path.join(tmp, "bridge-ds");
   const docsPath = path.join(tmp, "design-system");
@@ -76,14 +130,43 @@ test("sync: second run with same registries hash returns noDiff", async (t) => {
   await mkdir(path.join(kbPath, "knowledge-base", "recipes"), { recursive: true });
 
   const writeAll = async () => {
-    await writeFile(path.join(kbPath, "knowledge-base", "registries", "components.json"), JSON.stringify({
-      version: 1, generatedAt: "now",
-      components: [{ key: "k1", name: "TestBtn", category: "actions", status: "stable", variants: [], properties: [] }],
-    }, null, 2));
-    await writeFile(path.join(kbPath, "knowledge-base", "registries", "variables.json"), JSON.stringify({ version: 1, generatedAt: "now", variables: [] }));
-    await writeFile(path.join(kbPath, "knowledge-base", "registries", "text-styles.json"), JSON.stringify({ version: 1, generatedAt: "now", styles: [] }));
-    await writeFile(path.join(kbPath, "knowledge-base", "learnings.json"), JSON.stringify({ learnings: [], flags: [] }));
-    await writeFile(path.join(kbPath, "knowledge-base", "recipes", "_index.json"), JSON.stringify({ recipes: [] }));
+    await writeFile(
+      path.join(kbPath, "knowledge-base", "registries", "components.json"),
+      JSON.stringify(
+        {
+          version: 1,
+          generatedAt: "now",
+          components: [
+            {
+              key: "k1",
+              name: "TestBtn",
+              category: "actions",
+              status: "stable",
+              variants: [],
+              properties: [],
+            },
+          ],
+        },
+        null,
+        2
+      )
+    );
+    await writeFile(
+      path.join(kbPath, "knowledge-base", "registries", "variables.json"),
+      JSON.stringify({ version: 1, generatedAt: "now", variables: [] })
+    );
+    await writeFile(
+      path.join(kbPath, "knowledge-base", "registries", "text-styles.json"),
+      JSON.stringify({ version: 1, generatedAt: "now", styles: [] })
+    );
+    await writeFile(
+      path.join(kbPath, "knowledge-base", "learnings.json"),
+      JSON.stringify({ learnings: [], flags: [] })
+    );
+    await writeFile(
+      path.join(kbPath, "knowledge-base", "recipes", "_index.json"),
+      JSON.stringify({ recipes: [] })
+    );
   };
   await writeAll();
 

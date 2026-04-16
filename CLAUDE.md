@@ -14,30 +14,31 @@ Claude Code ──CSpec YAML──> Compiler (local) ──Plugin API──> MCP
 
 Two transports, auto-detected. See `references/transport-adapter.md` for full mapping.
 
-| Operation | Console (preferred) | Official (fallback) |
-|-----------|-------------------|-------------------|
-| Execute code | `figma_execute` | `use_figma` |
-| Screenshot | `figma_take_screenshot` | `get_screenshot` |
-| DS extraction | `figma_get_design_system_kit` | Composite strategy |
-| Variables | `figma_get_variables` | `get_variable_defs` |
-| Styles | `figma_get_styles` | `search_design_system` |
-| Components | `figma_search_components` | `search_design_system` |
-| Connection | `figma_get_status` | `whoami` |
+| Operation     | Console (preferred)           | Official (fallback)    |
+| ------------- | ----------------------------- | ---------------------- |
+| Execute code  | `figma_execute`               | `use_figma`            |
+| Screenshot    | `figma_take_screenshot`       | `get_screenshot`       |
+| DS extraction | `figma_get_design_system_kit` | Composite strategy     |
+| Variables     | `figma_get_variables`         | `get_variable_defs`    |
+| Styles        | `figma_get_styles`            | `search_design_system` |
+| Components    | `figma_search_components`     | `search_design_system` |
+| Connection    | `figma_get_status`            | `whoami`               |
 
 ## Skills (v5.0.0+)
 
 Bridge uses a **multi-skill** Claude Code architecture. There is no `/design-workflow` slash command — commands are triggered by keywords routed through `using-bridge` (see the command map in that skill).
 
-| Skill | Trigger keyword | Purpose |
-|-------|-----------------|---------|
-| `using-bridge` | SessionStart (force-loaded) | Command map, hard rules, drop/status procedures (~500 tokens) |
-| `generating-figma-design` | `make <description>` | CSpec → scene graph → compile → execute → verify |
-| `learning-from-corrections` | `fix` | Diff Figma corrections, extract learnings, patch recipes |
-| `shipping-and-archiving` | `done` | Final Gate B verification, archive CSpec, extract recipes |
-| `extracting-design-system` | `setup bridge` | Extract DS from Figma, scaffold repo, wire up cron |
-| `generating-ds-docs` | `docs` | 6 modes (init, full-build, sync, check, mcp, headless-sync) |
+| Skill                       | Trigger keyword             | Purpose                                                       |
+| --------------------------- | --------------------------- | ------------------------------------------------------------- |
+| `using-bridge`              | SessionStart (force-loaded) | Command map, hard rules, drop/status procedures (~500 tokens) |
+| `generating-figma-design`   | `make <description>`        | CSpec → scene graph → compile → execute → verify              |
+| `learning-from-corrections` | `fix`                       | Diff Figma corrections, extract learnings, patch recipes      |
+| `shipping-and-archiving`    | `done`                      | Final Gate B verification, archive CSpec, extract recipes     |
+| `extracting-design-system`  | `setup bridge`              | Extract DS from Figma, scaffold repo, wire up cron            |
+| `generating-ds-docs`        | `docs`                      | 6 modes (init, full-build, sync, check, mcp, headless-sync)   |
 
 Shared references live at the repo root under `references/`:
+
 - `compiler-reference.md`
 - `transport-adapter.md`
 - `verification-gates.md`
@@ -83,10 +84,10 @@ bridge-ds/knowledge-base/
 
 ## References
 
-| Reference | Path |
-|-----------|------|
-| Compiler reference | `references/compiler-reference.md` |
-| Transport adapter | `references/transport-adapter.md` |
-| Verification gates | `references/verification-gates.md` |
-| Red Flags catalog | `references/red-flags-catalog.md` |
-| CSpec templates | `skills/generating-figma-design/references/templates/` |
+| Reference          | Path                                                   |
+| ------------------ | ------------------------------------------------------ |
+| Compiler reference | `references/compiler-reference.md`                     |
+| Transport adapter  | `references/transport-adapter.md`                      |
+| Verification gates | `references/verification-gates.md`                     |
+| Red Flags catalog  | `references/red-flags-catalog.md`                      |
+| CSpec templates    | `skills/generating-figma-design/references/templates/` |

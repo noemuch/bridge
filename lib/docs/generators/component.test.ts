@@ -10,7 +10,14 @@ test("generateComponentDoc renders frontmatter + all sections", async () => {
       version: 1,
       generatedAt: "now",
       components: [
-        { key: "k1", name: "Button", category: "actions", status: "stable", variants: [], properties: [] },
+        {
+          key: "k1",
+          name: "Button",
+          category: "actions",
+          status: "stable",
+          variants: [],
+          properties: [],
+        },
       ],
     },
     variables: { version: 1, generatedAt: "now", variables: [] },
@@ -45,7 +52,16 @@ test("generateComponentDoc preserves manual regions on regen", async () => {
     components: {
       version: 1,
       generatedAt: "now",
-      components: [{ key: "k1", name: "Button", category: "actions", status: "stable", variants: [], properties: [] }],
+      components: [
+        {
+          key: "k1",
+          name: "Button",
+          category: "actions",
+          status: "stable",
+          variants: [],
+          properties: [],
+        },
+      ],
     },
     variables: { version: 1, generatedAt: "now", variables: [] },
     textStyles: { version: 1, generatedAt: "now", styles: [] },

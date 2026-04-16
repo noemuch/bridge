@@ -10,13 +10,26 @@ test("token never appears in process.env after set operation", async () => {
 
   const fakeSpawn = (_cmd: string, _args: readonly string[], _opts: any) => {
     const proc: any = {
-      stdin: { write() { return true; }, end() {} },
-      on(event: string, cb: (code: number) => void) { if (event === "exit") setTimeout(() => cb(0), 0); return proc; },
+      stdin: {
+        write() {
+          return true;
+        },
+        end() {},
+      },
+      on(event: string, cb: (code: number) => void) {
+        if (event === "exit") setTimeout(() => cb(0), 0);
+        return proc;
+      },
     };
     return proc;
   };
 
-  await setGitHubSecret({ name: "FIGMA_TOKEN", value: SENTINEL, repo: "acme/test", spawnImpl: fakeSpawn as any });
+  await setGitHubSecret({
+    name: "FIGMA_TOKEN",
+    value: SENTINEL,
+    repo: "acme/test",
+    spawnImpl: fakeSpawn as any,
+  });
 
   const envAfter = Object.values(process.env).join("");
   assert.ok(!envAfter.includes(SENTINEL), "sentinel leaked into process.env");
@@ -31,10 +44,12 @@ test("maskToken never returns full token", () => {
 test("validateFigmaToken does not log the value on failure", async () => {
   const logs: string[] = [];
   const origError = console.error;
-  console.error = (...args: unknown[]) => { logs.push(args.map(String).join(" ")); };
+  console.error = (...args: unknown[]) => {
+    logs.push(args.map(String).join(" "));
+  };
 
   try {
-    const fakeFetch = async () => ({ ok: false, status: 401 } as Response);
+    const fakeFetch = async () => ({ ok: false, status: 401 }) as Response;
     await validateFigmaToken(SENTINEL, fakeFetch as any);
   } finally {
     console.error = origError;

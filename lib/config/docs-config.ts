@@ -1,4 +1,4 @@
-import YAML from "js-yaml";
+import { load as yamlLoad, JSON_SCHEMA } from "js-yaml";
 import { z } from "zod";
 
 const CronCfg = z.object({
@@ -26,6 +26,9 @@ export const DocsConfigSchema = z.object({
 export type DocsConfig = z.infer<typeof DocsConfigSchema>;
 
 export function parseDocsConfig(raw: string): DocsConfig {
-  const parsed = YAML.load(raw);
+  // JSON_SCHEMA rejects custom YAML tags (e.g. `!!js/function`) that could
+  // execute code at parse time. The config is plain data, so this is safe
+  // and strictly tighter than the library default.
+  const parsed = yamlLoad(raw, { schema: JSON_SCHEMA });
   return DocsConfigSchema.parse(parsed);
 }

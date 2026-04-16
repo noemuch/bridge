@@ -1,4 +1,9 @@
-import type { ComponentRegistry, VariableRegistry, TextStyleRegistry, Category } from "../kb/registry-io.js";
+import type {
+  ComponentRegistry,
+  VariableRegistry,
+  TextStyleRegistry,
+  Category,
+} from "../kb/registry-io.js";
 
 export interface FigmaExtractOptions {
   fileKey: string;
@@ -12,12 +17,62 @@ export interface FigmaExtractResult {
   textStyles: TextStyleRegistry;
 }
 
+// Narrow shape types for the subset of the Figma REST API we consume.
+// Full schemas live at https://www.figma.com/developers/api — we only pick the
+// fields we actually read, so upstream additions don't break us.
+interface FigmaMode {
+  modeId: string;
+  name: string;
+}
+
+interface FigmaVariableCollection {
+  id: string;
+  modes?: FigmaMode[];
+}
+
+interface FigmaVariable {
+  key: string;
+  name: string;
+  variableCollectionId: string;
+  resolvedType: "COLOR" | "FLOAT" | "STRING" | "BOOLEAN";
+  scopes?: string[];
+  valuesByMode?: Record<string, unknown>;
+}
+
+interface FigmaVariablesResponse {
+  meta?: {
+    variableCollections?: Record<string, FigmaVariableCollection>;
+    variables?: Record<string, FigmaVariable>;
+  };
+}
+
+interface FigmaComponent {
+  key: string;
+  name: string;
+  description?: string;
+  containing_frame?: { pageName?: string };
+}
+
+interface FigmaComponentsResponse {
+  meta?: { components?: FigmaComponent[] };
+}
+
+interface FigmaStyle {
+  key: string;
+  name: string;
+  style_type: string;
+}
+
+interface FigmaStylesResponse {
+  meta?: { styles?: FigmaStyle[] };
+}
+
 const BASE = "https://api.figma.com/v1";
 
-async function fget(url: string, token: string, f: typeof fetch = fetch): Promise<any> {
+async function fget<T>(url: string, token: string, f: typeof fetch = fetch): Promise<T> {
   const res = await f(url, { headers: { "X-Figma-Token": token } });
   if (!res.ok) throw new Error(`GET ${url} failed: ${res.status}`);
-  return res.json();
+  return (await res.json()) as T;
 }
 
 function categoryFromPage(page: string | undefined): Category {
@@ -38,29 +93,43 @@ export async function extractFromFigma(opts: FigmaExtractOptions): Promise<Figma
   const f = opts.fetchImpl ?? fetch;
   const ts = new Date().toISOString();
 
-  const varsBody = await fget(`${BASE}/files/${opts.fileKey}/variables/local`, opts.token, f);
-  const varsMeta = varsBody.meta || {};
-  const collections = varsMeta.variableCollections || {};
-  const varDefs = varsMeta.variables || {};
+  const varsBody = await fget<FigmaVariablesResponse>(
+    `${BASE}/files/${opts.fileKey}/variables/local`,
+    opts.token,
+    f
+  );
+  const collections = varsBody.meta?.variableCollections ?? {};
+  const varDefs = varsBody.meta?.variables ?? {};
+
   const modeLabelByCollection: Record<string, Record<string, string>> = {};
-  for (const c of Object.values<any>(collections)) {
+  for (const c of Object.values(collections)) {
     const modeMap: Record<string, string> = {};
-    for (const m of c.modes || []) modeMap[m.modeId] = m.name;
+    for (const m of c.modes ?? []) modeMap[m.modeId] = m.name;
     modeLabelByCollection[c.id] = modeMap;
   }
 
-  const variables = Object.values<any>(varDefs).map((v) => {
-    const modeMap = modeLabelByCollection[v.variableCollectionId] || {};
+  const variables = Object.values(varDefs).map((v) => {
+    const modeMap = modeLabelByCollection[v.variableCollectionId] ?? {};
     const valuesByMode: Record<string, unknown> = {};
-    for (const [modeId, value] of Object.entries(v.valuesByMode || {})) {
+    for (const [modeId, value] of Object.entries(v.valuesByMode ?? {})) {
       const label = modeMap[modeId] ?? modeId;
       valuesByMode[label] = value;
     }
-    return { key: v.key, name: v.name, resolvedType: v.resolvedType, valuesByMode, scopes: v.scopes };
+    return {
+      key: v.key,
+      name: v.name,
+      resolvedType: v.resolvedType,
+      valuesByMode,
+      scopes: v.scopes,
+    };
   });
 
-  const compBody = await fget(`${BASE}/files/${opts.fileKey}/components`, opts.token, f);
-  const compsArr: any[] = compBody.meta?.components || [];
+  const compBody = await fget<FigmaComponentsResponse>(
+    `${BASE}/files/${opts.fileKey}/components`,
+    opts.token,
+    f
+  );
+  const compsArr = compBody.meta?.components ?? [];
   const components = compsArr.map((c) => ({
     key: c.key,
     name: c.name,
@@ -71,8 +140,12 @@ export async function extractFromFigma(opts: FigmaExtractOptions): Promise<Figma
     description: c.description,
   }));
 
-  const stylesBody = await fget(`${BASE}/files/${opts.fileKey}/styles`, opts.token, f);
-  const stylesArr: any[] = stylesBody.meta?.styles || [];
+  const stylesBody = await fget<FigmaStylesResponse>(
+    `${BASE}/files/${opts.fileKey}/styles`,
+    opts.token,
+    f
+  );
+  const stylesArr = stylesBody.meta?.styles ?? [];
   const textStylesOnly = stylesArr.filter((s) => s.style_type === "TEXT");
   const textStyles = textStylesOnly.map((s) => ({
     key: s.key,

@@ -11,11 +11,13 @@ We aim to acknowledge reports within 48 hours and ship a fix within 7 days for c
 Bridge requires a Figma Personal Access Token (`FIGMA_TOKEN`) to extract design-system data from Figma.
 
 **Scope minimization (user responsibility):** Generate tokens with read-only scopes:
+
 - `File content` → Read-only
 - `File variables` → Read-only (Enterprise plans only)
 - `Library content` → Read-only
 
 **Lifecycle hygiene (enforced by Bridge v4.1.0+):**
+
 - Tokens pasted interactively in Claude Code use a stdin-only pipe (no echo, no shell history).
 - Tokens are validated in-memory, then sent directly to GitHub Secrets via `gh secret set` (stdin-piped, never via argv).
 - Tokens never touch `process.env`, `.env` files, or local logs.
@@ -30,7 +32,7 @@ Bridge requires a Figma Personal Access Token (`FIGMA_TOKEN`) to extract design-
 **User mitigation:** Pin Bridge versions in your cron workflow:
 
 ```yaml
-- run: npm install @noemuch/bridge-ds@4.1.0  # not @latest
+- run: npm install @noemuch/bridge-ds@4.1.0 # not @latest
 ```
 
 **CI considerations:** The `bridge-docs-cron.yml` workflow runs inside GitHub Actions with access to `FIGMA_TOKEN`. Scope this secret to the `.github/workflows/bridge-docs-cron.yml` file only; do not add it to other workflows.
@@ -46,4 +48,4 @@ Bridge requires a Figma Personal Access Token (`FIGMA_TOKEN`) to extract design-
 
 ---
 
-*Last updated: 2026-04-15*
+_Last updated: 2026-04-15_

@@ -44,7 +44,10 @@ test("generateComponentLlmTxt stays under 500 words for a typical component", as
     docs: {
       summary: "Triggers an action.",
       whenToUse: ["Primary action", "Form submit", "Destructive confirm"],
-      dont: [{ rule: "Navigation", source: "l1" }, { rule: "Toggle state", source: "l2" }],
+      dont: [
+        { rule: "Navigation", source: "l1" },
+        { rule: "Toggle state", source: "l2" },
+      ],
       props: [
         { name: "variant", type: "primary|secondary|ghost|danger", default: "primary" },
         { name: "size", type: "sm|md|lg", default: "md" },

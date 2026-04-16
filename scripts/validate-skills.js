@@ -1,92 +1,107 @@
 #!/usr/bin/env node
 /* eslint-disable */
-const fs = require('fs');
-const path = require('path');
+// Skill manifest validator — run as part of `prepublishOnly` and CI.
+// Auto-discovers skills under skills/*/SKILL.md so new skills drop in without
+// editing this script. The only skill-specific rule is that `using-bridge` is
+// a process skill and does not carry the action-skill section scheme.
 
-const ROOT = path.resolve(__dirname, '..');
-const REQUIRED_SKILLS = [
-  'using-bridge',
-  'generating-figma-design',
-  'learning-from-corrections',
-  'shipping-and-archiving',
-  'extracting-design-system',
-  'generating-ds-docs',
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = path.resolve(__dirname, "..");
+const SKILLS_DIR = path.join(ROOT, "skills");
+
+const ACTION_SKILL_SECTIONS = [
+  "## Overview",
+  "## When to Use",
+  "## Procedure",
+  "## Red Flags",
+  "## Verification",
 ];
+
 const REQUIRED_REFERENCES = [
-  'references/compiler-reference.md',
-  'references/transport-adapter.md',
-  'references/verification-gates.md',
-  'references/red-flags-catalog.md',
+  "references/compiler-reference.md",
+  "references/transport-adapter.md",
+  "references/verification-gates.md",
+  "references/red-flags-catalog.md",
 ];
-const REQUIRED_SKILL_SECTIONS = [
-  '## Overview',
-  '## When to Use',
-  '## Procedure',
-  '## Red Flags',
-  '## Verification',
-];
-const failures = [];
 
-function fail(msg) { failures.push(msg); }
+// Paths that used to exist in older skill layouts. Any occurrence in current
+// skill markdown is a dead link, so we fail the build on sight.
+const DEAD_PATHS = [
+  "references/actions/make.md",
+  "references/actions/fix.md",
+  "references/actions/done.md",
+  "references/actions/setup.md",
+  "references/actions/drop.md",
+  "skills/design-workflow/",
+];
+
+const failures = [];
+const fail = (msg) => failures.push(msg);
 
 function parseFrontmatter(src) {
   const m = src.match(/^---\n([\s\S]*?)\n---/);
   if (!m) return null;
   const obj = {};
-  for (const line of m[1].split('\n')) {
+  for (const line of m[1].split("\n")) {
     const kv = line.match(/^([a-zA-Z_-]+):\s*(.*)$/);
     if (kv) obj[kv[1]] = kv[2].trim();
   }
   return obj;
 }
 
-// 1. Each required skill exists with valid frontmatter + required sections.
-for (const skill of REQUIRED_SKILLS) {
-  const p = path.join(ROOT, 'skills', skill, 'SKILL.md');
+function discoverSkills() {
+  if (!fs.existsSync(SKILLS_DIR)) {
+    fail(`Missing skills/ directory at ${SKILLS_DIR}`);
+    return [];
+  }
+  return fs
+    .readdirSync(SKILLS_DIR, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name)
+    .sort();
+}
+
+const skills = discoverSkills();
+if (skills.length === 0) fail("No skills discovered under skills/");
+
+for (const skill of skills) {
+  const p = path.join(SKILLS_DIR, skill, "SKILL.md");
   if (!fs.existsSync(p)) {
-    fail(`Missing skill: ${p}`);
+    fail(`Missing SKILL.md for ${skill}`);
     continue;
   }
-  const src = fs.readFileSync(p, 'utf8');
+  const src = fs.readFileSync(p, "utf8");
   const fm = parseFrontmatter(src);
-  if (!fm) { fail(`${skill}: no frontmatter`); continue; }
-  if (fm.name !== skill) fail(`${skill}: frontmatter name "${fm.name}" != dir "${skill}"`);
+  if (!fm) {
+    fail(`${skill}: missing frontmatter`);
+    continue;
+  }
+  if (fm.name !== skill) fail(`${skill}: frontmatter name "${fm.name}" != directory "${skill}"`);
   if (!fm.description) fail(`${skill}: missing description`);
-  if (skill !== 'using-bridge') {
-    for (const section of REQUIRED_SKILL_SECTIONS) {
+  // Action skills carry the procedure scheme; process skills (using-bridge)
+  // are shorter by design.
+  if (skill !== "using-bridge") {
+    for (const section of ACTION_SKILL_SECTIONS) {
       if (!src.includes(section)) fail(`${skill}: missing section "${section}"`);
     }
   }
+  for (const dead of DEAD_PATHS) {
+    if (src.includes(dead)) fail(`${skill}: references deprecated path "${dead}"`);
+  }
 }
 
-// 2. Required shared references exist.
 for (const ref of REQUIRED_REFERENCES) {
   const p = path.join(ROOT, ref);
   if (!fs.existsSync(p)) fail(`Missing reference: ${ref}`);
 }
 
-// v4.0.0: design-workflow shim removed (Phase 4 complete).
-
-// 4. No broken internal links to old action paths inside new skills.
-const deadPaths = [
-  'references/actions/make.md',
-  'references/actions/fix.md',
-  'references/actions/done.md',
-  'references/actions/setup.md',
-  'references/actions/drop.md',
-];
-for (const skill of REQUIRED_SKILLS) {
-  const p = path.join(ROOT, 'skills', skill, 'SKILL.md');
-  if (!fs.existsSync(p)) continue;
-  const src = fs.readFileSync(p, 'utf8');
-  for (const dead of deadPaths) {
-    if (src.includes(dead)) fail(`${skill}: references deprecated path "${dead}"`);
-  }
-}
-
 if (failures.length) {
-  console.error('Skill validation FAILED:');
-  for (const f of failures) console.error('  - ' + f);
+  console.error("Skill validation FAILED:");
+  for (const f of failures) console.error("  - " + f);
   process.exit(1);
 }
-console.log(`OK — ${REQUIRED_SKILLS.length} skills, ${REQUIRED_REFERENCES.length} references, shim OK.`);
+console.log(
+  `OK — ${skills.length} skill(s) (${skills.join(", ")}), ${REQUIRED_REFERENCES.length} reference(s).`
+);

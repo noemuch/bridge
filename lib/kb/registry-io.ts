@@ -1,6 +1,14 @@
 import { readFile, writeFile } from "node:fs/promises";
 
-export type Category = "actions" | "forms" | "data-display" | "feedback" | "navigation" | "layout" | "overlay" | "surface";
+export type Category =
+  | "actions"
+  | "forms"
+  | "data-display"
+  | "feedback"
+  | "navigation"
+  | "layout"
+  | "overlay"
+  | "surface";
 export type Status = "stable" | "beta" | "deprecated" | "experimental";
 
 export interface ComponentEntry {

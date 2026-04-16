@@ -14,7 +14,7 @@ export interface McpServerOptions {
 
 export async function startMcpServer(opts: McpServerOptions) {
   const server = new Server(
-    { name: "bridge-ds", version: "4.0.0" },
+    { name: "bridge-ds", version: "5.0.0" },
     { capabilities: { resources: {} } }
   );
 
@@ -75,25 +75,35 @@ export async function startMcpServer(opts: McpServerOptions) {
 
   server.setRequestHandler(ReadResourceRequestSchema, async (req) => {
     const uri = req.params.uri;
+    // Name is restricted to a safe alphabet so a malicious client cannot
+    // escape the docsPath via `..` or path separators.
     const m = uri.match(
-      /^ds:\/\/(component|foundation|pattern|token|index)(?:\/(.+))?$/
+      /^ds:\/\/(component|foundation|pattern|token|index)(?:\/([A-Za-z0-9_-]+))?$/
     );
     if (!m) throw new Error(`Invalid URI: ${uri}`);
     const [, kind, name] = m;
+    const docsRoot = path.resolve(opts.docsPath);
+    const assertInsideDocs = (p: string): string => {
+      const resolved = path.resolve(p);
+      if (resolved !== docsRoot && !resolved.startsWith(docsRoot + path.sep)) {
+        throw new Error(`Path escape detected: ${uri}`);
+      }
+      return resolved;
+    };
     let filePath: string;
     if (kind === "index") {
       filePath = "llms.txt";
     } else if (kind === "foundation") {
-      filePath = path.join(opts.docsPath, "foundations", `${name}.md`);
+      filePath = assertInsideDocs(path.join(opts.docsPath, "foundations", `${name}.md`));
     } else if (kind === "component") {
       const compsRoot = path.join(opts.docsPath, "components");
       let found: string | null = null;
       try {
         for (const cat of await readdir(compsRoot)) {
-          const p = path.join(compsRoot, cat, `${name}.md`);
+          const candidate = assertInsideDocs(path.join(compsRoot, cat, `${name}.md`));
           try {
-            await readFile(p);
-            found = p;
+            await readFile(candidate);
+            found = candidate;
             break;
           } catch {
             // try next category
@@ -105,9 +115,9 @@ export async function startMcpServer(opts: McpServerOptions) {
       if (!found) throw new Error(`Not found: ${uri}`);
       filePath = found;
     } else if (kind === "pattern") {
-      filePath = path.join(opts.docsPath, "patterns", `${name}.md`);
+      filePath = assertInsideDocs(path.join(opts.docsPath, "patterns", `${name}.md`));
     } else {
-      throw new Error(`URI kind not yet implemented in V0.1: ${kind}`);
+      throw new Error(`URI kind not yet implemented: ${kind}`);
     }
 
     const content = await readFile(filePath, "utf8");

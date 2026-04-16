@@ -5,7 +5,9 @@ import { generateFoundationDoc } from "./foundation.js";
 
 test("foundation doc renders color foundation", async () => {
   const md = await generateFoundationDoc({
-    category: "color", title: "Color", summary: "Semantic color tokens.",
+    category: "color",
+    title: "Color",
+    summary: "Semantic color tokens.",
     tokens: [{ name: "bg/primary", light: "#0066FF", dark: "#3385FF", scopes: ["ALL_FILLS"] }],
   });
   assert.match(md, /^# Color$/m);

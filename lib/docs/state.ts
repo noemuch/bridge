@@ -25,5 +25,9 @@ export async function readState(basePath: string): Promise<DocsState> {
 
 export async function writeState(basePath: string, state: DocsState): Promise<void> {
   await mkdir(path.join(basePath, ".bridge"), { recursive: true });
-  await writeFile(path.join(basePath, ".bridge", "docs-state.json"), JSON.stringify(state, null, 2) + "\n", "utf8");
+  await writeFile(
+    path.join(basePath, ".bridge", "docs-state.json"),
+    JSON.stringify(state, null, 2) + "\n",
+    "utf8"
+  );
 }

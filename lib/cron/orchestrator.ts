@@ -21,12 +21,26 @@ export async function runCron(opts: CronOptions) {
   // 2. Persist registries to KB
   const regDir = path.join(cfg.kbPath, "knowledge-base", "registries");
   await mkdir(regDir, { recursive: true });
-  await writeFile(path.join(regDir, "variables.json"),   JSON.stringify(extract.variables, null, 2) + "\n");
-  await writeFile(path.join(regDir, "components.json"),  JSON.stringify(extract.components, null, 2) + "\n");
-  await writeFile(path.join(regDir, "text-styles.json"), JSON.stringify(extract.textStyles, null, 2) + "\n");
+  await writeFile(
+    path.join(regDir, "variables.json"),
+    JSON.stringify(extract.variables, null, 2) + "\n"
+  );
+  await writeFile(
+    path.join(regDir, "components.json"),
+    JSON.stringify(extract.components, null, 2) + "\n"
+  );
+  await writeFile(
+    path.join(regDir, "text-styles.json"),
+    JSON.stringify(extract.textStyles, null, 2) + "\n"
+  );
 
   // 3. Run the docs sync pipeline
-  const report = await sync({ kbPath: cfg.kbPath, docsPath: cfg.docsPath, dsName: cfg.dsName, tagline: cfg.tagline });
+  const report = await sync({
+    kbPath: cfg.kbPath,
+    docsPath: cfg.docsPath,
+    dsName: cfg.dsName,
+    tagline: cfg.tagline,
+  });
 
   // 4. Write a PR body to .bridge/last-sync-report.md
   await mkdir(".bridge", { recursive: true });
@@ -37,7 +51,8 @@ export async function runCron(opts: CronOptions) {
 }
 
 function formatReport(report: Awaited<ReturnType<typeof sync>>, dsName: string): string {
-  if (report.noDiff) return `# 🤖 Bridge Docs — ${dsName} sync\n\n✅ No changes detected. No PR needed.\n`;
+  if (report.noDiff)
+    return `# 🤖 Bridge Docs — ${dsName} sync\n\n✅ No changes detected. No PR needed.\n`;
   const lines: string[] = [];
   lines.push(`# 🤖 Bridge Docs — ${dsName} sync`);
   lines.push("");
@@ -61,10 +76,12 @@ const invokedPath = process.argv[1] ?? "";
 if (/[\\/]orchestrator\.(js|ts)$/.test(invokedPath)) {
   const configArgIdx = process.argv.indexOf("--config");
   const configPath = configArgIdx >= 0 ? process.argv[configArgIdx + 1] : "docs.config.yaml";
-  runCron({ configPath }).then((r) => {
-    console.log(JSON.stringify(r, null, 2));
-  }).catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });
+  runCron({ configPath })
+    .then((r) => {
+      console.log(JSON.stringify(r, null, 2));
+    })
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    });
 }

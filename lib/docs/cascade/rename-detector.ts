@@ -1,7 +1,11 @@
 // lib/docs/cascade/rename-detector.ts
 import { sha256 } from "../../kb/hash.js";
 
-export interface Namable { key: string; name: string; [k: string]: unknown; }
+export interface Namable {
+  key: string;
+  name: string;
+  [k: string]: unknown;
+}
 
 export interface RenameResult<T extends Namable> {
   added: T[];

@@ -6,39 +6,55 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
+  lint-typecheck:
+    name: Lint + typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+
   smoke:
-    name: CLI + compiler smoke test
+    name: CLI smoke (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ['18', '20', '22']
-
+        node-version: ["18", "20", "22"]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: "npm"
 
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund || true
+      - name: Install
+        run: npm ci --no-audit --no-fund
 
-      - name: CLI help
-        run: node bin/bridge.js help
+      - name: Build
+        run: npm run build
 
-      - name: CLI version
-        run: node bin/bridge.js version
+      - name: CLI help + version
+        run: |
+          node bin/bridge.js help
+          node bin/bridge.js version
 
       - name: Compiler loads without error
-        run: node -e "require('./lib/compiler/compile.js')"
-
-      - name: Package manifest parses
-        run: node -e "JSON.parse(require('fs').readFileSync('package.json','utf8'))"
+        run: node -e "require('./dist/lib/compiler/compile.js')"
 
       - name: Plugin manifests parse
         run: |
+          node -e "JSON.parse(require('fs').readFileSync('package.json','utf8'))"
           node -e "JSON.parse(require('fs').readFileSync('.claude-plugin/plugin.json','utf8'))"
           node -e "JSON.parse(require('fs').readFileSync('.claude-plugin/marketplace.json','utf8'))"
           node -e "JSON.parse(require('fs').readFileSync('.cursor-plugin/plugin.json','utf8'))"
@@ -46,26 +62,32 @@ jobs:
       - name: Skills validation
         run: node scripts/validate-skills.js
 
-      - name: TypeScript build
-        run: npm run build
-
       - name: SessionStart hook executes
         run: bash hooks/session-start | node -e "let s=''; process.stdin.on('data',d=>s+=d); process.stdin.on('end',()=>{ const o=JSON.parse(s); if(!o.hookSpecificOutput) process.exit(1); })"
 
-  security:
-    name: Security tests (token hygiene)
+  test-suite:
+    name: Full test suite
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-      - name: Build TypeScript
-        run: npm run build
-      - name: Run security tests
-        run: node --test dist/test/security/*.test.js
+          cache: "npm"
+      - run: npm ci --no-audit --no-fund
+      - run: npm run test:all
+
+  security:
+    name: Security (token hygiene)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci --no-audit --no-fund
+      - run: npm run test:security
       - name: Scan dist/ for token patterns
         run: |
           if grep -rE 'figd_[a-zA-Z0-9_-]{32,}' dist/ lib/; then
@@ -81,7 +103,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: npm install --no-audit --no-fund
+          cache: "npm"
+      - run: npm ci --no-audit --no-fund
       - run: npm run build
       - name: Scaffold in a temp dir
         run: |

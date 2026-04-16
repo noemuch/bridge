@@ -29,5 +29,13 @@ test("parseDocsConfig throws on missing required field", () => {
 });
 
 test("parseDocsConfig throws on empty dsName", () => {
-  assert.throws(() => parseDocsConfig("dsName: \"\"\nfigmaFileKey: abc\n"));
+  assert.throws(() => parseDocsConfig('dsName: ""\nfigmaFileKey: abc\n'));
+});
+
+test("parseDocsConfig rejects custom YAML tags (defense-in-depth)", () => {
+  // JSON_SCHEMA only accepts plain data — custom tags like !!js/function
+  // are rejected at parse time, so a malicious config cannot smuggle code.
+  assert.throws(() =>
+    parseDocsConfig('dsName: x\nfigmaFileKey: y\ndocsPath: !!js/function "() => 1"\n')
+  );
 });

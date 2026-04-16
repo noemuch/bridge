@@ -3,11 +3,16 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { registerAllHelpers } from "./helpers.js";
 
-export interface RenderContext { [key: string]: unknown; }
+export interface RenderContext {
+  [key: string]: unknown;
+}
 
 let HELPERS_REGISTERED = false;
 
-export async function renderTemplate(templateName: string, context: RenderContext): Promise<string> {
+export async function renderTemplate(
+  templateName: string,
+  context: RenderContext
+): Promise<string> {
   if (!HELPERS_REGISTERED) {
     registerAllHelpers();
     HELPERS_REGISTERED = true;
@@ -23,9 +28,13 @@ export async function renderTemplate(templateName: string, context: RenderContex
   ];
   let src: string | null = null;
   for (const c of candidates) {
-    try { src = await readFile(c, "utf8"); break; } catch {}
+    try {
+      src = await readFile(c, "utf8");
+      break;
+    } catch {}
   }
-  if (src === null) throw new Error(`template not found: ${templateName} (tried ${candidates.join(", ")})`);
+  if (src === null)
+    throw new Error(`template not found: ${templateName} (tried ${candidates.join(", ")})`);
   const compile = Handlebars.compile(src);
   return compile(context);
 }

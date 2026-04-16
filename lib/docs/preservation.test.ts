@@ -20,7 +20,9 @@ test("extractRegions extracts a single region", () => {
 
 test("mergeRegions reinjects content into fresh render", () => {
   const fresh = `# Button\n\n## When to use\n\n<!-- manual:when-to-use-Button -->\n<!-- /manual:when-to-use-Button -->\n\nNew content.`;
-  const merged = mergeRegions(fresh, { "when-to-use-Button": "Custom guidance written by a human." });
+  const merged = mergeRegions(fresh, {
+    "when-to-use-Button": "Custom guidance written by a human.",
+  });
   assert.match(merged, /Custom guidance written by a human\./);
 });
 

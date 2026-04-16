@@ -1,7 +1,7 @@
 {
   "name": "bridge-ds",
   "displayName": "Bridge Design System",
-  "version": "4.1.0",
+  "version": "5.0.0",
   "description": "Compiler-driven design generation in Figma — declarative scene graphs compiled into DS-native Figma designs.",
   "author": {
     "name": "noemuch"
@@ -9,7 +9,12 @@
   "homepage": "https://github.com/noemuch/bridge",
   "repository": "https://github.com/noemuch/bridge",
   "license": "MIT",
-  "keywords": ["figma", "design-system", "mcp", "ai-design"],
+  "keywords": [
+    "figma",
+    "design-system",
+    "mcp",
+    "ai-design"
+  ],
   "skills": "./skills/",
   "commands": "./commands/",
   "mcpServers": "./.mcp.json"

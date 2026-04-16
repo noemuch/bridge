@@ -11,15 +11,14 @@ const FIGMA_URL_RE = /https?:\/\/(?:www\.)?figma\.com\/(?:design|file)\/([a-zA-Z
  * 3. package.json "figma.url" field
  * Returns the file key, or null if none found.
  */
-export async function detectFigmaFileKey(opts: {
-  readmePath?: string;
-  claudeMdPath?: string;
-  packageJsonPath?: string;
-} = {}): Promise<string | null> {
-  const candidates = [
-    opts.readmePath ?? "README.md",
-    opts.claudeMdPath ?? "CLAUDE.md",
-  ];
+export async function detectFigmaFileKey(
+  opts: {
+    readmePath?: string;
+    claudeMdPath?: string;
+    packageJsonPath?: string;
+  } = {}
+): Promise<string | null> {
+  const candidates = [opts.readmePath ?? "README.md", opts.claudeMdPath ?? "CLAUDE.md"];
   for (const p of candidates) {
     try {
       const content = await readFile(p, "utf8");
@@ -48,10 +47,12 @@ export async function detectFigmaFileKey(opts: {
  * Detect the GitHub remote repo in "owner/name" form from .git/config.
  * Accepts either an explicit content string (for testing) or a path.
  */
-export async function detectGitRemote(opts: {
-  gitConfigContent?: string;
-  gitDir?: string;
-} = {}): Promise<string | null> {
+export async function detectGitRemote(
+  opts: {
+    gitConfigContent?: string;
+    gitDir?: string;
+  } = {}
+): Promise<string | null> {
   let content = opts.gitConfigContent;
   if (content === undefined) {
     const gitDir = opts.gitDir ?? ".git";
@@ -62,7 +63,9 @@ export async function detectGitRemote(opts: {
     }
   }
   // Look for `url = ...github.com[:/]owner/repo(.git)?`
-  const m = content.match(/url\s*=\s*(?:https?:\/\/|git@)github\.com[:/]([^\s\/]+)\/([^\s\/]+?)(?:\.git)?\s*$/m);
+  const m = content.match(
+    /url\s*=\s*(?:https?:\/\/|git@)github\.com[:/]([^\s\/]+)\/([^\s\/]+?)(?:\.git)?\s*$/m
+  );
   if (m) return `${m[1]}/${m[2]}`;
   return null;
 }

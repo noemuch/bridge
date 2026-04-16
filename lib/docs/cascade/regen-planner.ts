@@ -26,7 +26,11 @@ export function planRegens(impact: Impact, idx: KbIndex, docsPath: string): Plan
   }
   for (const m of impact.migrations) {
     const slug = `${m.reason}-${m.from.replace(/[^a-zA-Z0-9]/g, "-")}`;
-    writes.push({ kind: "migration", target: `${m.from}→${m.to}`, path: `${docsPath}/changelog/migrations/${slug}.md` });
+    writes.push({
+      kind: "migration",
+      target: `${m.from}→${m.to}`,
+      path: `${docsPath}/changelog/migrations/${slug}.md`,
+    });
   }
   return writes;
 }

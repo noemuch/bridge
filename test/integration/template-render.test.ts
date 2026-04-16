@@ -46,8 +46,12 @@ test("llms.txt.hbs renders index", async () => {
   const out = await renderTemplate("llms.txt.hbs", {
     dsName: "Test DS",
     tagline: "Test tagline.",
-    components: [{ name: "Button", path: "./design-system/components/actions/Button.md", summary: "CTAs" }],
-    foundations: [{ name: "Color", path: "./design-system/foundations/color.md", summary: "Colors" }],
+    components: [
+      { name: "Button", path: "./design-system/components/actions/Button.md", summary: "CTAs" },
+    ],
+    foundations: [
+      { name: "Color", path: "./design-system/foundations/color.md", summary: "Colors" },
+    ],
     patterns: [],
   });
   assert.match(out, /^# Test DS/m);

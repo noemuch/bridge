@@ -1,7 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import path from "node:path";
-import { readComponentRegistry, readVariableRegistry, readTextStyleRegistry } from "./registry-io.js";
+import {
+  readComponentRegistry,
+  readVariableRegistry,
+  readTextStyleRegistry,
+} from "./registry-io.js";
 
 const FIX = path.resolve("test/fixtures/kb/registries");
 
@@ -24,5 +28,7 @@ test("readTextStyleRegistry returns styles", async () => {
 });
 
 test("throws on missing file", async () => {
-  await assert.rejects(() => readComponentRegistry("test/fixtures/kb/registries/does-not-exist.json"));
+  await assert.rejects(() =>
+    readComponentRegistry("test/fixtures/kb/registries/does-not-exist.json")
+  );
 });

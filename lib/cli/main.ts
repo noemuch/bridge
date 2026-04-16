@@ -69,7 +69,8 @@ export async function main() {
         return;
       case "extract": {
         const headless = rest.includes("--headless") || sub === "--headless";
-        if (!headless) throw new Error("Only headless extraction is CLI-exposed. Use `extract --headless`.");
+        if (!headless)
+          throw new Error("Only headless extraction is CLI-exposed. Use `extract --headless`.");
         console.log(await extractHeadless({ configPath: "docs.config.yaml" }));
         return;
       }
@@ -78,12 +79,25 @@ export async function main() {
           throw new Error(`Unknown docs subcommand: ${sub}`);
         }
         const cfg = await loadCfg();
-        const syncArgs = { kbPath: cfg.kbPath, docsPath: cfg.docsPath, dsName: cfg.dsName, tagline: cfg.tagline };
+        const syncArgs = {
+          kbPath: cfg.kbPath,
+          docsPath: cfg.docsPath,
+          dsName: cfg.dsName,
+          tagline: cfg.tagline,
+        };
         switch (sub) {
-          case "build": console.log(await build(syncArgs)); return;
-          case "sync":  console.log(await sync(syncArgs)); return;
-          case "check": console.log(await check({ docsPath: cfg.docsPath })); return;
-          case "mcp":   await startMcpServer({ docsPath: cfg.docsPath, kbPath: cfg.kbPath }); return;
+          case "build":
+            console.log(await build(syncArgs));
+            return;
+          case "sync":
+            console.log(await sync(syncArgs));
+            return;
+          case "check":
+            console.log(await check({ docsPath: cfg.docsPath }));
+            return;
+          case "mcp":
+            await startMcpServer({ docsPath: cfg.docsPath, kbPath: cfg.kbPath });
+            return;
         }
         return;
       }
@@ -91,7 +105,9 @@ export async function main() {
         console.log(await runCron({ configPath: "docs.config.yaml" }));
         return;
       case "init":
-        deprecationNotice("bridge-ds setup --ds-name <name> --figma-key <key>   (or 'setup bridge' in Claude Code)");
+        deprecationNotice(
+          "bridge-ds setup --ds-name <name> --figma-key <key>   (or 'setup bridge' in Claude Code)"
+        );
         return;
       case "update":
         deprecationNotice("re-install the plugin: /plugin update bridge-ds   (in Claude Code)");

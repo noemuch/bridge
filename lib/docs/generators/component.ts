@@ -9,7 +9,10 @@ if (!Handlebars.helpers.concat) {
   Handlebars.registerHelper("concat", (...args: unknown[]) => args.slice(0, -1).join(""));
 }
 if (!Handlebars.helpers.lookup) {
-  Handlebars.registerHelper("lookup", (obj: any, key: string) => obj?.[key]);
+  Handlebars.registerHelper("lookup", (obj: unknown, key: string) => {
+    if (obj == null || typeof obj !== "object") return undefined;
+    return (obj as Record<string, unknown>)[key];
+  });
 }
 
 export interface ComponentDocs {
@@ -33,21 +36,31 @@ export async function generateComponentDoc(opts: {
 }): Promise<string> {
   const tokensTable = Object.entries(opts.index.tokenIndex)
     .filter(([, t]) => t.valuesByMode)
-    .map(([ref, t]) => ({
-      token: ref,
-      light: String((t.valuesByMode as any)?.light ?? "—"),
-      dark: String((t.valuesByMode as any)?.dark ?? "—"),
-      usage: t.category,
-    }));
+    .map(([ref, t]) => {
+      const modes = (t.valuesByMode ?? {}) as Record<string, unknown>;
+      return {
+        token: ref,
+        light: String(modes.light ?? "—"),
+        dark: String(modes.dark ?? "—"),
+        usage: t.category,
+      };
+    });
 
   const ctx: Record<string, unknown> = {
     name: opts.entry.name,
     category: opts.entry.category,
     status: opts.entry.status,
     figma: opts.docs.figmaUrl,
-    related: (opts.entry.alternatives.length || opts.entry.composesWith.length || opts.entry.supersedes.length)
-      ? { alternatives: opts.entry.alternatives, composesWith: opts.entry.composesWith, supersedes: opts.entry.supersedes }
-      : undefined,
+    related:
+      opts.entry.alternatives.length ||
+      opts.entry.composesWith.length ||
+      opts.entry.supersedes.length
+        ? {
+            alternatives: opts.entry.alternatives,
+            composesWith: opts.entry.composesWith,
+            supersedes: opts.entry.supersedes,
+          }
+        : undefined,
     tokens: undefined,
     "generated-from": {
       "kb-version": opts.kbVersion,

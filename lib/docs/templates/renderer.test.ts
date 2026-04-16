@@ -1,28 +1,37 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import Handlebars from "handlebars";
 import { registerAllHelpers } from "./renderer.js";
 
-test("registerAllHelpers exposes Handlebars", () => {
+test("registerAllHelpers registers all documented helpers", () => {
   registerAllHelpers();
-  const Hb = (globalThis as any).__bridgeHandlebars;
-  assert.ok(Hb, "Handlebars must be exposed globally for introspection");
-  assert.ok(Hb.helpers.eq);
-  assert.ok(Hb.helpers.formatDate);
-  assert.ok(Hb.helpers.provenanceMarker);
-  assert.ok(Hb.helpers.manualRegion);
-  assert.ok(Hb.helpers.concat);
+  assert.ok(Handlebars.helpers.eq);
+  assert.ok(Handlebars.helpers.formatDate);
+  assert.ok(Handlebars.helpers.provenanceMarker);
+  assert.ok(Handlebars.helpers.manualRegion);
+  assert.ok(Handlebars.helpers.concat);
 });
 
 test("formatDate helper renders YYYY-MM-DD", () => {
   registerAllHelpers();
-  const Hb = (globalThis as any).__bridgeHandlebars;
-  const tpl = Hb.compile("{{formatDate iso}}");
+  const tpl = Handlebars.compile("{{formatDate iso}}");
   assert.equal(tpl({ iso: "2026-04-15T06:00:00Z" }), "2026-04-15");
 });
 
-test("provenanceMarker emits comment", () => {
+test("provenanceMarker emits a safe HTML comment", () => {
   registerAllHelpers();
-  const Hb = (globalThis as any).__bridgeHandlebars;
-  const tpl = Hb.compile("{{{provenanceMarker src}}}");
-  assert.equal(tpl({ src: "learning#5" }), "<!-- source: learning#5 -->");
+  const tpl = Handlebars.compile("{{{provenanceMarker src}}}");
+  // Source is sanitised to a safe alphabet — `#` in the input is replaced
+  // with `_` so it cannot break downstream markdown rendering.
+  assert.equal(tpl({ src: "learning#5" }), "<!-- source: learning_5 -->");
+});
+
+test("manualRegion sanitises ids", () => {
+  registerAllHelpers();
+  const tpl = Handlebars.compile("{{{manualRegion id}}}");
+  assert.equal(tpl({ id: "usage" }), "<!-- manual:usage -->\n<!-- /manual:usage -->");
+  assert.equal(
+    tpl({ id: "evil id <!--" }),
+    "<!-- manual:evil_id______ -->\n<!-- /manual:evil_id______ -->"
+  );
 });

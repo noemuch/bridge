@@ -21,8 +21,13 @@ export function mergeRegions(freshRender: string, savedRegions: Record<string, s
   });
   const orphans = Object.entries(savedRegions).filter(([id]) => !presentInFresh.has(id));
   if (orphans.length === 0) return merged;
-  const tail = orphans.map(([id, body]) =>
-    `\n<!-- WARNING: orphaned manual region "${id}" — moved from its original position -->\n${body}\n`
-  ).join("\n");
-  return merged + "\n\n---\n<!-- Orphaned manual regions appended by preservation engine -->\n" + tail;
+  const tail = orphans
+    .map(
+      ([id, body]) =>
+        `\n<!-- WARNING: orphaned manual region "${id}" — moved from its original position -->\n${body}\n`
+    )
+    .join("\n");
+  return (
+    merged + "\n\n---\n<!-- Orphaned manual regions appended by preservation engine -->\n" + tail
+  );
 }

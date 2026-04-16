@@ -7,7 +7,12 @@ export interface Impact {
   foundationsToRegen: string[];
   patternsToRegen: string[];
   changelogsToAppend: string[];
-  migrations: Array<{ reason: string; from: string; to: string; severity: "breaking" | "deprecation" | "non-breaking" }>;
+  migrations: Array<{
+    reason: string;
+    from: string;
+    to: string;
+    severity: "breaking" | "deprecation" | "non-breaking";
+  }>;
 }
 
 export function computeImpact(cs: Changeset, idx: KbIndex): Impact {
@@ -43,7 +48,12 @@ export function computeImpact(cs: Changeset, idx: KbIndex): Impact {
   }
 
   for (const r of cs.variables.renamed) {
-    migrations.push({ reason: "token-rename", from: "$" + r.from, to: "$" + r.to, severity: "breaking" });
+    migrations.push({
+      reason: "token-rename",
+      from: "$" + r.from,
+      to: "$" + r.to,
+      severity: "breaking",
+    });
     const t = idx.tokenIndex["$" + r.from] || idx.tokenIndex["$" + r.to];
     if (t) for (const c of t.usedBy) componentsToRegen.add(c);
   }

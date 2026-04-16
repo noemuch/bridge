@@ -16,11 +16,9 @@ export interface SetGitHubSecretOptions {
  */
 export async function setGitHubSecret(opts: SetGitHubSecretOptions): Promise<void> {
   const spawnFn = opts.spawnImpl ?? realSpawn;
-  const proc = spawnFn(
-    "gh",
-    ["secret", "set", opts.name, "--repo", opts.repo],
-    { stdio: ["pipe", "inherit", "inherit"] }
-  );
+  const proc = spawnFn("gh", ["secret", "set", opts.name, "--repo", opts.repo], {
+    stdio: ["pipe", "inherit", "inherit"],
+  });
 
   proc.stdin!.write(opts.value);
   proc.stdin!.end();

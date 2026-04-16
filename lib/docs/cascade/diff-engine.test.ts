@@ -22,13 +22,24 @@ test("diffKb detects added/removed", () => {
 });
 
 test("diffKb detects modified variable value", () => {
-  const next = { ...base, variables: [{ key: "v1", name: "color/bg/primary", valuesByMode: { light: { r: 0, g: 0.5, b: 1 } } }] };
+  const next = {
+    ...base,
+    variables: [
+      { key: "v1", name: "color/bg/primary", valuesByMode: { light: { r: 0, g: 0.5, b: 1 } } },
+    ],
+  };
   const d = diffKb(base, next);
   assert.deepEqual(d.variables.modified, ["color/bg/primary"]);
 });
 
 test("diffKb detects rename (same key, different name)", () => {
-  const next = { ...base, components: [{ key: "k1", name: "ButtonNew" }, { key: "k2", name: "Link" }] };
+  const next = {
+    ...base,
+    components: [
+      { key: "k1", name: "ButtonNew" },
+      { key: "k2", name: "Link" },
+    ],
+  };
   const d = diffKb(base, next);
   assert.deepEqual(d.components.renamed, [{ from: "Button", to: "ButtonNew" }]);
 });
