@@ -22,7 +22,7 @@ Thanks for your interest in contributing. Bridge is open source and welcomes con
 
 ## Development guidelines
 
-**Node.js 18+** everywhere. The codebase is **TypeScript (strict mode)**, compiled to `dist/` via `tsc`. Rebuild after any source change (`npm run build` or `npm run build:watch`).
+**Node.js 20 LTS or later** (`engines.node: ">=20"`). The codebase is **TypeScript (strict mode)**, compiled to `dist/` via `tsc`. Rebuild after any source change (`npm run build` or `npm run build:watch`).
 
 **Compiler is the only path.** Bridge's core guarantee is that every Figma output goes through `lib/compiler/compile.ts`. Do not add workflows that emit raw Plugin API code — this breaks the design system compliance guarantee.
 

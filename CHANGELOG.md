@@ -38,6 +38,10 @@ touch your knowledge base or generated docs.
 
 ### Breaking changes
 
+- **Minimum Node.js bumped to 20 LTS** (`engines.node: ">=20"`). Node
+  18 reached maintenance-only status and is incompatible with ESM-only
+  dependencies we now rely on (`@clack/prompts@1.2`). Node 20 and 22 are
+  supported.
 - **`bridge-ds init` and `bridge-ds update` CLI commands removed.** The
   legacy interactive wizard retired in favour of `setup bridge` in
   Claude Code (single-entry flow). Typing `init`/`update` now prints a
