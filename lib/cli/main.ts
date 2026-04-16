@@ -8,7 +8,7 @@ import { startMcpServer } from "../docs/mcp-server.js";
 import { runCron } from "../cron/orchestrator.js";
 import { parseDocsConfig } from "../config/docs-config.js";
 
-const VERSION = "4.0.0";
+const VERSION = "4.1.0";
 
 async function loadCfg() {
   const raw = await readFile("docs.config.yaml", "utf8");
