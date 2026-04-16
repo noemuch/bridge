@@ -17,6 +17,12 @@ All notable changes to Bridge DS are documented here.
 - **`lib/cli/setup-orchestrator.ts`** — shared orchestration: preflight,
   scaffold, token storage with optional variables-API probe.
 
+### Changed
+- **`extracting-design-system` skill extended** to orchestrate the
+  complete setup flow (pre-flight → scaffold → token → extract →
+  build → commit). Replaces the legacy CLI wizard as the primary
+  entry point.
+
 ## [4.0.0] — 2026-04-15
 
 ### Added
