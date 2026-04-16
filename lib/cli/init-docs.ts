@@ -3,7 +3,17 @@ import { writeFile, mkdir } from "node:fs/promises";
 import { printBanner } from "./banner.js";
 import { brand, brandBg, icons, bold } from "./ui.js";
 
-export async function initDocs(version = "4.0.0") {
+export async function initDocs(version = "4.1.0") {
+  // V0.2 deprecation warning — the recommended path is the Claude Code skill flow.
+  console.warn(
+    "\x1b[33m" +
+      "⚠ DeprecationWarning: `bridge-ds init-docs` is deprecated in v4.1.0.\n" +
+      "   The recommended setup flow runs in Claude Code via `setup bridge`.\n" +
+      "   The CLI command still works but will be removed in v5.0.0.\n" +
+      "   See: https://github.com/noemuch/bridge/blob/main/MIGRATION.md" +
+      "\x1b[0m\n"
+  );
+
   printBanner("Compiler-driven design system docs", version);
   console.log(" " + brandBg(" bridge init-docs ") + "\n");
 

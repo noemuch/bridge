@@ -28,6 +28,11 @@ All notable changes to Bridge DS are documented here.
   build → commit). Replaces the legacy CLI wizard as the primary
   entry point.
 
+### Deprecated
+- **`bridge-ds init-docs` CLI wizard** emits a yellow DeprecationWarning
+  on startup. Still functional (legacy contract preserved for v4.x).
+  Removal planned for v5.0.0. Migrate to `setup bridge` in Claude Code.
+
 ## [4.0.0] — 2026-04-15
 
 ### Added
