@@ -11,6 +11,9 @@ All notable changes to Bridge DS are documented here.
   code output) is unchanged. Staged migration across several commits:
   errors/helpers/wrap, then registry/plan/schema, validate/resolve,
   codegen, and finally the `compile` orchestrator.
+- New `lib/compiler/types.ts` module exposes shared pipeline types
+  (`SceneGraph`, `SceneNode`, `ResolvedToken`, `ImportBundle`, …)
+  consumed by every compiler stage.
 
 ## [4.1.0] — 2026-04-15
 
