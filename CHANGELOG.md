@@ -10,6 +10,8 @@ All notable changes to Bridge DS are documented here.
   Powers setup pre-fill so users confirm rather than type.
 - **`lib/docs/templates/component.llm.txt.hbs`** — Handlebars template for
   per-component `.llm.txt` sidecars (shadcn-inspired, <500 tokens each).
+- **`lib/docs/generators/llm-txt.ts`** — generator that renders per-component
+  `.llm.txt` sidecars via the Handlebars template.
 
 ## [4.0.0] — 2026-04-15
 
