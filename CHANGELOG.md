@@ -8,6 +8,8 @@ All notable changes to Bridge DS are documented here.
 - **`lib/kb/auto-detect.ts`** — auto-detect git remote and Figma file key
   by scanning README.md, CLAUDE.md, and `package.json` `figma.url` field.
   Powers setup pre-fill so users confirm rather than type.
+- **`lib/docs/templates/component.llm.txt.hbs`** — Handlebars template for
+  per-component `.llm.txt` sidecars (shadcn-inspired, <500 tokens each).
 
 ## [4.0.0] — 2026-04-15
 
