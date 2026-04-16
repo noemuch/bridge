@@ -2,6 +2,13 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [Unreleased] — v4.1.0 (UX polish)
+
+### Added
+- **`lib/kb/auto-detect.ts`** — auto-detect git remote and Figma file key
+  by scanning README.md, CLAUDE.md, and `package.json` `figma.url` field.
+  Powers setup pre-fill so users confirm rather than type.
+
 ## [4.0.0] — 2026-04-15
 
 ### Added
