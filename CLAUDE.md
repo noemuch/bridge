@@ -1,6 +1,24 @@
 # Bridge DS — Claude Code Instructions
 
-Bridge DS is a compiler-driven design workflow that generates Figma designs using MCP. Claude produces declarative JSON scene graphs; the compiler generates correct Figma Plugin API scripts.
+## Mission
+
+Bridge is a **deterministic compiler** that turns AI-generated design intent into Figma output **guaranteed DS-compliant by construction, not by verification**.
+
+Bridge is to Figma what a type-checker is to code: the layer that catches errors at the door, not in production.
+
+## The 3 pillars
+
+Everything Bridge does must serve one of these. Anything else is candidate for cut.
+
+1. **Compiler-enforced correctness** — 26 Figma API rules + 100% DS token compliance, deterministic
+2. **Conversational UX via Claude Code skills** — `make` / `fix` / `done` workflow
+3. **Living KB synchronized with Figma** — registries refreshed via cron, drift-aware
+
+## Design principle: subtraction by default
+
+> The Bridge codebase should be smaller in 6 months, not larger.
+
+Subtraction is the default. Every subsystem must justify its existence against the 3 pillars or die. When in doubt, cut. Adding code is a hypothesis; the burden of proof is on the addition.
 
 ## Architecture
 

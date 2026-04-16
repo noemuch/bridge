@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <strong>Compiler-driven design generation for Figma.</strong><br/>
-  <em>Auto-maintained docs included. Cron-synced. MCP-native.</em>
+  <strong>Compiler-grade trust for AI-generated Figma.</strong><br/>
+  <em>Deterministic compiler · Living KB · MCP-native</em>
 </p>
 
 <p align="center">
@@ -22,9 +22,9 @@
 
 <br />
 
-Bridge compiles your design-system intent into correct Figma Plugin API code. No AI hallucinations. No hand-written scripts. 26 Figma API rules enforced automatically by a local compiler.
+Bridge compiles your design-system intent into Figma output that's **guaranteed DS-compliant by construction — not by verification**. 26 Figma API rules enforced automatically by a local compiler. Zero hardcoded values, zero raw Plugin API code, zero AI hallucinations.
 
-Bonus: Bridge also auto-maintains your DS documentation in your own repo (no SaaS, no lock-in). The compiler is the moat; the docs pipeline is a feature on top.
+Three pillars: a **deterministic compiler** (the moat), **conversational UX** via Claude Code skills (`make` / `fix` / `done`), and a **living KB** continuously synchronized with Figma via cron.
 
 ## For designers
 
