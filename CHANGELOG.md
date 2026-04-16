@@ -18,6 +18,9 @@ All notable changes to Bridge DS are documented here.
   types module; token resolution, component resolution, REPEAT/
   CONDITIONAL expansion, and structural rule checks remain behaviorally
   identical to the pre-migration implementation.
+- `codegen` stage (Figma Plugin API emitter) fully typed against the
+  resolved scene graph. Generated code output is byte-identical to the
+  pre-migration implementation.
 
 ## [4.1.0] — 2026-04-15
 
