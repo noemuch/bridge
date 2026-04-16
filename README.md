@@ -85,7 +85,7 @@ setup bridge
 
 One phrase. The skill handles pre-flight, scaffolding, extraction, docs generation, GitHub secret, first commit, and optional cron test. ~10 minutes end-to-end.
 
-**Upgrading from v4.x?** See [MIGRATION.md](MIGRATION.md) for the v5.0.0 upgrade path.
+**Upgrading from v4.x?** See the [v5.0.0 upgrade path](CHANGELOG.md#upgrading-from-v4x) in the changelog.
 
 ---
 

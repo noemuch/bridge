@@ -10,7 +10,7 @@ export async function initDocs(version = "4.1.0") {
       "⚠ DeprecationWarning: `bridge-ds init-docs` is deprecated in v4.1.0.\n" +
       "   The recommended setup flow runs in Claude Code via `setup bridge`.\n" +
       "   The CLI command still works but will be removed in v5.0.0.\n" +
-      "   See: https://github.com/noemuch/bridge/blob/main/MIGRATION.md" +
+      "   See: https://github.com/noemuch/bridge/blob/main/CHANGELOG.md" +
       "\x1b[0m\n"
   );
 

@@ -28,7 +28,6 @@
     "CHANGELOG.md",
     "LICENSE",
     "SECURITY.md",
-    "MIGRATION.md",
     ".claude-plugin/",
     ".cursor-plugin/",
     ".mcp.json",

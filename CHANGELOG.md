@@ -12,6 +12,30 @@ the foundations: TypeScript everywhere, zero `any` in production, a
 strict lint/format/typecheck pipeline, an automated release, and a
 repo free of dead code and dogfood cruft.
 
+### Upgrading from v4.x
+
+```bash
+npm install @noemuch/bridge-ds@5
+# or, if you installed the plugin:
+# /plugin update bridge-ds   (in Claude Code)
+```
+
+If your code imports Bridge programmatically, swap any direct source
+references for the package entry:
+
+```js
+import { main, VERSION } from "@noemuch/bridge-ds";
+import { compile } from "@noemuch/bridge-ds/compiler";
+```
+
+The skill flow (`setup bridge`, `make`, `fix`, `done`, `docs`) is
+unchanged. Knowledge-base format, scene-graph schema, MCP URIs, and the
+scaffolded cron workflow are all backwards-compatible — no state to
+migrate.
+
+**Rollback:** `npm install @noemuch/bridge-ds@4.1.0`. v5.0.0 does not
+touch your knowledge base or generated docs.
+
 ### Breaking changes
 
 - **`bridge-ds init` and `bridge-ds update` CLI commands removed.** The
@@ -137,8 +161,8 @@ repo free of dead code and dogfood cruft.
   skill. Flags: `--ds-name`, `--figma-key`, `--docs-path`, `--kb-path`.
 - `SECURITY.md` with disclosure policy, scope minimization notes, and
   supply-chain guidance.
-- `MIGRATION.md` at repo root — one-page v4.0.0 → v4.1.0 upgrade
-  notes.
+- One-page v4.0.0 → v4.1.0 upgrade notes (previously a separate
+  `MIGRATION.md`, folded into this changelog in v5.0.0).
 - Token-handling module `lib/cli/token-handling.ts` — stdin-only pipe
   to `gh secret set`, `maskToken` for safe logging, `validateFigmaToken`
   against `/v1/me`, `probeVariablesEndpoint` for Enterprise-plan probing.
