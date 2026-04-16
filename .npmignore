@@ -1,0 +1,45 @@
+# Only ship what users need at runtime.
+# package.json `files` is the primary allowlist — this file is a defense-in-depth.
+
+# Sources (TypeScript) — shipped compiled in dist/
+lib/
+
+# Tests
+test/
+**/*.test.ts
+**/*.test.js
+**/*.test.d.ts
+**/*.test.js.map
+**/*.test.d.ts.map
+
+# Build scaffolding
+tsconfig.json
+*.tsbuildinfo
+.eslintrc*
+eslint.config.*
+.prettierrc*
+prettier.config.*
+
+# Dev tooling
+scripts/
+.github/
+.vscode/
+.idea/
+
+# Project docs (specs/plans) — local only
+docs/
+CONTRIBUTING.md
+
+# VCS / OS cruft
+.git/
+.gitignore
+.gitattributes
+.DS_Store
+*.log
+
+# Dogfood artifacts (never ship)
+docs.config.yaml
+.bridge/
+bridge-ds/
+design-system/
+llms.txt

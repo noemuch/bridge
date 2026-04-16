@@ -10,22 +10,21 @@ Thanks for your interest in contributing. Bridge is open source and welcomes con
    git clone https://github.com/YOUR_USERNAME/bridge.git
    cd bridge && npm install
    ```
-3. Link the CLI locally to test changes end-to-end:
+3. Build the TypeScript sources:
+   ```bash
+   npm run build
+   ```
+4. Link the CLI locally to test changes end-to-end:
    ```bash
    npm link
    bridge-ds help
    ```
-4. Point a scratch project at your local checkout:
-   ```bash
-   cd /path/to/scratch-project
-   bridge-ds init
-   ```
 
-## Development Guidelines
+## Development guidelines
 
-**Node.js 18+** everywhere. No transpile step — the codebase is plain JS with explicit imports.
+**Node.js 18+** everywhere. The codebase is **TypeScript (strict mode)**, compiled to `dist/` via `tsc`. Rebuild after any source change (`npm run build` or `npm run build:watch`).
 
-**Compiler is the only path.** Bridge's core guarantee is that every Figma output goes through `lib/compiler/compile.js`. Do not add workflows that emit raw Plugin API code — this breaks the design system compliance guarantee.
+**Compiler is the only path.** Bridge's core guarantee is that every Figma output goes through `lib/compiler/compile.ts`. Do not add workflows that emit raw Plugin API code — this breaks the design system compliance guarantee.
 
 **Semantic tokens only.** No hardcoded primitives in generated output. Every value must resolve to a DS token (`$color/...`, `$spacing/...`, `$text/...`, `$comp/...`).
 
@@ -33,13 +32,19 @@ Thanks for your interest in contributing. Bridge is open source and welcomes con
 
 **English for generated artifacts.** Knowledge base files, CSpecs, guides, learnings, recipes, scene graphs — English only. Conversation with users can happen in any language; artifacts cannot.
 
-**Run the compiler smoke test** before every PR:
+## Before sending a PR
+
 ```bash
-node bin/bridge.js help
-node lib/compiler/compile.js --help
+npm run typecheck   # tsc --noEmit
+npm run lint        # eslint
+npm run format:check # prettier
+npm run test:all    # build + run all tests
+npm run test:skills # skill frontmatter + references validation
 ```
 
-## Pull Requests
+CI runs the same checks — get them green locally first.
+
+## Pull requests
 
 - Keep PRs focused. One feature or fix per PR.
 - Write a clear description of what changed and why.
@@ -48,16 +53,17 @@ node lib/compiler/compile.js --help
 - Update `README.md` if you changed user-visible behavior, commands, or prerequisites.
 - Ensure CI passes.
 
-## Project Structure
+## Project structure
 
 See [`CLAUDE.md`](CLAUDE.md) for the full architecture guide, compiler pipeline, transport adapter, and skill-layer overview.
 
 Key entry points:
 
-- `lib/compiler/compile.js` — scene graph → Plugin API pipeline
+- `lib/compiler/compile.ts` — scene graph → Plugin API pipeline
+- `lib/cli/main.ts` — CLI router (all commands)
+- `lib/cli/setup-orchestrator.ts` — headless scaffolding invoked by `setup bridge`
 - `skills/using-bridge/SKILL.md` — force-loaded process-layer skill
-- `skills/design-workflow/SKILL.md` — action-layer skill
-- `skills/design-workflow/references/actions/` — per-command logic
+- `skills/*/SKILL.md` — one skill per action (`make`, `fix`, `done`, `setup`, `docs`)
 
 ## Community
 

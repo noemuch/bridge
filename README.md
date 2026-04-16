@@ -84,7 +84,7 @@ setup bridge
 
 One phrase. The skill handles pre-flight, scaffolding, extraction, docs generation, GitHub secret, first commit, and optional cron test. ~10 minutes end-to-end.
 
-**Already on v4.0.0?** See [MIGRATION.md](MIGRATION.md) for the v4.1.0 upgrade path (TL;DR: `npm install @noemuch/bridge-ds@4.1.0`, no other action needed).
+**Upgrading from v4.x?** See [MIGRATION.md](MIGRATION.md) for the v5.0.0 upgrade path.
 
 ---
 
@@ -92,9 +92,9 @@ One phrase. The skill handles pre-flight, scaffolding, extraction, docs generati
 
 | Layer | Technology | Description |
 |-------|-----------|-------------|
-| **Workflow** | Claude Code Skills | Two-layer skill (`using-bridge` process + `design-workflow` actions) |
+| **Workflow** | Claude Code Skills | Six focused skills (see [Skills](#skills) below) |
 | **Spec** | CSpec YAML | Structured, human-readable compilable specifications |
-| **Compiler** | Node.js | Scene graph JSON → Figma Plugin API code (26 rules enforced) |
+| **Compiler** | TypeScript | Scene graph JSON → Figma Plugin API code (26 rules enforced) |
 | **Transport** | MCP | `figma-console-mcp` (preferred) or official Figma MCP server |
 | **Target** | Figma Desktop / Cloud | Production-ready designs in your real DS library |
 | **Memory** | Knowledge Base | Registries, guides, recipes, learnings — per-project |
@@ -103,135 +103,102 @@ One phrase. The skill handles pre-flight, scaffolding, extraction, docs generati
 You describe → Claude writes CSpec → Compiler resolves tokens → MCP → Figma
 ```
 
-## Quick Start
+## Skills
+
+| Skill | Trigger | Purpose |
+|-------|---------|---------|
+| `using-bridge` | SessionStart (auto) | Force-loaded rules, command map, drop/status procedures |
+| `generating-figma-design` | `make <description>` | Spec + compile + execute + verify |
+| `learning-from-corrections` | `fix` | Diff Figma corrections, extract learnings, patch recipes |
+| `shipping-and-archiving` | `done` | Final gate, archive, extract recipes |
+| `extracting-design-system` | `setup bridge` | Bootstrap a DS repo end-to-end |
+| `generating-ds-docs` | `docs` | Build / sync / check / MCP server / headless sync |
+
+## The compiler
+
+Every scene graph JSON goes through a deterministic pipeline:
 
 ```bash
-# 1. Install figma-console-mcp (recommended transport)
-claude mcp add figma-console -s user \
-  -e FIGMA_ACCESS_TOKEN=figd_YOUR_TOKEN \
-  -- npx -y figma-console-mcp@latest
-
-# 2. Connect Figma Desktop plugin
-npx figma-console-mcp@latest --print-path
-# Then in Figma Desktop: Plugins > Development > Import plugin from manifest...
-# Select the manifest.json inside the printed directory.
-
-# 3. Initialize your project
-cd your-project
-npx @noemuch/bridge-ds init
-
-# 4. Extract your DS (first-time only)
-# In Claude Code:
-/design-workflow setup
-
-# 5. Start designing
-/design-workflow make a settings page for account information
-```
-
-Full prerequisites: [Claude Code](https://claude.ai/download), [Node.js 18+](https://nodejs.org), a Figma file with a published DS library.
-
-## Build Your Own Recipe
-
-Recipes are parameterized scene graph templates that the compiler can reuse across sessions. The fastest way to create one: generate a screen with `make`, then `done` to archive it — Bridge auto-extracts a recipe when the layout is reusable.
-
-Manually:
-
-```bash
-# Recipes live in: knowledge-base/recipes/
-# Schema: { id, name, archetype, tags, scene_graph, confidence }
-```
-
-Each recipe gets scored against the user's description on four axes: archetype match, tag overlap, structural similarity, and confidence. High-scoring recipes pre-fill the CSpec and shortcut the generation flow.
-
-See [`skills/design-workflow/references/knowledge-base/recipes/README.md`](skills/design-workflow/references/knowledge-base/recipes/README.md) for the full schema.
-
-## The Compiler
-
-The compiler is the single enforcement path. Every scene graph JSON goes through a deterministic pipeline:
-
-```bash
-node lib/compiler/compile.js --input scene.json --kb <kb-path> --transport <console|official>
+bridge-ds compile --input scene.json --kb <kb-path> --transport <console|official>
 ```
 
 | Stage | Purpose |
 |-------|---------|
 | **Parse** | Load scene graph JSON, validate schema |
-| **Resolve** | Look up every `$token` reference against the knowledge base registries (variables, components, text styles, icons) |
+| **Resolve** | Look up every `$token` reference against the knowledge base registries |
 | **Validate** | Check structure, detect missing tokens with fuzzy suggestions, flag hardcoded values |
 | **Plan** | Chunk large graphs for transport limits; bridge nodeIds across chunks |
-| **Generate** | Emit Figma Plugin API code that respects all 26 rules (FILL after appendChild, resize before sizing, setBoundVariableForPaint, async component imports, …) |
+| **Generate** | Emit Figma Plugin API code respecting all 26 rules |
 | **Wrap** | Adapt output for the target transport (console IIFE vs. official top-level await) |
 
-Errors are caught at compile time, before anything touches Figma. The 26 rules — the ones that would trip up hand-written Plugin API scripts — are enforced by code generation, not by memory.
+Errors are caught at compile time, before anything touches Figma.
 
 [Compiler reference →](references/compiler-reference.md) · [Transport adapter →](references/transport-adapter.md) · [Verification gates →](references/verification-gates.md)
 
-## Bridge Docs (V0.1)
+## Bridge Docs CLI
 
-Bridge auto-generates and maintains your design system's documentation in the same repo:
-
-- `bridge-ds init-docs` — scaffold `design-system/` + `docs.config.yaml` + cron.
-- `bridge-ds docs build` — full regeneration from your knowledge base.
-- `bridge-ds docs sync` — incremental cascade when Figma drifts.
-- `bridge-ds docs check` — lint only.
-- `bridge-ds docs mcp` — launch the local MCP server (`ds://` URIs over stdio).
-- `bridge-ds doctor` — diagnose config, connectivity, docs health, cron.
-- `bridge-ds extract --headless` — Figma REST extraction (CI-friendly, `FIGMA_TOKEN` required).
-- Daily cron (`.github/workflows/bridge-docs-cron.yml`) keeps Figma and docs in sync automatically.
-
-See [CHANGELOG.md](CHANGELOG.md) for the full V0.1 feature list.
-
-## Commands
+Direct CLI commands (typically invoked under the hood by the skills):
 
 | Command | Purpose |
 |---------|---------|
-| `/design-workflow make <description>` | Spec + compile + execute + verify (unified flow) |
-| `/design-workflow fix` | Diff Figma corrections, extract learnings, iterate |
-| `/design-workflow done` | Archive spec, extract recipes, ship |
-| `/design-workflow setup` | Extract DS + build knowledge base |
-| `/design-workflow status` | Show current state, suggest next action |
-| `/design-workflow drop` | Abandon with preserved learnings |
+| `bridge-ds setup --ds-name <name> --figma-key <key>` | Headless scaffold (used by `setup bridge`) |
+| `bridge-ds docs build` | Full regeneration from the knowledge base |
+| `bridge-ds docs sync` | Incremental cascade when Figma drifts |
+| `bridge-ds docs check` | Lint without regenerating |
+| `bridge-ds docs mcp` | Launch the local MCP server (`ds://` URIs over stdio) |
+| `bridge-ds doctor` | Diagnose config, connectivity, docs health, cron |
+| `bridge-ds extract --headless` | Figma REST extraction (CI-friendly, `FIGMA_TOKEN` required) |
+| `bridge-ds cron` | Run the cron orchestrator (CI entry point) |
 
-## Project Structure
+## Recipes
+
+Recipes are parameterized scene graph templates the compiler reuses across sessions. The fastest way to build one: generate a screen with `make`, then `done` to archive — Bridge auto-extracts a recipe when the layout is reusable.
+
+Recipes live under `bridge-ds/knowledge-base/recipes/` in your repo. Schema: `{ id, name, archetype, tags, scene_graph, confidence }`. Each recipe is scored against the user's description on four axes (archetype match, tag overlap, structural similarity, confidence). High-scoring recipes pre-fill the CSpec.
+
+Full schema: [`references/compiler-reference.md`](references/compiler-reference.md#recipe-schema).
+
+## Project structure
 
 ```
-bin/                                 CLI entry point
+bin/                                 CLI entry (bridge-ds binary)
 lib/
-  cli.js
-  scaffold.js
-  mcp-setup.js
-  compiler/                          Scene graph compiler
+  cli/                               Typed CLI (main, setup-orchestrator, token-handling, …)
+  compiler/                          Scene graph compiler (TypeScript)
+  config/                            YAML config parsing
+  cron/                              GitHub Actions cron orchestrator
+  docs/                              Docs pipeline (generate, cascade, generators, templates, MCP server)
+  extractors/                        Figma REST + MCP extractors
+  kb/                                Knowledge base (registries, hashing, auto-detect)
+  mcp/                               MCP transport adapter (console/official)
 
-references/                          Shared, repo-level
+references/                          Shared repo-level references
   compiler-reference.md
   transport-adapter.md
   verification-gates.md
   red-flags-catalog.md
 
 skills/
-  using-bridge/SKILL.md              Force-loaded process skill
-  generating-figma-design/SKILL.md   make
-  learning-from-corrections/SKILL.md fix
-  shipping-and-archiving/SKILL.md    done
-  extracting-design-system/SKILL.md  setup
-  design-workflow/SKILL.md           Compatibility shim (removed in v4.0.0)
+  using-bridge/                      Force-loaded process skill
+  generating-figma-design/           make
+  learning-from-corrections/         fix
+  shipping-and-archiving/            done
+  extracting-design-system/          setup
+  generating-ds-docs/                docs
 
-hooks/
-  session-start
-  hooks.json
-
-scripts/
-  validate-skills.js                 Skill/reference validation harness
+hooks/                               SessionStart health-line hook
+scripts/                             validate-skills, bump-version
+test/                                Integration + security tests
 
 .claude-plugin/                      Claude Code plugin manifest
 .cursor-plugin/                      Cursor plugin manifest
 ```
 
-## Plugin Support
+## Plugin support
 
 Bridge DS works as a plugin for:
 
-- **Claude Code** — Native skill via `.claude/skills/` and SessionStart hook injection.
+- **Claude Code** — Native skill via `.claude-plugin/` and SessionStart hook injection.
 - **Cursor** — Plugin via `.cursor-plugin/`.
 
 Both use the same MCP transport and compiler infrastructure.

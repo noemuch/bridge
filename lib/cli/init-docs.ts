@@ -23,7 +23,7 @@ export async function initDocs(version = "4.1.0") {
   const dsName = await p.text({
     message: "What's your DS called?",
     placeholder: "Spectra",
-    validate: (v) => (v.length === 0 ? "Required" : undefined),
+    validate: (v) => ((v ?? "").length === 0 ? "Required" : undefined),
   });
   if (p.isCancel(dsName)) { p.cancel("Cancelled"); return; }
 
