@@ -51,3 +51,49 @@ jobs:
 
       - name: SessionStart hook executes
         run: bash hooks/session-start | node -e "let s=''; process.stdin.on('data',d=>s+=d); process.stdin.on('end',()=>{ const o=JSON.parse(s); if(!o.hookSpecificOutput) process.exit(1); })"
+
+  security:
+    name: Security tests (token hygiene)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build TypeScript
+        run: npm run build
+      - name: Run security tests
+        run: node --test dist/test/security/*.test.js
+      - name: Scan dist/ for token patterns
+        run: |
+          if grep -rE 'figd_[a-zA-Z0-9_-]{32,}' dist/ lib/; then
+            echo "::error::Found potential Figma token pattern in dist/ or lib/"
+            exit 1
+          fi
+
+  integration-smoke:
+    name: Integration smoke (headless scaffold)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+      - name: Scaffold in a temp dir
+        run: |
+          set -euo pipefail
+          TMP=$(mktemp -d)
+          cd "$TMP"
+          git init -q
+          node "$GITHUB_WORKSPACE/bin/bridge.js" setup --ds-name TestDS --figma-key abc123TEST_KEY
+          test -f docs.config.yaml
+          test -d bridge-ds/knowledge-base/registries
+          test -d design-system/components
+          test -f .github/workflows/bridge-docs-cron.yml
+          test -f .bridge/mcp.json
+          test -f llms.txt
+          echo "✓ Scaffold produced all expected files"
