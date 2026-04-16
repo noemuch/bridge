@@ -29,6 +29,11 @@ All notable changes to Bridge DS are documented here.
 - `tsconfig.json`: removed the now-obsolete `"lib/**/*.js"` entry from
   the `exclude` list.
 
+### Added
+- Regression test suite for the compile pipeline
+  (`lib/compiler/compile.test.ts`): success path, unknown-token resolve
+  error, `official` transport missing fileKey, and malformed JSON input.
+
 ## [4.1.0] — 2026-04-15
 
 ### Added
