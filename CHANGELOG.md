@@ -14,6 +14,8 @@ All notable changes to Bridge DS are documented here.
   `.llm.txt` sidecars via the Handlebars template.
 - **`.llm.txt` sidecar wiring in `lib/docs/generate.ts`** — every component
   regeneration now writes the `.llm.txt` sidecar alongside the `.md`.
+- **`lib/cli/setup-orchestrator.ts`** — shared orchestration: preflight,
+  scaffold, token storage with optional variables-API probe.
 
 ## [4.0.0] — 2026-04-15
 
