@@ -19,6 +19,9 @@ All notable changes to Bridge DS are documented here.
 - **SessionStart hook health line** — `hooks/session-start` now appends
   a one-line live status (`◆ Bridge: KB synced Xh ago · N components` or
   `not set up yet`) to the emitted context.
+- **`bridge-ds setup` CLI subcommand** — headless scaffold dispatch for the
+  `extracting-design-system` skill (via Bash tool). Accepts `--ds-name`,
+  `--figma-key`, `--docs-path`, `--kb-path` flags.
 
 ### Changed
 - **`using-bridge` command map** expanded with "setup bridge", "bootstrap",
