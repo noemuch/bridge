@@ -4,7 +4,7 @@
 // intact under lib/cli.js for backwards compatibility.
 
 const cmd = process.argv[2];
-const v4Cmds = new Set(["init-docs", "doctor", "docs", "extract", "cron"]);
+const v4Cmds = new Set(["init-docs", "doctor", "docs", "extract", "cron", "setup"]);
 
 if (v4Cmds.has(cmd)) {
   const { main } = require("../dist/lib/cli/main.js");

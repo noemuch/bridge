@@ -1,0 +1,30 @@
+# {{name}}{{#if since}} (v{{since}}, {{status}}){{else}} ({{status}}){{/if}}
+
+{{#if summary}}{{summary}}{{else}}Component {{name}} (category: {{category}}).{{/if}}
+
+## Props
+{{#each props}}{{name}}: {{type}}{{#if default}} (default: {{default}}){{/if}}
+{{/each}}
+{{#unless props}}(none){{/unless}}
+
+## Tokens used
+{{#if tokens}}{{#if tokens.color}}color: {{join tokens.color ", "}}
+{{/if}}{{#if tokens.spacing}}spacing: {{join tokens.spacing ", "}}
+{{/if}}{{#if tokens.radius}}radius: {{join tokens.radius ", "}}
+{{/if}}{{#if tokens.text}}text: {{join tokens.text ", "}}
+{{/if}}{{else}}(not yet mapped){{/if}}
+
+## When to use
+{{#each whenToUse}}- {{this}}
+{{/each}}
+{{#unless whenToUse}}(to be filled via ship-time interview){{/unless}}
+
+## Don't
+{{#each dont}}- {{rule}}
+{{/each}}
+{{#unless dont}}(none yet){{/unless}}
+
+## Related
+{{#if related}}{{#if related.alternatives}}Alternatives: {{join related.alternatives ", "}}
+{{/if}}{{#if related.composesWith}}Composes with: {{join related.composesWith ", "}}
+{{/if}}{{else}}(none documented){{/if}}

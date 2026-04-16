@@ -1,10 +1,10 @@
 <p align="center">
-  <!-- TODO: Replace with actual Bridge banner/logo -->
   <img src="docs/assets/banner-placeholder.png" alt="Bridge" width="600" />
 </p>
 
 <p align="center">
-  <strong>Compiler-driven design generation for Figma. Zero hardcoded values.</strong>
+  <strong>Compiler-driven design generation for Figma.</strong><br/>
+  <em>Auto-maintained docs included. Cron-synced. MCP-native.</em>
 </p>
 
 <p align="center">
@@ -12,39 +12,81 @@
   <a href="https://www.npmjs.com/package/@noemuch/bridge-ds"><img src="https://img.shields.io/npm/v/@noemuch/bridge-ds?color=0183ff" alt="npm version" /></a>
   <a href="https://github.com/noemuch/bridge/stargazers"><img src="https://img.shields.io/github/stars/noemuch/bridge?color=0183ff" alt="Stars" /></a>
   <a href="https://github.com/noemuch/bridge/actions"><img src="https://github.com/noemuch/bridge/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="#"><img src="https://img.shields.io/badge/figma--api--rules-26%2F26-success" alt="26/26 Figma API rules enforced" /></a>
 </p>
 
 <div align="center">
 
-[Discussions](https://github.com/noemuch/bridge/discussions) · [Issues](https://github.com/noemuch/bridge/issues) · [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
+[Discussions](https://github.com/noemuch/bridge/discussions) · [Issues](https://github.com/noemuch/bridge/issues) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Changelog](CHANGELOG.md)
 
 </div>
 
 <br />
 
-<!-- TODO: Replace with actual GIF/screenshot of Bridge generating a screen in Figma -->
-<p align="center">
-  <img src="docs/assets/demo-placeholder.png" alt="Bridge generating a Figma screen from a description" width="800" />
-</p>
+Bridge compiles your design-system intent into correct Figma Plugin API code. No AI hallucinations. No hand-written scripts. 26 Figma API rules enforced automatically by a local compiler.
 
-## What is Bridge?
+Bonus: Bridge also auto-maintains your DS documentation in your own repo (no SaaS, no lock-in). The compiler is the moat; the docs pipeline is a feature on top.
 
-Bridge turns Claude Code into a designer that knows your design system inside out. You describe a component or a screen in natural language — Bridge consults your documented DS, writes a structured CSpec, compiles it into a scene graph, and executes it in Figma via MCP.
+## For designers
 
-No raw Figma Plugin API scripting. No hardcoded hex codes or magic pixels. Every output uses your real components, bound variables, and text styles. The compiler is the single enforcement path: 26 Figma API rules, token resolution, validation, code generation, transport adaptation — all automatic.
+Design components and screens **from natural language** inside Claude Code. Bridge handles the rest:
 
-## Key Features
+```
+# In Claude Code, inside your DS repo:
+make a settings screen for account information
+```
 
-- **Scene Graph Compiler** — The LLM produces declarative JSON with `$token` references. A local compiler (`lib/compiler/compile.js`) resolves tokens, validates structure, enforces all 26 Figma Plugin API rules, and generates correct executable code. Claude never writes raw Plugin API scripts.
+Bridge produces:
+1. A structured CSpec (YAML) describing the layout + tokens
+2. A scene graph JSON (validated against your DS registries)
+3. Compiled Figma Plugin API code (all 26 rules respected)
+4. Executed designs in Figma via MCP
 
-- **CSpec — Compilable Specifications** — Structured YAML that describes what to build: layout tree, components, tokens, variants. Human-readable, machine-parseable. Templates exist for screens and components.
+Every output uses your real components, bound variables, and text styles. **Zero hardcoded values.**
 
-- **Recipe System** — Proven layouts captured as parameterized scene graph templates. High-scoring recipes pre-fill the CSpec, accelerating generation. Recipes evolve: `fix` and `done` flows extract learnings and patch recipes from user corrections.
+Iterate with `fix` (capture manual Figma edits as learnings). Ship with `done` (archive + cascade docs).
 
-- **Fix Loop** — "I adjusted it in Figma" triggers a snapshot diff. Corrections are classified (DS token vs. hardcoded flag), persisted as learnings, and used to auto-patch recipes. The DS knowledge deepens with every iteration.
+## For DS teams
 
-- **Dual MCP Transport** — Supports [figma-console-mcp](https://github.com/southleft/figma-console-mcp) (preferred, full capabilities via Figma Desktop plugin) and the official Figma MCP server (simpler, cloud-based). Auto-detection picks the best available transport.
+Bridge's secondary value: auto-maintained documentation in your repo.
+
+- **`setup bridge`** in Claude Code bootstraps your DS repo: registries, docs tree, cron workflow, all in one flow.
+- **Daily cron** on GitHub Actions pulls Figma via REST, detects drift, opens a PR with cascaded doc updates. Silent on no-diff.
+- **Preservation layer**: `_manual/` directory and inline `<!-- manual:id -->` regions are never overwritten. Your hand-written content stays.
+- **Per-component `.llm.txt`** sidecars for AI-native consumption.
+- **Linter** verifies token references, frontmatter schema, Figma deeplinks.
+
+## For engineers
+
+Consume the DS from your IDE — Cursor, Claude Code, Copilot CLI, Codex:
+
+- **`llms.txt`** index (Answer.AI spec) — AI-discoverable catalog.
+- **`llms-full.txt`** — concatenated full docs for inline context.
+- **`.llm.txt` per component** — ultra-compressed structured entries.
+- **MCP server** (`bridge-ds docs mcp`) exposes `ds://component/<name>`, `ds://foundation/<name>`, `ds://index` over stdio.
+
+Point your AI client at the DS repo's `llms.txt` or the MCP server. Your generated code uses tokens, variants, and composition rules correctly — because it's reading the source of truth, not guessing.
+
+## Quick start
+
+**In Claude Code, any session (one-time install):**
+
+```
+/plugin marketplace add github:noemuch/bridge
+/plugin install bridge-ds
+```
+
+**In your DS repo:**
+
+```
+cd /path/to/ds-repo && claude
+setup bridge
+```
+
+One phrase. The skill handles pre-flight, scaffolding, extraction, docs generation, GitHub secret, first commit, and optional cron test. ~10 minutes end-to-end.
+
+**Already on v4.0.0?** See [MIGRATION.md](MIGRATION.md) for the v4.1.0 upgrade path (TL;DR: `npm install @noemuch/bridge-ds@4.1.0`, no other action needed).
+
+---
 
 ## Architecture
 

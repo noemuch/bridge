@@ -8,7 +8,7 @@ import { startMcpServer } from "../docs/mcp-server.js";
 import { runCron } from "../cron/orchestrator.js";
 import { parseDocsConfig } from "../config/docs-config.js";
 
-const VERSION = "4.0.0";
+const VERSION = "4.1.0";
 
 async function loadCfg() {
   const raw = await readFile("docs.config.yaml", "utf8");
@@ -65,6 +65,26 @@ export async function main() {
       case "cron":
         console.log(await runCron({ configPath: "docs.config.yaml" }));
         return;
+      case "setup": {
+        // Headless setup entry point — used by the extracting-design-system skill
+        // via Bash dispatches. Takes flags: --ds-name, --figma-key, --docs-path, --kb-path.
+        const args = new Map<string, string>();
+        for (let i = 0; i < rest.length; i += 2) {
+          const k = rest[i];
+          if (k?.startsWith("--")) {
+            args.set(k.slice(2), rest[i + 1] ?? "");
+          }
+        }
+        const { scaffold } = await import("./setup-orchestrator.js");
+        const created = await scaffold({
+          dsName: args.get("ds-name") ?? "DS",
+          figmaFileKey: args.get("figma-key") ?? "",
+          docsPath: args.get("docs-path"),
+          kbPath: args.get("kb-path"),
+        });
+        console.log(JSON.stringify({ scaffolded: created }, null, 2));
+        return;
+      }
       case "version":
       case "--version":
       case "-v":

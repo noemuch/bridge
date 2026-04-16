@@ -1,231 +1,214 @@
 ---
 name: extracting-design-system
-description: Use when the user says "setup", "extract", "extract DS", "onboard", "build knowledge base", or is starting Bridge in a project for the first time. Extracts the user's design system from Figma (variables, components, text styles, icons, logos), validates registries, and builds the initial knowledge base with guides and a recipe index.
+description: Use when the user says "setup", "setup bridge", "extract", "extract DS", "onboard", "build knowledge base", "initialize bridge", or is starting Bridge in a project for the first time. Handles the complete bootstrap: pre-flight checks, scaffolding (docs.config.yaml, cron workflow, .bridge/mcp.json), Figma token management (stdin-only), DS extraction via MCP (preferred) or REST (fallback), guide generation, initial docs build, and first commit proposal.
 ---
 
 # Extracting Design System
 
 ## Overview
 
-Bridge's onboarding skill. Connects to the user's Figma DS library via the active MCP transport, extracts variables / components / text styles / icons, validates that every entry has a reusable `key` (not a session-scoped `id`), writes per-domain registries under `knowledge-base/registries/`, generates human-readable guides under `knowledge-base/guides/`, and initializes an empty recipe index.
-
-In V4.0.0 this skill will also support a **headless** mode invoked by `bridge-ds extract --headless` (cron) using the Figma REST API, but in V3.3.0 only the interactive MCP path is implemented.
+Single-entry-point skill for Bridge's initial setup AND subsequent re-extracts. Orchestrates the complete flow from empty repo to "docs shipped" via 8 procedural steps. Uses the `setup-orchestrator` module (Bash tool) + MCP tools (figma-console-mcp) + user prompts.
 
 ## When to Use
 
 Invoke when the user:
-- says "setup", "extract", "extract DS", "onboard", "build KB", "refresh registries"
-- has installed Bridge in a new project and has no `knowledge-base/`
+- says "setup bridge", "setup", "init", "extract", "extract DS", "onboard", "build KB", "refresh registries"
+- has just installed the Bridge plugin and wants to bootstrap a repo
 - wants to re-extract after an upstream Figma change
 
 Do NOT use if:
-- a recent registry already exists and the user wants incremental sync — V4.0.0 `generating-ds-docs sync` handles this
-- the user is designing — they need `generating-figma-design`
+- the user is designing a component — use `generating-figma-design`
+- the user is processing manual corrections — use `learning-from-corrections`
+- the user is shipping a design — use `shipping-and-archiving`
 
 ## Procedure
 
 **Before starting, load:**
-- `references/transport-adapter.md` (repo-root) — for transport detection and composite extraction strategy
+- `references/transport-adapter.md` (repo-root) — for MCP transport detection
 
-### 1. Transport detection
+### Step 1 — Pre-flight checks
 
-Detect which transport is available (see `references/transport-adapter.md` (repo-root) Section A):
+Run via Bash tool:
+```bash
+node --version
+git rev-parse --is-inside-work-tree
+gh auth status
+```
 
-1. **Check console transport:** Is `figma_execute` available? Try `figma_get_status()`.
-2. **Check official transport:** Is `use_figma` available? Try `whoami()`.
+Then Node:
+```js
+const { runPreflight } = require("/path/to/node_modules/@noemuch/bridge-ds/dist/lib/cli/setup-orchestrator.js");
+const { gitRemote, figmaKey } = await runPreflight();
+```
 
-| Result | Action |
-|--------|--------|
-| Console available | Use console transport |
-| Official only | Use official transport |
-| Both available | Use console (preferred) |
-| Neither available | **Block.** Show setup instructions from `references/transport-adapter.md` (repo-root) Section A |
+Report to user in conversation:
+```
+✓ Node 20 · git repo · gh auth OK
+📍 Detected git remote: {gitRemote or "(none)"}
+📍 Detected Figma URL in README: {figmaKey or "(none)"}
+```
+
+### Step 2 — Ask for Figma file URL (skip if auto-detected and user confirms)
+
+If `figmaKey` is null from pre-flight:
+```
+Paste the Figma DS file URL:
+```
+
+Extract the key via the regex `figma\.com\/(?:design|file)\/([a-zA-Z0-9_-]+)`.
+
+### Step 3 — Ask for Figma Personal Access Token
+
+**IMPORTANT**: token must be stdin-masked. Use Claude Code's native password prompt (`AskUserQuestion` tool with type=password if available, otherwise instruct the user via terminal).
+
+```
+Paste your Figma PAT (hidden, never logged).
+Press Enter to skip — we'll use the plugin path (interactive extraction only).
+```
+
+If provided:
+- Validate via `validateFigmaToken(token)` — if 401, abort
+- Probe via `probeVariablesEndpoint(token, fileKey)` — note plan tier
+
+If skipped: plan to use MCP path only (no cron support until token added later).
+
+### Step 4 — Scaffold the repo
+
+Via Bash:
+```bash
+node -e "
+const { scaffold } = require('@noemuch/bridge-ds/dist/lib/cli/setup-orchestrator.js');
+(async () => {
+  const created = await scaffold({
+    dsName: '$DS_NAME',
+    figmaFileKey: '$FIGMA_KEY',
+    cronCadence: 'daily',
+    cronTime: '06:00',
+  });
+  console.log(JSON.stringify(created, null, 2));
+})();
+"
+```
 
 Report:
 ```
-Transport: {console | official}
+✓ Scaffolded 8 files/directories:
+  - bridge-ds/knowledge-base/registries/
+  - design-system/
+  - docs.config.yaml
+  - .github/workflows/bridge-docs-cron.yml
+  - .bridge/mcp.json
+  - llms.txt
+  - design-system/_manual/README.md
 ```
 
-### 2. Ask for DS library
+### Step 5 — Store token in GitHub Secrets (if provided)
 
-```
-What is the Figma URL of your design system library?
-(The file containing your components, tokens, and styles)
-```
-
-Extract the `fileKey` from the URL.
-
-### 3. Extract DS via MCP
-
-**Console transport:**
-```
-figma_get_design_system_kit({ file_key: "{fileKey}", format: "full" })
-figma_get_variables({ file_key: "{fileKey}" })
-figma_get_styles({ file_key: "{fileKey}" })
-```
-
-**Official transport** (composite strategy — see `references/transport-adapter.md` (repo-root) Section D):
-```
-get_variable_defs({ fileKey: "{fileKey}" })
-search_design_system({ query: "*", includeComponents: true })
-search_design_system({ query: "*", includeStyles: true })
-```
-Supplement with `use_figma` extraction scripts as needed for detailed data.
-
-### 4. Write registries
-
-**Determine KB directory:**
-- If `./.claude/skills/design-workflow/references/knowledge-base/` already exists -> use that path
-- Otherwise -> create and use `./bridge-ds/knowledge-base/`
-
-Create subdirectories:
-```
-knowledge-base/
-  registries/
-  guides/tokens/
-  guides/components/
-  guides/patterns/
-  guides/assets/
-  recipes/
-  ui-references/screenshots/
+Via Bash:
+```bash
+node -e "
+const { storeTokenInGitHubSecret } = require('@noemuch/bridge-ds/dist/lib/cli/setup-orchestrator.js');
+(async () => {
+  const result = await storeTokenInGitHubSecret({
+    token: process.env._FIGMA_TOKEN_TEMP,
+    repo: '$GITHUB_REPO',
+    fileKey: '$FIGMA_KEY',
+  });
+  console.log(JSON.stringify(result));
+})();
+" 2>&1
 ```
 
-**Read the schema for each registry BEFORE writing it:**
-- `schemas/components.md` -> `registries/components.json`
-- `schemas/variables.md` -> `registries/variables.json`
-- `schemas/text-styles.md` -> `registries/text-styles.json`
-- `schemas/assets.md` -> `registries/icons.json`, `registries/logos.json`, `registries/illustrations.json`
+Where `_FIGMA_TOKEN_TEMP` is set for the duration of this single command invocation ONLY, then unset.
 
-**CRITICAL:** Every entry MUST have a `key` field (hex hash for components, key string for variables). Without keys, the compiler cannot resolve `$token` references or import components.
+### Step 6 — Detect transport + extract via MCP (preferred)
 
-### 5. Validate keys (BLOCKING)
+Per `references/transport-adapter.md`:
+- `figma_get_status` via MCP → if available and `setup.valid: true`, use console transport
+- Otherwise, fall back to REST (headless) with graceful 403 handling for non-Enterprise
 
-Test-import 3-5 sample entries per registry via `figma_execute` (or `use_figma`):
+**During extract**, Claude Code should display progress events from the MCP tool calls. Pattern:
+- After each `figma_get_design_system_kit` / `figma_get_variables` / `figma_search_components` batch, report to user:
+  ```
+  ⠋ Extracted: 42/156 components · 130/856 variables · 12/49 text styles
+  ```
 
-**Components:** Try `importComponentByKeyAsync("{key}")` for 3-5 sample component keys.
-**Variables:** Try `figma.variables.importVariableByKeyAsync("{key}")` for 3-5 sample variable keys.
-**Text styles:** Try `figma.importStyleByKeyAsync("{key}")` for 3-5 sample text style keys.
+### Step 7 — Validate extracted data + write registries
 
-If ANY validation fails:
-1. Report which keys failed
-2. Re-extract the failing items using remediation scripts from `schemas/validation.md`
-3. Re-validate
-4. **Gate:** ALL validation checks MUST pass before proceeding
+Sample import probe (3–5 keys per registry type). If any fail, re-extract the failing entries (max 3 attempts).
+
+Write to `bridge-ds/knowledge-base/registries/{components,variables,text-styles,icons,logos,illustrations}.json`.
 
 Report:
 ```
-Registry validation:
-  Components: {n}/{n} keys verified
-  Variables: {n}/{n} keys verified
-  Text styles: {n}/{n} keys verified
-  Assets: {n}/{n} keys verified (if applicable)
+✓ Registries validated. Keys verified.
+  - Components: 156 (100%)
+  - Variables: 856 (100%)
+  - ...
 ```
 
-### 6. Generate guides
+### Step 8 — Build initial docs + propose commit
 
-Claude analyzes the raw registry data and writes intelligent guides:
-
-**Token guides:**
-- `guides/tokens/color-usage.md` — Group colors by semantic role, create decision tree
-- `guides/tokens/spacing-usage.md` — Map spacing values to UI contexts
-- `guides/tokens/typography-usage.md` — Map text styles to hierarchy
-
-**Component guides:**
-- `guides/components/overview.md` — Decision tree: "I need X" -> use component Y
-- `guides/components/{group}.md` — Per-group guides (actions, form-controls, data-display, feedback, navigation, layout)
-
-**Asset guides (if icons/logos/illustrations exist):**
-- `guides/assets/icons.md` — Categorized icon catalog
-- `guides/assets/logos.md` — Logo catalog
-- `guides/assets/illustrations.md` — Illustration catalog
-
-### 7. Ask for product screenshots
-
-```
-To document your layout patterns, add screenshots of your product's key screens
-to: {kb-path}/ui-references/screenshots/
-
-Ideal screenshots:
-- Dashboard / home page
-- List / category page
-- Detail / form page
-- Settings page
-- Modal / dialog
-- Empty state
-- Multi-step flow
-
-Drop the PNG/JPG files and confirm when done.
-(Skip this step if you don't have screenshots yet — you can add them later.)
+Via Bash:
+```bash
+npx bridge-ds docs build
 ```
 
-### 8. Generate pattern guides (if screenshots provided)
+Report the outcome (number of .md, .json, .llm.txt generated).
 
-Claude analyzes the screenshots and writes:
-- `guides/design-patterns.md` — Layout patterns catalogue with zone placement, proportions, density
-- `guides/patterns/form-patterns.md` — Form field patterns
-- `guides/patterns/navigation-patterns.md` — Sidebar, tabs, breadcrumbs patterns
-- `guides/patterns/feedback-patterns.md` — Success, error, warning, loading states
-- `ui-references/ui-references-guide.md` — Which screenshot for which pattern type
-
-### 9. Initialize recipe index
-
-Create an empty recipe index:
-
-```json
-// recipes/_index.json
-{
-  "version": 1,
-  "recipes": [],
-  "lastUpdated": "{ISO date}"
-}
+Then:
+```
+Propose initial commit? [Y/n]
 ```
 
-### 10. Initialize learnings file
-
-Create an empty learnings file (if it doesn't already exist):
-
-```json
-// learnings.json
-{
-  "meta": {
-    "version": 1,
-    "lastUpdated": "{ISO date}"
-  },
-  "learnings": [],
-  "flags": []
-}
+If Y, Bash:
+```bash
+git add .
+git commit -m "feat: bootstrap Bridge Docs V0.1 via setup bridge"
+git push origin $(git rev-parse --abbrev-ref HEAD)
 ```
 
----
-
-## Output
-
+Finally, propose first cron run:
 ```
-Knowledge base built and validated:
-  - {N} components documented ({N} with variants) — {N} keys verified
-  - {N} variables ({N} colors, {N} spacing, {N} radius) — {N} keys verified
-  - {N} text styles — {N} keys verified
-  - {N} asset items (icons/logos/illustrations) — {N} keys verified
-  - {N} layout patterns extracted from {N} screenshots
-  - Recipe index initialized (empty)
-  - Learnings file initialized (empty)
-
-Ready to design. Run: `make <description>`
+Trigger first cron run now to verify the workflow? [Y/n]
 ```
 
----
+If Y, Bash:
+```bash
+gh workflow run bridge-docs-cron.yml --repo $GITHUB_REPO
+gh run watch
+```
 
-## Transition
+### Final report
 
-When setup is complete -> suggest: "Run: `make <description>` to start designing" (handled by `generating-figma-design`)
+```
+✨ Setup complete in Xm Ys.
+
+Your DS:
+  Repo:      https://github.com/{repo}
+  Docs:      design-system/ (rendered on GitHub)
+  LLM index: llms.txt · .llm.txt sidecars
+  MCP:       ds://component/<name>
+
+Next steps:
+  • Say "make <description>" to design a new component/screen
+  • Say "fix" after manual Figma edits
+  • Say "done" to ship + cascade
+  • Daily cron runs at 06:00 UTC automatically
+```
 
 <HARD-GATE>
 NEVER write a registry entry without a `key` field (hex hash for
-components/icons/logos; name path for variables). NodeId-only entries
-are a gate failure.
+components/icons/logos; name path for variables).
 
 NEVER mark setup complete without validating a sample of keys
 (3–5 per registry) via a live import probe.
+
+NEVER echo or log the Figma PAT. Token goes from stdin → validate
+→ `setGitHubSecret` (stdin pipe to gh CLI). Wipe buffer afterward.
+
+NEVER invoke `bridge-ds init-docs` (deprecated CLI wizard). Use the
+setup-orchestrator module via Bash directly.
 </HARD-GATE>
 
 ## Red Flags
@@ -234,13 +217,18 @@ See the full catalog at `references/red-flags-catalog.md` (repo-root).
 
 Top flags for this skill:
 - "I'll skip the key validation, the names look fine" → **Names are not keys. Validate by import.**
-- "I'll use nodeIds — they're easier to copy from the API" → **NodeIds are session-scoped. Keys are persistent.**
+- "I'll use nodeIds — they're easier to copy" → **NodeIds are session-scoped. Keys are persistent.**
+- "I'll export FIGMA_TOKEN in the shell first" → **Never. stdin-only via `setGitHubSecret`.**
 
 ## Verification
 
-- **Gate A / B / C** — not applicable in V3.3.0 (setup does not compile,
-  execute, or generate docs). Internal gates are key-validation and
-  schema conformance, defined inline in the procedure.
+- **Gate A / B / C** — not applicable in V3.3.0/V4.1.0 (setup doesn't compile, execute, or generate docs directly — it composes them). Internal gates: key-validation, schema conformance, token-pipe discipline.
 
-Evidence to surface: per-registry entry counts, key-validation probe
-results.
+Evidence to surface: per-registry entry counts, key-validation probe results, scaffold file list, token mask (never full value).
+
+## Skill-specific references
+
+- `lib/cli/setup-orchestrator.ts` — shared orchestration logic
+- `lib/cli/token-handling.ts` — stdin pipe + validate
+- `lib/kb/auto-detect.ts` — git remote + Figma URL detection
+- `references/transport-adapter.md` (repo-root) — MCP vs REST decision
