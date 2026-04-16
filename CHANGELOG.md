@@ -2,6 +2,16 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [Unreleased]
+
+### Changed
+- Compiler migrated from CommonJS JavaScript to strict TypeScript
+  (`lib/compiler/*.js` → `lib/compiler/*.ts`). Public API
+  (`compile()` signature, `CompilerError` shape, CLI flags, generated
+  code output) is unchanged. Staged migration across several commits:
+  errors/helpers/wrap, then registry/plan/schema, validate/resolve,
+  codegen, and finally the `compile` orchestrator.
+
 ## [4.1.0] — 2026-04-15
 
 ### Added
