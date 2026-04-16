@@ -16,6 +16,9 @@ All notable changes to Bridge DS are documented here.
   regeneration now writes the `.llm.txt` sidecar alongside the `.md`.
 - **`lib/cli/setup-orchestrator.ts`** — shared orchestration: preflight,
   scaffold, token storage with optional variables-API probe.
+- **SessionStart hook health line** — `hooks/session-start` now appends
+  a one-line live status (`◆ Bridge: KB synced Xh ago · N components` or
+  `not set up yet`) to the emitted context.
 
 ### Changed
 - **`extracting-design-system` skill extended** to orchestrate the

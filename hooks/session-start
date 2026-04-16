@@ -1,45 +1,73 @@
 #!/usr/bin/env bash
-# Bridge SessionStart hook — injects using-bridge/SKILL.md into the
-# Claude Code system prompt at session start.
-#
-# Output: JSON per the Claude Code SessionStart hook spec.
-# Silent (exit 0 with empty output) if the skill file is missing.
+# Bridge SessionStart hook. Injects skills/using-bridge/SKILL.md into the
+# LLM system prompt at session start and appends a one-line health summary.
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILL_FILE="$SCRIPT_DIR/../skills/using-bridge/SKILL.md"
 
-if [[ ! -f "$SKILL_FILE" ]]; then
-  # No skill file → silent no-op.
+if [ ! -f "$SKILL_FILE" ]; then
+  printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":""}}\n'
   exit 0
 fi
 
-# Strip YAML frontmatter (between the first two `---` fences).
-# awk approach: skip content between first two `---` lines.
-SKILL_BODY=$(awk '
-  BEGIN { in_fm = 0; past_fm = 0 }
-  /^---[[:space:]]*$/ {
-    if (past_fm == 0 && in_fm == 0) { in_fm = 1; next }
-    if (in_fm == 1) { in_fm = 0; past_fm = 1; next }
-  }
-  { if (in_fm == 0) print }
-' "$SKILL_FILE")
+SKILL_BODY="$(awk 'BEGIN{fm=0} /^---$/{fm++; next} fm>=2{print}' "$SKILL_FILE")"
 
-# Emit a JSON payload using python (portable JSON escaping).
-if ! command -v python3 >/dev/null 2>&1; then
-  # Fallback: no python → emit nothing rather than risk malformed JSON.
-  exit 0
-fi
-
-python3 - "$SKILL_BODY" <<'PY'
+HEALTH=""
+if [ -f "docs.config.yaml" ]; then
+  KB_STATE_FILE=".bridge/docs-state.json"
+  if [ -f "$KB_STATE_FILE" ]; then
+    LAST_SYNC="$(python3 -c "
+import json, sys, datetime
+try:
+    with open('$KB_STATE_FILE') as f:
+        s = json.load(f)
+    ts = s.get('lastSyncAt', '')
+    if ts:
+        dt = datetime.datetime.fromisoformat(ts.replace('Z', '+00:00'))
+        now = datetime.datetime.now(datetime.timezone.utc)
+        delta = now - dt
+        hours = int(delta.total_seconds() / 3600)
+        if hours < 1:
+            print('just now')
+        elif hours < 24:
+            print(f'{hours}h ago')
+        else:
+            print(f'{hours // 24}d ago')
+    else:
+        print('never')
+except Exception:
+    print('')
+" 2>/dev/null || echo "")"
+    if [ -n "$LAST_SYNC" ] && [ "$LAST_SYNC" != "never" ]; then
+      COMP_COUNT="$(python3 -c "
 import json, sys
-body = sys.argv[1]
-payload = {
-  "hookSpecificOutput": {
-    "hookEventName": "SessionStart",
-    "additionalContext": body
-  }
-}
-print(json.dumps(payload))
-PY
+try:
+    with open('bridge-ds/knowledge-base/registries/components.json') as f:
+        print(len(json.load(f).get('components', [])))
+except Exception:
+    print('?')
+" 2>/dev/null || echo "?")"
+      HEALTH="◆ Bridge: KB synced $LAST_SYNC · $COMP_COUNT components"
+    else
+      HEALTH="◆ Bridge: scaffolded but not yet extracted · run \"setup bridge\""
+    fi
+  else
+    HEALTH="◆ Bridge: scaffolded but not yet extracted · run \"setup bridge\""
+  fi
+else
+  HEALTH="◆ Bridge: not set up yet · run \"setup bridge\" to initialize"
+fi
+
+COMBINED="$SKILL_BODY"
+if [ -n "$HEALTH" ]; then
+  COMBINED="$COMBINED
+
+---
+
+$HEALTH"
+fi
+
+printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":%s}}\n' \
+  "$(printf '%s' "$COMBINED" | python3 -c "import json,sys; print(json.dumps(sys.stdin.read()))")"
