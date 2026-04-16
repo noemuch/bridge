@@ -52,11 +52,16 @@ export async function sync(opts: SyncOptions): Promise<SyncReport> {
 
   const idx = buildFromScratch({ components, variables, textStyles, learnings, recipes });
 
-  // For V0.1, build a "fake" old snapshot for the initial run that has no previous state.
-  // If there's no prior state, treat the old snapshot as empty so every current entry
-  // shows up as "added" and triggers a full regen.
+  // V0.1 bug fix (formalized in v4.1.0): on first run (no prior state), we want ALL entries
+  // to appear as "added" in the diff, which requires the OLD snapshot to be empty and the NEW
+  // snapshot to contain the current registries. The original code had the ternary inverted,
+  // producing an empty changeset on first run (0 regenerated).
   const hasPriorState = Object.keys(state.perFileHashes).length > 0 || state.registriesHash !== "";
-  const oldSnapshot = { components: hasPriorState ? components.components : [], variables: hasPriorState ? variables.variables : [], textStyles: hasPriorState ? textStyles.styles : [] };
+  const oldSnapshot = {
+    components: hasPriorState ? components.components : [],
+    variables: hasPriorState ? variables.variables : [],
+    textStyles: hasPriorState ? textStyles.styles : [],
+  };
   const newSnapshot = { components: components.components, variables: variables.variables, textStyles: textStyles.styles };
   const changeset = diffKb(oldSnapshot as any, newSnapshot as any);
   const impact = computeImpact(changeset, idx);
