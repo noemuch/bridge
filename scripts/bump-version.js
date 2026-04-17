@@ -14,6 +14,7 @@ const MANIFESTS = [
   ".claude-plugin/plugin.json",
   ".claude-plugin/marketplace.json",
   ".cursor-plugin/plugin.json",
+  ".cursor-plugin/marketplace.json",
 ];
 
 const target = process.argv[2];

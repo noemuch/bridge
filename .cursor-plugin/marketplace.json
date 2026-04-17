@@ -9,7 +9,7 @@
     {
       "name": "bridge-ds",
       "description": "Compiler-driven design generation in Figma — 100% design system compliant.",
-      "version": "5.1.0",
+      "version": "6.0.0",
       "source": "./",
       "author": {
         "name": "noemuch",

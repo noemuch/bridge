@@ -1,6 +1,6 @@
 {
   "name": "@noemuch/bridge-ds",
-  "version": "5.1.0",
+  "version": "6.0.0",
   "description": "Compiler-driven design generation in Figma — 100% design system compliant. Compiles component specs into verified Figma output via MCP.",
   "main": "dist/lib/cli/main.js",
   "types": "dist/lib/cli/main.d.ts",
