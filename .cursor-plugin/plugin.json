@@ -1,7 +1,7 @@
 {
   "name": "bridge-ds",
   "displayName": "Bridge Design System",
-  "version": "5.1.0",
+  "version": "6.0.0",
   "description": "Compiler-driven design generation in Figma — declarative scene graphs compiled into DS-native Figma designs.",
   "author": {
     "name": "noemuch"

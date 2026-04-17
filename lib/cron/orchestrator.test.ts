@@ -71,14 +71,13 @@ test("runCron integration: MCP-free end-to-end on fake fetch", async () => {
     await mkdir(dir, { recursive: true });
     await writeFile(
       path.join(dir, "docs.config.yaml"),
-      `dsName: "TestDS"\nfigmaFileKey: "KEY"\ndocsPath: "ds"\nkbPath: "kb"\n`
+      `dsName: "TestDS"\nfigmaFileKey: "KEY"\nkbPath: "kb"\n`
     );
     process.chdir(dir);
     const report = await runCron({ configPath: "docs.config.yaml" });
-    assert.equal(typeof report.changed, "number");
-    // Sync writes last-sync-report.md in the current working directory.
+    assert.equal(report.extracted, true);
     const body = await readFile(path.join(dir, ".bridge/last-sync-report.md"), "utf8");
-    assert.match(body, /Bridge Docs — TestDS/);
+    assert.match(body, /Bridge KB sync/);
   } finally {
     process.chdir(originalCwd);
     global.fetch = originalFetch;

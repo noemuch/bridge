@@ -16,43 +16,17 @@ SKILL_BODY="$(awk 'BEGIN{fm=0} /^---$/{fm++; next} fm>=2{print}' "$SKILL_FILE")"
 
 HEALTH=""
 if [ -f "docs.config.yaml" ]; then
-  KB_STATE_FILE=".bridge/docs-state.json"
-  if [ -f "$KB_STATE_FILE" ]; then
-    LAST_SYNC="$(python3 -c "
-import json, sys, datetime
-try:
-    with open('$KB_STATE_FILE') as f:
-        s = json.load(f)
-    ts = s.get('lastSyncAt', '')
-    if ts:
-        dt = datetime.datetime.fromisoformat(ts.replace('Z', '+00:00'))
-        now = datetime.datetime.now(datetime.timezone.utc)
-        delta = now - dt
-        hours = int(delta.total_seconds() / 3600)
-        if hours < 1:
-            print('just now')
-        elif hours < 24:
-            print(f'{hours}h ago')
-        else:
-            print(f'{hours // 24}d ago')
-    else:
-        print('never')
-except Exception:
-    print('')
-" 2>/dev/null || echo "")"
-    if [ -n "$LAST_SYNC" ] && [ "$LAST_SYNC" != "never" ]; then
-      COMP_COUNT="$(python3 -c "
+  KB_FILE="bridge-ds/knowledge-base/registries/components.json"
+  if [ -f "$KB_FILE" ]; then
+    COMP_COUNT="$(python3 -c "
 import json, sys
 try:
-    with open('bridge-ds/knowledge-base/registries/components.json') as f:
+    with open('$KB_FILE') as f:
         print(len(json.load(f).get('components', [])))
 except Exception:
     print('?')
 " 2>/dev/null || echo "?")"
-      HEALTH="◆ Bridge: KB synced $LAST_SYNC · $COMP_COUNT components"
-    else
-      HEALTH="◆ Bridge: scaffolded but not yet extracted · run \"setup bridge\""
-    fi
+    HEALTH="◆ Bridge: KB ready · $COMP_COUNT components"
   else
     HEALTH="◆ Bridge: scaffolded but not yet extracted · run \"setup bridge\""
   fi

@@ -8,19 +8,12 @@ const CronCfg = z.object({
   autoMergeIfTrivial: z.boolean().default(false),
 });
 
-const McpCfg = z.object({
-  enabled: z.boolean().default(true),
-});
-
 export const DocsConfigSchema = z.object({
   dsName: z.string().min(1),
   tagline: z.string().optional(),
   figmaFileKey: z.string().min(1),
-  docsPath: z.string().default("design-system"),
   kbPath: z.string().default("bridge-ds"),
   cron: CronCfg.default({}),
-  categories: z.record(z.string(), z.string()).default({}),
-  mcp: McpCfg.default({}),
 });
 
 export type DocsConfig = z.infer<typeof DocsConfigSchema>;

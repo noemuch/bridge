@@ -8,20 +8,16 @@ test("parseDocsConfig accepts minimal config with defaults", async () => {
   const raw = await readFile(path.resolve("test/fixtures/docs-config/minimal.yaml"), "utf8");
   const cfg = parseDocsConfig(raw);
   assert.equal(cfg.dsName, "Spectra");
-  assert.equal(cfg.docsPath, "design-system");
   assert.equal(cfg.kbPath, "bridge-ds");
   assert.equal(cfg.cron.cadence, "daily");
   assert.equal(cfg.cron.time, "06:00");
-  assert.equal(cfg.cron.maxPRsPerWeek, 7);
-  assert.equal(cfg.mcp.enabled, true);
 });
 
 test("parseDocsConfig accepts full config", async () => {
   const raw = await readFile(path.resolve("test/fixtures/docs-config/full.yaml"), "utf8");
   const cfg = parseDocsConfig(raw);
-  assert.equal(cfg.cron.maxPRsPerWeek, 7);
-  assert.equal(cfg.categories.actions, "Primary + CTAs");
   assert.equal(cfg.tagline, "Finary's design system.");
+  assert.equal(cfg.kbPath, "bridge-ds");
 });
 
 test("parseDocsConfig throws on missing required field", () => {
@@ -33,9 +29,7 @@ test("parseDocsConfig throws on empty dsName", () => {
 });
 
 test("parseDocsConfig rejects custom YAML tags (defense-in-depth)", () => {
-  // JSON_SCHEMA only accepts plain data — custom tags like !!js/function
-  // are rejected at parse time, so a malicious config cannot smuggle code.
   assert.throws(() =>
-    parseDocsConfig('dsName: x\nfigmaFileKey: y\ndocsPath: !!js/function "() => 1"\n')
+    parseDocsConfig('dsName: x\nfigmaFileKey: y\nkbPath: !!js/function "() => 1"\n')
   );
 });

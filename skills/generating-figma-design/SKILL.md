@@ -444,3 +444,36 @@ Evidence to surface: compiler stdout, scene graph JSON, screenshot tool result, 
 
 - `./references/templates/component-cspec.yaml` — CSpec template for components
 - `./references/templates/screen-cspec.yaml` — CSpec template for screens
+
+---
+
+## The make flow (decision diagram)
+
+```dot
+digraph make_flow {
+  "User says 'make X'" [shape=doublecircle];
+  "Load context (recipes, learnings)" [shape=box];
+  "Generate CSpec" [shape=box];
+  "Compile" [shape=box];
+  "Compile exit 0?" [shape=diamond];
+  "Surface compile error" [shape=box style=filled fillcolor=lightcoral];
+  "Execute via MCP" [shape=box];
+  "Screenshot" [shape=box];
+  "User satisfied?" [shape=diamond];
+  "Gate A passed" [shape=doublecircle style=filled fillcolor=lightgreen];
+  "Capture intent diff" [shape=box];
+
+  "User says 'make X'" -> "Load context (recipes, learnings)";
+  "Load context (recipes, learnings)" -> "Generate CSpec";
+  "Generate CSpec" -> "Compile";
+  "Compile" -> "Compile exit 0?";
+  "Compile exit 0?" -> "Surface compile error" [label="no"];
+  "Surface compile error" -> "Generate CSpec";
+  "Compile exit 0?" -> "Execute via MCP" [label="yes"];
+  "Execute via MCP" -> "Screenshot";
+  "Screenshot" -> "User satisfied?";
+  "User satisfied?" -> "Gate A passed" [label="yes"];
+  "User satisfied?" -> "Capture intent diff" [label="no"];
+  "Capture intent diff" -> "Generate CSpec";
+}
+```

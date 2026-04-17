@@ -48,36 +48,14 @@ or "ready to ship".
 
 ---
 
-## Gate C — Lint Gate
-
-**When:** Before any docs-related artifact (docs PR, ds-docs sync output)
-is committed or opened as a PR. V3.3.0 scope: applies only to future
-`generating-ds-docs` skill; listed here for completeness and to anchor
-V4.0.0 contracts.
-
-**Checks:**
-- All code examples in generated docs parse (language-specific).
-- All `$token` refs in generated docs resolve against current registries.
-- All Figma deeplinks are URL-valid (scheme + host + file-key format).
-- Frontmatter schema validates.
-- No provenance markers (`<!-- source: ... -->`) point to removed
-  sources.
-
-**Evidence required in-conversation:** linter tool result (stdout).
-
-**Applies to:** `generating-ds-docs` (V4.0.0+).
-
----
-
 ## Per-action gate requirements
 
-| Action skill                  | Gate A | Gate B | Gate C |
-| ----------------------------- | ------ | ------ | ------ |
-| `generating-figma-design`     | ✅     | ✅     | —      |
-| `learning-from-corrections`   | ✅ (if recompiling) | ✅ (after re-execute) | — |
-| `shipping-and-archiving`      | —      | ✅     | — (V4.0.0: ✅) |
-| `extracting-design-system`    | —      | —      | —      |
-| `generating-ds-docs`          | —      | —      | ✅ (V4.0.0+) |
+| Action skill                  | Gate A | Gate B |
+| ----------------------------- | ------ | ------ |
+| `generating-figma-design`     | ✅     | ✅     |
+| `learning-from-corrections`   | ✅ (if recompiling) | ✅ (after re-execute) |
+| `shipping-and-archiving`      | —      | ✅     |
+| `extracting-design-system`    | —      | —      |
 
 ---
 
@@ -100,3 +78,86 @@ When skipping:
 3. Surface as an advisory issue in the next `fix` cycle.
 
 See `red-flags-catalog.md` for rationalizations and counter-responses.
+
+---
+
+## Evidence Discipline
+
+Every "done" claim must be backed by **fresh tool output from this turn**. Memory and intuition do not count as evidence.
+
+### Forbidden phrases
+
+These phrases mean STOP — you don't have evidence yet:
+- "Looks right" / "looks good"
+- "Should pass" / "should work"
+- "I'm confident that..."
+- "Probably fine"
+- "Last time it worked"
+- "Tests usually pass here"
+
+### Required evidence per claim
+
+| Claim | Required evidence (this turn) |
+|---|---|
+| "The compiler ran" | `bridge-ds compile ...` exit code 0 in this conversation |
+| "The Figma output looks right" | Screenshot from `figma_take_screenshot` taken in this conversation |
+| "Tests pass" | `npm test` output captured in this conversation |
+| "The token exists" | `grep` or `Read` of the registry file in this conversation |
+| "The cron PR opens correctly" | The actual PR URL or `gh pr view` output |
+| "The KB is fresh" | `git log --oneline -1 knowledge-base/registries/` in this turn |
+
+### Rationalization → Reality
+
+| Rationalization | Reality |
+|---|---|
+| "I just ran it 2 turns ago, no need to re-run" | State changes between turns. Re-run. |
+| "The diff is so small, of course it'll pass" | Small diffs cause big failures. Run the test. |
+| "Showing the output is verbose, the user trusts me" | The user trusts evidence, not assertions. Show the output. |
+| "I remember this passing yesterday" | Yesterday is not now. |
+| "The user can run it themselves" | If you claim done, you back it. The user shouldn't have to verify your work. |
+
+### Application across Bridge skills
+
+- **`make`** — never claim CSpec done without compiler exit 0 + Figma screenshot in turn
+- **`fix`** — never claim correction integrated without diff output + recipe-patch test passing
+- **`done`** — never archive CSpec without final Gate B verification screenshot + recipes-test pass
+- **`setup`** — never claim setup complete without `bridge-ds doctor` passing
+
+---
+
+## CSpec generation pipeline (decision flow)
+
+```dot
+digraph cspec_pipeline {
+  "User intent received" [shape=doublecircle];
+  "Recipe match >= 0.7?" [shape=diamond];
+  "Use recipe as starting CSpec" [shape=box];
+  "Generate fresh CSpec" [shape=box];
+  "All $tokens resolve?" [shape=diamond];
+  "Suggest alternatives + abort" [shape=box style=filled fillcolor=lightcoral];
+  "Compile" [shape=box];
+  "Compiler exit 0?" [shape=diamond];
+  "Surface errors + abort" [shape=box style=filled fillcolor=lightcoral];
+  "Execute via MCP" [shape=box];
+  "Take screenshot" [shape=box];
+  "User confirms?" [shape=diamond];
+  "Gate A passed" [shape=doublecircle style=filled fillcolor=lightgreen];
+  "Iterate" [shape=box];
+
+  "User intent received" -> "Recipe match >= 0.7?";
+  "Recipe match >= 0.7?" -> "Use recipe as starting CSpec" [label="yes"];
+  "Recipe match >= 0.7?" -> "Generate fresh CSpec" [label="no"];
+  "Use recipe as starting CSpec" -> "All $tokens resolve?";
+  "Generate fresh CSpec" -> "All $tokens resolve?";
+  "All $tokens resolve?" -> "Suggest alternatives + abort" [label="no"];
+  "All $tokens resolve?" -> "Compile" [label="yes"];
+  "Compile" -> "Compiler exit 0?";
+  "Compiler exit 0?" -> "Surface errors + abort" [label="no"];
+  "Compiler exit 0?" -> "Execute via MCP" [label="yes"];
+  "Execute via MCP" -> "Take screenshot";
+  "Take screenshot" -> "User confirms?";
+  "User confirms?" -> "Gate A passed" [label="yes"];
+  "User confirms?" -> "Iterate" [label="no"];
+  "Iterate" -> "Generate fresh CSpec";
+}
+```
