@@ -2,6 +2,34 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [6.0.0] — 2026-04-17
+
+Deliberate cleanup release. Cuts the unfulfilled docs subsystem, reframes cron as a KB-freshness mechanism, and tightens skills with superpowers-style discipline patterns. See [BREAKING.md](BREAKING.md) for the migration guide and [docs/v6-cleanup-audit.md](docs/v6-cleanup-audit.md) for the full audit reasoning.
+
+### BREAKING
+
+- **Removed entire docs subsystem** (`bridge-ds docs build/sync/check/mcp` commands, `lib/docs/` tree, `generating-ds-docs` skill, Handlebars dependency). Why: produced empty boilerplate — CSpecs were never wired through the generator.
+- **Removed `init-docs` CLI** (deprecated v4.1, duplicate of `setup`).
+- **Removed `init` + `update` deprecation stubs** (v5.0 residue).
+- **Setup scaffold no longer creates `design-system/` tree**, `llms.txt`, or `.bridge/mcp.json`. Config YAML no longer has `docsPath` field.
+- **Cron workflow now uses `npx -y @noemuch/bridge-ds@<VERSION>`** instead of `npm install && npm run build` in consumer repos (fixes #15).
+
+### Added
+
+- **`<IRON-LAW>` markers** in `using-bridge` SKILL and `compiler-reference.md`.
+- **Evidence-before-claims discipline** in `references/verification-gates.md`.
+- **4 graphviz decision diagrams** (`make`, `fix`, `done`, CSpec pipeline).
+- **`.cursor-plugin/marketplace.json`** (was missing).
+
+### Changed
+
+- **`shipping-and-archiving` skill** no longer cascades to docs sync.
+- **`extracting-design-system` skill** no longer triggers initial docs build.
+- **Skills reduced from 6 to 5.** CLI commands from 13 to 8 active.
+- **`lib/kb/index-builder.ts` removed** (was docs-only consumer).
+
+---
+
 ## [5.1.0] — 2026-04-16
 
 KB schema versioning + guided migration. Consumer repos with a pre-v5 KB

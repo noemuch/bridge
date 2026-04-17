@@ -32,10 +32,7 @@ test("scaffold creates the expected directory tree with defaults", async () => {
     // AND physically exist on disk.
     for (const relPath of [
       "docs.config.yaml",
-      "llms.txt",
-      ".bridge/mcp.json",
       ".github/workflows/bridge-docs-cron.yml",
-      "design-system/_manual/README.md",
     ]) {
       assert.ok(created.includes(relPath), `created list missing ${relPath}`);
       assert.ok(await exists(path.join(dir, relPath)), `${relPath} not on disk`);
@@ -43,9 +40,6 @@ test("scaffold creates the expected directory tree with defaults", async () => {
     for (const dirPath of [
       "bridge-ds/knowledge-base/registries/",
       "bridge-ds/knowledge-base/recipes/",
-      "design-system/components/",
-      "design-system/foundations/",
-      "design-system/_manual/",
       ".bridge/",
       ".github/workflows/",
     ]) {
@@ -54,17 +48,14 @@ test("scaffold creates the expected directory tree with defaults", async () => {
   });
 });
 
-test("scaffold respects custom docsPath and kbPath", async () => {
+test("scaffold respects custom kbPath", async () => {
   await withTempDir(async (dir) => {
     const created = await scaffold({
       dsName: "Custom",
       figmaFileKey: "K",
-      docsPath: "custom-docs",
       kbPath: "custom-kb",
     });
-    assert.ok(await exists(path.join(dir, "custom-docs", "components")));
     assert.ok(await exists(path.join(dir, "custom-kb", "knowledge-base", "registries")));
-    assert.ok(created.some((p) => p.startsWith("custom-docs/")));
     assert.ok(created.some((p) => p.startsWith("custom-kb/")));
   });
 });
@@ -79,12 +70,10 @@ test("scaffold writes a docs.config.yaml that embeds the dsName and key", async 
   });
 });
 
-test("scaffold writes an .mcp.json pointing at the published bridge-ds binary", async () => {
+test("scaffold creates .bridge/ directory for cron reports", async () => {
   await withTempDir(async (dir) => {
     await scaffold({ dsName: "X", figmaFileKey: "Y" });
-    const mcp = JSON.parse(await readFile(path.join(dir, ".bridge/mcp.json"), "utf8"));
-    assert.equal(mcp.mcpServers["bridge-ds"].command, "npx");
-    assert.deepEqual(mcp.mcpServers["bridge-ds"].args, ["@noemuch/bridge-ds", "docs", "mcp"]);
+    assert.ok(await exists(path.join(dir, ".bridge")));
   });
 });
 
@@ -92,9 +81,10 @@ test("scaffold produces a cron workflow with the daily schedule", async () => {
   await withTempDir(async (dir) => {
     await scaffold({ dsName: "X", figmaFileKey: "Y" });
     const yml = await readFile(path.join(dir, ".github/workflows/bridge-docs-cron.yml"), "utf8");
-    assert.match(yml, /Bridge Docs — Daily Sync/);
+    assert.match(yml, /Bridge KB — Daily Sync/);
     assert.match(yml, /schedule:\s*-\s*cron: "0 6 \* \* \*"/);
     assert.match(yml, /secrets\.FIGMA_TOKEN/);
+    assert.match(yml, /npx -y @noemuch\/bridge-ds@/);
   });
 });
 

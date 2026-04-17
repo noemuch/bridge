@@ -1,0 +1,20 @@
+{
+  "name": "bridge-ds",
+  "description": "Compiler-driven design generation in Figma — 100% design system compliant. Compiles component specs into verified Figma output via MCP.",
+  "owner": {
+    "name": "noemuch",
+    "url": "https://github.com/noemuch"
+  },
+  "plugins": [
+    {
+      "name": "bridge-ds",
+      "description": "Compiler-driven design generation in Figma — 100% design system compliant.",
+      "version": "6.0.0",
+      "source": "./",
+      "author": {
+        "name": "noemuch",
+        "url": "https://github.com/noemuch"
+      }
+    }
+  ]
+}

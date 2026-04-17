@@ -1,6 +1,24 @@
 # Bridge DS — Claude Code Instructions
 
-Bridge DS is a compiler-driven design workflow that generates Figma designs using MCP. Claude produces declarative JSON scene graphs; the compiler generates correct Figma Plugin API scripts.
+## Mission
+
+Bridge is a **deterministic compiler** that turns AI-generated design intent into Figma output **guaranteed DS-compliant by construction, not by verification**.
+
+Bridge is to Figma what a type-checker is to code: the layer that catches errors at the door, not in production.
+
+## The 3 pillars
+
+Everything Bridge does must serve one of these. Anything else is candidate for cut.
+
+1. **Compiler-enforced correctness** — 26 Figma API rules + 100% DS token compliance, deterministic
+2. **Conversational UX via Claude Code skills** — `make` / `fix` / `done` workflow
+3. **Living KB synchronized with Figma** — registries refreshed via cron, drift-aware
+
+## Design principle: subtraction by default
+
+> The Bridge codebase should be smaller in 6 months, not larger.
+
+Subtraction is the default. Every subsystem must justify its existence against the 3 pillars or die. When in doubt, cut. Adding code is a hypothesis; the burden of proof is on the addition.
 
 ## Architecture
 
@@ -24,18 +42,17 @@ Two transports, auto-detected. See `references/transport-adapter.md` for full ma
 | Components    | `figma_search_components`     | `search_design_system` |
 | Connection    | `figma_get_status`            | `whoami`               |
 
-## Skills (v5.0.0+)
+## Skills (v6.0.0+)
 
-Bridge uses a **multi-skill** Claude Code architecture. There is no `/design-workflow` slash command — commands are triggered by keywords routed through `using-bridge` (see the command map in that skill).
+Bridge uses a **multi-skill** Claude Code architecture. Commands are triggered by keywords routed through `using-bridge` (see the command map in that skill).
 
 | Skill                       | Trigger keyword             | Purpose                                                       |
 | --------------------------- | --------------------------- | ------------------------------------------------------------- |
-| `using-bridge`              | SessionStart (force-loaded) | Command map, hard rules, drop/status procedures (~500 tokens) |
+| `using-bridge`              | SessionStart (force-loaded) | Command map, iron laws, drop/status procedures (~500 tokens)  |
 | `generating-figma-design`   | `make <description>`        | CSpec → scene graph → compile → execute → verify              |
 | `learning-from-corrections` | `fix`                       | Diff Figma corrections, extract learnings, patch recipes      |
 | `shipping-and-archiving`    | `done`                      | Final Gate B verification, archive CSpec, extract recipes     |
 | `extracting-design-system`  | `setup bridge`              | Extract DS from Figma, scaffold repo, wire up cron            |
-| `generating-ds-docs`        | `docs`                      | 6 modes (init, full-build, sync, check, mcp, headless-sync)   |
 
 Shared references live at the repo root under `references/`:
 

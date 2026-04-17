@@ -2,7 +2,6 @@
 import { writeFile, mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { extractFromFigma } from "../extractors/figma-rest.js";
-import { sync } from "../docs/generate.js";
 import { parseDocsConfig } from "../config/docs-config.js";
 
 export interface CronOptions {
@@ -15,10 +14,8 @@ export async function runCron(opts: CronOptions) {
   const token = process.env.FIGMA_TOKEN;
   if (!token) throw new Error("FIGMA_TOKEN env var is required");
 
-  // 1. Extract from Figma REST
   const extract = await extractFromFigma({ fileKey: cfg.figmaFileKey, token });
 
-  // 2. Persist registries to KB
   const regDir = path.join(cfg.kbPath, "knowledge-base", "registries");
   await mkdir(regDir, { recursive: true });
   await writeFile(
@@ -34,44 +31,16 @@ export async function runCron(opts: CronOptions) {
     JSON.stringify(extract.textStyles, null, 2) + "\n"
   );
 
-  // 3. Run the docs sync pipeline
-  const report = await sync({
-    kbPath: cfg.kbPath,
-    docsPath: cfg.docsPath,
-    dsName: cfg.dsName,
-    tagline: cfg.tagline,
-  });
-
-  // 4. Write a PR body to .bridge/last-sync-report.md
   await mkdir(".bridge", { recursive: true });
-  const body = formatReport(report, cfg.dsName);
-  await writeFile(".bridge/last-sync-report.md", body, "utf8");
+  await writeFile(
+    ".bridge/last-sync-report.md",
+    `# Bridge KB sync — ${cfg.dsName}\n\nKB registries refreshed from Figma.\n`,
+    "utf8"
+  );
 
-  return report;
+  return { extracted: true, dsName: cfg.dsName };
 }
 
-function formatReport(report: Awaited<ReturnType<typeof sync>>, dsName: string): string {
-  if (report.noDiff)
-    return `# 🤖 Bridge Docs — ${dsName} sync\n\n✅ No changes detected. No PR needed.\n`;
-  const lines: string[] = [];
-  lines.push(`# 🤖 Bridge Docs — ${dsName} sync`);
-  lines.push("");
-  lines.push(`## Regenerated (${report.regenerated.length})`);
-  for (const r of report.regenerated) lines.push(`- \`${r}\``);
-  if (report.migrations.length > 0) {
-    lines.push("");
-    lines.push(`## Migrations (${report.migrations.length})`);
-    for (const m of report.migrations) lines.push(`- ${m}`);
-  }
-  lines.push("");
-  lines.push(`## Doc linter`);
-  lines.push(`- ${report.lintIssues === 0 ? "✅" : "⚠️"} ${report.lintIssues} issues`);
-  return lines.join("\n") + "\n";
-}
-
-// CLI entry for the compiled dist/ module.
-// Detects direct invocation via process.argv[1] filename match (works under both
-// CommonJS and ESM emit; avoids `import.meta` which is ESM-only under NodeNext).
 const invokedPath = process.argv[1] ?? "";
 if (/[\\/]orchestrator\.(js|ts)$/.test(invokedPath)) {
   const configArgIdx = process.argv.indexOf("--config");

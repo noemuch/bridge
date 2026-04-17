@@ -7,7 +7,7 @@ description: Use when the user says "done", "ship it", "finish", "complete", "ar
 
 ## Overview
 
-Formal completion of a design session. Verifies visual correctness one last time (Gate B), moves the CSpec to `specs/shipped/`, appends a history entry, and — when the design qualifies — extracts a reusable recipe back into the knowledge base. Finally cascades documentation updates by invoking `generating-ds-docs` in Mode 3 (sync); see step 10 of the procedure.
+Formal completion of a design session. Verifies visual correctness one last time (Gate B), moves the CSpec to `specs/shipped/`, appends a history entry, and — when the design qualifies — extracts a reusable recipe back into the knowledge base.
 
 ## When to Use
 
@@ -99,16 +99,6 @@ If a snapshot exists:
 mv specs/active/{name}-snapshot.json specs/shipped/{name}-snapshot.json
 ```
 
-### 10. Cascade docs regen
-
-After archive, invoke `generating-ds-docs` in Mode 3 (sync):
-
-```bash
-npx @noemuch/bridge-ds docs sync
-```
-
-If the sync reports `regenerated.length > 0`, surface the list to the user and ask if they want to open a PR now or wait for the next cron.
-
 ### 6. Update history log
 
 Append to `specs/history.log`:
@@ -172,13 +162,47 @@ This skill is gated by `references/verification-gates.md` (repo-root):
 
 - **Gate B** — mandatory. Fresh screenshot this turn OR in the immediately
   preceding turn + explicit confirmation text.
-- **Gate C** — not applicable in V3.3.0; becomes mandatory for docs
-  cascade in V4.0.0.
 
 Evidence to surface: screenshot tool result, confirmation text, archive
 path, recipe extraction decision.
 
 ## Hooks into other skills
 
-- After archive, this skill invokes `generating-ds-docs` in Mode 3
-  (sync / cascade). See step 10 of the procedure.
+(No cross-skill invocations in v6. The docs cascade was removed.)
+
+---
+
+## The done gate sequence (decision diagram)
+
+```dot
+digraph done_gate {
+  "User says 'done'" [shape=doublecircle];
+  "CSpec in specs/active/?" [shape=diamond];
+  "Abort: nothing active" [shape=box style=filled fillcolor=lightcoral];
+  "Final compile (Gate B)" [shape=box];
+  "Compile exit 0?" [shape=diamond];
+  "Take final screenshot" [shape=box];
+  "Visual matches intent?" [shape=diamond];
+  "Iterate via fix" [shape=box];
+  "Move CSpec to shipped/" [shape=box];
+  "Recipe eligible?" [shape=diamond];
+  "Extract recipe to KB" [shape=box];
+  "Append history" [shape=box];
+  "Done" [shape=doublecircle style=filled fillcolor=lightgreen];
+
+  "User says 'done'" -> "CSpec in specs/active/?";
+  "CSpec in specs/active/?" -> "Abort: nothing active" [label="no"];
+  "CSpec in specs/active/?" -> "Final compile (Gate B)" [label="yes"];
+  "Final compile (Gate B)" -> "Compile exit 0?";
+  "Compile exit 0?" -> "Iterate via fix" [label="no"];
+  "Compile exit 0?" -> "Take final screenshot" [label="yes"];
+  "Take final screenshot" -> "Visual matches intent?";
+  "Visual matches intent?" -> "Iterate via fix" [label="no"];
+  "Visual matches intent?" -> "Move CSpec to shipped/" [label="yes"];
+  "Move CSpec to shipped/" -> "Recipe eligible?";
+  "Recipe eligible?" -> "Extract recipe to KB" [label="yes"];
+  "Recipe eligible?" -> "Append history" [label="no"];
+  "Extract recipe to KB" -> "Append history";
+  "Append history" -> "Done";
+}
+```

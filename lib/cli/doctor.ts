@@ -1,9 +1,8 @@
 import { access } from "node:fs/promises";
 import { brand, icons } from "./ui.js";
 import { printBanner } from "./banner.js";
-import { readState } from "../docs/state.js";
 
-export async function doctor(version = "4.0.0") {
+export async function doctor(version = "6.0.0") {
   if (process.stdout.isTTY && !process.env.CI) printBanner("Diagnostic", version);
 
   console.log(brand("Environment"));
@@ -36,19 +35,10 @@ export async function doctor(version = "4.0.0") {
     console.log(`  ${icons.warn} FIGMA_TOKEN env var not set (ok for local, required in CI)`);
   else console.log(`  ${icons.pass} FIGMA_TOKEN set`);
 
-  console.log(brand("Docs health"));
-  try {
-    const state = await readState(".");
-    if (state.lastSyncAt) console.log(`  ${icons.pass} Last sync: ${state.lastSyncAt}`);
-    else console.log(`  ${icons.warn} No sync yet`);
-  } catch {
-    console.log(`  ${icons.warn} No docs-state.json`);
-  }
-
   console.log(brand("Cron"));
   try {
     await access(".github/workflows/bridge-docs-cron.yml");
-    console.log(`  ${icons.pass} bridge-docs-cron.yml installed`);
+    console.log(`  ${icons.pass} cron workflow installed`);
   } catch {
     console.log(`  ${icons.warn} cron workflow missing`);
   }
