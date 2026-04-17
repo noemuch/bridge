@@ -1,6 +1,6 @@
 ---
 name: extracting-design-system
-description: Use when the user says "setup", "setup bridge", "extract", "extract DS", "onboard", "build knowledge base", "initialize bridge", or is starting Bridge in a project for the first time. Handles the complete bootstrap: pre-flight checks, scaffolding (docs.config.yaml, cron workflow, .bridge/mcp.json), Figma token management (stdin-only), DS extraction via MCP (preferred) or REST (fallback), guide generation, initial docs build, and first commit proposal.
+description: Use when the user says "setup", "setup bridge", "extract", "extract DS", "onboard", "build knowledge base", "initialize bridge", or is starting Bridge in a project for the first time. Handles the complete bootstrap: pre-flight checks, scaffolding (docs.config.yaml, cron workflow, .bridge/mcp.json), Figma token management (stdin-only), DS extraction via MCP (preferred) or REST (fallback), guide generation, and first commit proposal.
 ---
 
 # Extracting Design System
@@ -147,16 +147,8 @@ Report:
   - ...
 ```
 
-### Step 8 — Build initial docs + propose commit
+### Step 8 — Propose initial commit
 
-Via Bash:
-```bash
-npx bridge-ds docs build
-```
-
-Report the outcome (number of .md, .json, .llm.txt generated).
-
-Then:
 ```
 Propose initial commit? [Y/n]
 ```
@@ -164,7 +156,7 @@ Propose initial commit? [Y/n]
 If Y, Bash:
 ```bash
 git add .
-git commit -m "feat: bootstrap Bridge Docs V0.1 via setup bridge"
+git commit -m "feat: bootstrap Bridge KB via setup bridge"
 git push origin $(git rev-parse --abbrev-ref HEAD)
 ```
 
