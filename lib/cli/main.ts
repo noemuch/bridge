@@ -31,7 +31,6 @@ export async function main() {
         const created = await scaffold({
           dsName: args.get("ds-name") ?? "DS",
           figmaFileKey: args.get("figma-key") ?? "",
-          docsPath: args.get("docs-path"),
           kbPath: args.get("kb-path"),
         });
         console.log(JSON.stringify({ scaffolded: created }, null, 2));
