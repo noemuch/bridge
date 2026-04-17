@@ -144,3 +144,42 @@ These phrases mean STOP — you don't have evidence yet:
 - **`fix`** — never claim correction integrated without diff output + recipe-patch test passing
 - **`done`** — never archive CSpec without final Gate B verification screenshot + recipes-test pass
 - **`setup`** — never claim setup complete without `bridge-ds doctor` passing
+
+---
+
+## CSpec generation pipeline (decision flow)
+
+```dot
+digraph cspec_pipeline {
+  "User intent received" [shape=doublecircle];
+  "Recipe match >= 0.7?" [shape=diamond];
+  "Use recipe as starting CSpec" [shape=box];
+  "Generate fresh CSpec" [shape=box];
+  "All $tokens resolve?" [shape=diamond];
+  "Suggest alternatives + abort" [shape=box style=filled fillcolor=lightcoral];
+  "Compile" [shape=box];
+  "Compiler exit 0?" [shape=diamond];
+  "Surface errors + abort" [shape=box style=filled fillcolor=lightcoral];
+  "Execute via MCP" [shape=box];
+  "Take screenshot" [shape=box];
+  "User confirms?" [shape=diamond];
+  "Gate A passed" [shape=doublecircle style=filled fillcolor=lightgreen];
+  "Iterate" [shape=box];
+
+  "User intent received" -> "Recipe match >= 0.7?";
+  "Recipe match >= 0.7?" -> "Use recipe as starting CSpec" [label="yes"];
+  "Recipe match >= 0.7?" -> "Generate fresh CSpec" [label="no"];
+  "Use recipe as starting CSpec" -> "All $tokens resolve?";
+  "Generate fresh CSpec" -> "All $tokens resolve?";
+  "All $tokens resolve?" -> "Suggest alternatives + abort" [label="no"];
+  "All $tokens resolve?" -> "Compile" [label="yes"];
+  "Compile" -> "Compiler exit 0?";
+  "Compiler exit 0?" -> "Surface errors + abort" [label="no"];
+  "Compiler exit 0?" -> "Execute via MCP" [label="yes"];
+  "Execute via MCP" -> "Take screenshot";
+  "Take screenshot" -> "User confirms?";
+  "User confirms?" -> "Gate A passed" [label="yes"];
+  "User confirms?" -> "Iterate" [label="no"];
+  "Iterate" -> "Generate fresh CSpec";
+}
+```

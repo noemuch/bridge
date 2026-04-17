@@ -180,5 +180,41 @@ path, recipe extraction decision.
 
 ## Hooks into other skills
 
-- After archive, this skill invokes `generating-ds-docs` in Mode 3
-  (sync / cascade). See step 10 of the procedure.
+(No cross-skill invocations in v6. The docs cascade was removed.)
+
+---
+
+## The done gate sequence (decision diagram)
+
+```dot
+digraph done_gate {
+  "User says 'done'" [shape=doublecircle];
+  "CSpec in specs/active/?" [shape=diamond];
+  "Abort: nothing active" [shape=box style=filled fillcolor=lightcoral];
+  "Final compile (Gate B)" [shape=box];
+  "Compile exit 0?" [shape=diamond];
+  "Take final screenshot" [shape=box];
+  "Visual matches intent?" [shape=diamond];
+  "Iterate via fix" [shape=box];
+  "Move CSpec to shipped/" [shape=box];
+  "Recipe eligible?" [shape=diamond];
+  "Extract recipe to KB" [shape=box];
+  "Append history" [shape=box];
+  "Done" [shape=doublecircle style=filled fillcolor=lightgreen];
+
+  "User says 'done'" -> "CSpec in specs/active/?";
+  "CSpec in specs/active/?" -> "Abort: nothing active" [label="no"];
+  "CSpec in specs/active/?" -> "Final compile (Gate B)" [label="yes"];
+  "Final compile (Gate B)" -> "Compile exit 0?";
+  "Compile exit 0?" -> "Iterate via fix" [label="no"];
+  "Compile exit 0?" -> "Take final screenshot" [label="yes"];
+  "Take final screenshot" -> "Visual matches intent?";
+  "Visual matches intent?" -> "Iterate via fix" [label="no"];
+  "Visual matches intent?" -> "Move CSpec to shipped/" [label="yes"];
+  "Move CSpec to shipped/" -> "Recipe eligible?";
+  "Recipe eligible?" -> "Extract recipe to KB" [label="yes"];
+  "Recipe eligible?" -> "Append history" [label="no"];
+  "Extract recipe to KB" -> "Append history";
+  "Append history" -> "Done";
+}
+```

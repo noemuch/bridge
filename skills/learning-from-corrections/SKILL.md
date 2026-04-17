@@ -226,3 +226,32 @@ This skill is gated by `references/verification-gates.md` (repo-root):
 - **Gate B** — applies if the fix re-executes in Figma.
 
 Evidence to surface: diff summary, classification table, updated `learnings.json` diff.
+
+---
+
+## The fix flow (decision diagram)
+
+```dot
+digraph fix_flow {
+  "User says 'fix'" [shape=doublecircle];
+  "Diff Figma vs snapshot" [shape=box];
+  "DS-compliant changes?" [shape=diamond];
+  "Hardcoded primitives?" [shape=diamond];
+  "Persist as LEARNING" [shape=box];
+  "Surface as FLAG" [shape=box style=filled fillcolor=lightyellow];
+  "Recipe eligible?" [shape=diamond];
+  "Auto-patch recipe" [shape=box];
+  "Update snapshot" [shape=doublecircle style=filled fillcolor=lightgreen];
+
+  "User says 'fix'" -> "Diff Figma vs snapshot";
+  "Diff Figma vs snapshot" -> "DS-compliant changes?";
+  "DS-compliant changes?" -> "Persist as LEARNING" [label="yes"];
+  "DS-compliant changes?" -> "Hardcoded primitives?" [label="check next"];
+  "Hardcoded primitives?" -> "Surface as FLAG" [label="yes"];
+  "Persist as LEARNING" -> "Recipe eligible?";
+  "Recipe eligible?" -> "Auto-patch recipe" [label="yes"];
+  "Auto-patch recipe" -> "Update snapshot";
+  "Recipe eligible?" -> "Update snapshot" [label="no"];
+  "Surface as FLAG" -> "Update snapshot";
+}
+```
