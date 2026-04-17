@@ -7,7 +7,7 @@ description: Use when the user says "done", "ship it", "finish", "complete", "ar
 
 ## Overview
 
-Formal completion of a design session. Verifies visual correctness one last time (Gate B), moves the CSpec to `specs/shipped/`, appends a history entry, and — when the design qualifies — extracts a reusable recipe back into the knowledge base. Finally cascades documentation updates by invoking `generating-ds-docs` in Mode 3 (sync); see step 10 of the procedure.
+Formal completion of a design session. Verifies visual correctness one last time (Gate B), moves the CSpec to `specs/shipped/`, appends a history entry, and — when the design qualifies — extracts a reusable recipe back into the knowledge base.
 
 ## When to Use
 
@@ -99,16 +99,6 @@ If a snapshot exists:
 mv specs/active/{name}-snapshot.json specs/shipped/{name}-snapshot.json
 ```
 
-### 10. Cascade docs regen
-
-After archive, invoke `generating-ds-docs` in Mode 3 (sync):
-
-```bash
-npx @noemuch/bridge-ds docs sync
-```
-
-If the sync reports `regenerated.length > 0`, surface the list to the user and ask if they want to open a PR now or wait for the next cron.
-
 ### 6. Update history log
 
 Append to `specs/history.log`:
@@ -172,8 +162,6 @@ This skill is gated by `references/verification-gates.md` (repo-root):
 
 - **Gate B** — mandatory. Fresh screenshot this turn OR in the immediately
   preceding turn + explicit confirmation text.
-- **Gate C** — not applicable in V3.3.0; becomes mandatory for docs
-  cascade in V4.0.0.
 
 Evidence to surface: screenshot tool result, confirmation text, archive
 path, recipe extraction decision.

@@ -48,36 +48,14 @@ or "ready to ship".
 
 ---
 
-## Gate C — Lint Gate
-
-**When:** Before any docs-related artifact (docs PR, ds-docs sync output)
-is committed or opened as a PR. V3.3.0 scope: applies only to future
-`generating-ds-docs` skill; listed here for completeness and to anchor
-V4.0.0 contracts.
-
-**Checks:**
-- All code examples in generated docs parse (language-specific).
-- All `$token` refs in generated docs resolve against current registries.
-- All Figma deeplinks are URL-valid (scheme + host + file-key format).
-- Frontmatter schema validates.
-- No provenance markers (`<!-- source: ... -->`) point to removed
-  sources.
-
-**Evidence required in-conversation:** linter tool result (stdout).
-
-**Applies to:** `generating-ds-docs` (V4.0.0+).
-
----
-
 ## Per-action gate requirements
 
-| Action skill                  | Gate A | Gate B | Gate C |
-| ----------------------------- | ------ | ------ | ------ |
-| `generating-figma-design`     | ✅     | ✅     | —      |
-| `learning-from-corrections`   | ✅ (if recompiling) | ✅ (after re-execute) | — |
-| `shipping-and-archiving`      | —      | ✅     | — (V4.0.0: ✅) |
-| `extracting-design-system`    | —      | —      | —      |
-| `generating-ds-docs`          | —      | —      | ✅ (V4.0.0+) |
+| Action skill                  | Gate A | Gate B |
+| ----------------------------- | ------ | ------ |
+| `generating-figma-design`     | ✅     | ✅     |
+| `learning-from-corrections`   | ✅ (if recompiling) | ✅ (after re-execute) |
+| `shipping-and-archiving`      | —      | ✅     |
+| `extracting-design-system`    | —      | —      |
 
 ---
 

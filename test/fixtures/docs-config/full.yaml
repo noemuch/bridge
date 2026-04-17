@@ -1,15 +1,7 @@
 dsName: "Spectra"
 tagline: "Finary's design system."
 figmaFileKey: "FILEKEY123"
-docsPath: "design-system"
 kbPath: "bridge-ds"
 cron:
   cadence: "daily"
   time: "06:00"
-  maxPRsPerWeek: 7
-  autoMergeIfTrivial: false
-categories:
-  actions: "Primary + CTAs"
-  forms: "Inputs + selectors"
-mcp:
-  enabled: true

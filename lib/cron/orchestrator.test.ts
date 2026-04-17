@@ -71,7 +71,7 @@ test("runCron integration: MCP-free end-to-end on fake fetch", async () => {
     await mkdir(dir, { recursive: true });
     await writeFile(
       path.join(dir, "docs.config.yaml"),
-      `dsName: "TestDS"\nfigmaFileKey: "KEY"\ndocsPath: "ds"\nkbPath: "kb"\n`
+      `dsName: "TestDS"\nfigmaFileKey: "KEY"\nkbPath: "kb"\n`
     );
     process.chdir(dir);
     const report = await runCron({ configPath: "docs.config.yaml" });

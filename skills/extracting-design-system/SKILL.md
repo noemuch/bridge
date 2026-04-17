@@ -199,8 +199,7 @@ NEVER mark setup complete without validating a sample of keys
 NEVER echo or log the Figma PAT. Token goes from stdin → validate
 → `setGitHubSecret` (stdin pipe to gh CLI). Wipe buffer afterward.
 
-NEVER invoke `bridge-ds init-docs` (deprecated CLI wizard). Use the
-setup-orchestrator module via Bash directly.
+NEVER use an interactive CLI wizard. Bridge is plugin-only — use `setup bridge` via Claude Code.
 </HARD-GATE>
 
 ## Red Flags

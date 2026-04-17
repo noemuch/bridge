@@ -84,7 +84,7 @@ One phrase. The skill handles pre-flight, scaffolding, extraction, GitHub secret
 
 | Layer         | Technology            | Description                                                  |
 | ------------- | --------------------- | ------------------------------------------------------------ |
-| **Workflow**  | Claude Code Skills    | Six focused skills (see [Skills](#skills) below)             |
+| **Workflow**  | Claude Code Skills    | Five focused skills (see [Skills](#skills) below)             |
 | **Spec**      | CSpec YAML            | Structured, human-readable compilable specifications         |
 | **Compiler**  | TypeScript            | Scene graph JSON → Figma Plugin API code (26 rules enforced) |
 | **Transport** | MCP                   | `figma-console-mcp` (preferred) or official Figma MCP server |
