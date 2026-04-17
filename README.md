@@ -44,28 +44,19 @@ Bridge produces:
 
 Every output uses your real components, bound variables, and text styles. **Zero hardcoded values.**
 
-Iterate with `fix` (capture manual Figma edits as learnings). Ship with `done` (archive + cascade docs).
+Iterate with `fix` (capture manual Figma edits as learnings). Ship with `done` (archive + extract recipes).
 
 ## For DS teams
 
-Bridge's secondary value: auto-maintained documentation in your repo.
+Bridge keeps your knowledge base **continuously synchronized** with Figma.
 
-- **`setup bridge`** in Claude Code bootstraps your DS repo: registries, docs tree, cron workflow, all in one flow.
-- **Daily cron** on GitHub Actions pulls Figma via REST, detects drift, opens a PR with cascaded doc updates. Silent on no-diff.
-- **Preservation layer**: `_manual/` directory and inline `<!-- manual:id -->` regions are never overwritten. Your hand-written content stays.
-- **Per-component `.llm.txt`** sidecars for AI-native consumption.
-- **Linter** verifies token references, frontmatter schema, Figma deeplinks.
+- **`setup bridge`** in Claude Code bootstraps your DS repo: registries, cron workflow, all in one flow.
+- **Daily cron** on GitHub Actions pulls Figma via REST, detects KB drift, opens a PR with the diff. Silent on no-change.
+- **Recipe + CSpec ref-validity checks** flag broken references when components are renamed or removed.
 
 ## For engineers
 
-Consume the DS from your IDE — Cursor, Claude Code, Copilot CLI, Codex:
-
-- **`llms.txt`** index (Answer.AI spec) — AI-discoverable catalog.
-- **`llms-full.txt`** — concatenated full docs for inline context.
-- **`.llm.txt` per component** — ultra-compressed structured entries.
-- **MCP server** (`bridge-ds docs mcp`) exposes `ds://component/<name>`, `ds://foundation/<name>`, `ds://index` over stdio.
-
-Point your AI client at the DS repo's `llms.txt` or the MCP server. Your generated code uses tokens, variants, and composition rules correctly — because it's reading the source of truth, not guessing.
+The KB lives in your repo at `bridge-ds/knowledge-base/registries/`. Point your AI client at this directory or read it programmatically. Your generated code uses tokens, variants, and composition rules correctly — because it reads the source of truth, not guesses.
 
 ## Quick start
 
@@ -83,9 +74,9 @@ cd /path/to/ds-repo && claude
 setup bridge
 ```
 
-One phrase. The skill handles pre-flight, scaffolding, extraction, docs generation, GitHub secret, first commit, and optional cron test. ~10 minutes end-to-end.
+One phrase. The skill handles pre-flight, scaffolding, extraction, GitHub secret, first commit, and optional cron test. ~10 minutes end-to-end.
 
-**Upgrading from v4.x?** See the [v5.0.0 upgrade path](CHANGELOG.md#upgrading-from-v4x) in the changelog.
+**Upgrading from v5.x?** See [BREAKING.md](BREAKING.md) for the v6 migration guide.
 
 ---
 
@@ -113,7 +104,6 @@ You describe → Claude writes CSpec → Compiler resolves tokens → MCP → Fi
 | `learning-from-corrections` | `fix`                | Diff Figma corrections, extract learnings, patch recipes |
 | `shipping-and-archiving`    | `done`               | Final gate, archive, extract recipes                     |
 | `extracting-design-system`  | `setup bridge`       | Bootstrap a DS repo end-to-end                           |
-| `generating-ds-docs`        | `docs`               | Build / sync / check / MCP server / headless sync        |
 
 ## The compiler
 
@@ -136,29 +126,18 @@ Errors are caught at compile time, before anything touches Figma.
 
 [Compiler reference →](references/compiler-reference.md) · [Transport adapter →](references/transport-adapter.md) · [Verification gates →](references/verification-gates.md)
 
-## Bridge Docs CLI
+## Bridge CLI
 
-Direct CLI commands (typically invoked under the hood by the skills):
+Direct CLI commands (typically invoked under the hood by skills):
 
 | Command                                              | Purpose                                                     |
 | ---------------------------------------------------- | ----------------------------------------------------------- |
 | `bridge-ds setup --ds-name <name> --figma-key <key>` | Headless scaffold (used by `setup bridge`)                  |
-| `bridge-ds docs build`                               | Full regeneration from the knowledge base                   |
-| `bridge-ds docs sync`                                | Incremental cascade when Figma drifts                       |
-| `bridge-ds docs check`                               | Lint without regenerating                                   |
-| `bridge-ds docs mcp`                                 | Launch the local MCP server (`ds://` URIs over stdio)       |
-| `bridge-ds doctor`                                   | Diagnose config, connectivity, docs health, cron            |
+| `bridge-ds compile --input <json> --kb <path>`       | Compile a scene graph JSON                                  |
+| `bridge-ds doctor`                                   | Diagnose config, connectivity, KB health                    |
 | `bridge-ds extract --headless`                       | Figma REST extraction (CI-friendly, `FIGMA_TOKEN` required) |
 | `bridge-ds migrate`                                  | Upgrade a legacy knowledge base to the current schema       |
-| `bridge-ds cron`                                     | Run the cron orchestrator (CI entry point)                  |
-
-### `bridge-ds migrate`
-
-Upgrades a knowledge base written by an older Bridge version to the
-current schema. Run this in a repo where `docs build` or the compiler
-reports a `KBSchemaError`.
-
-    npx @noemuch/bridge-ds migrate --kb-path bridge-ds
+| `bridge-ds cron`                                     | Run the cron orchestrator (KB sync, opens PR on diff)       |
 
 ## Recipes
 
@@ -176,8 +155,7 @@ lib/
   cli/                               Typed CLI (main, setup-orchestrator, token-handling, …)
   compiler/                          Scene graph compiler (TypeScript)
   config/                            YAML config parsing
-  cron/                              GitHub Actions cron orchestrator
-  docs/                              Docs pipeline (generate, cascade, generators, templates, MCP server)
+  cron/                              GitHub Actions cron orchestrator (KB sync)
   extractors/                        Figma REST + MCP extractors
   kb/                                Knowledge base (registries, hashing, auto-detect)
   mcp/                               MCP transport adapter (console/official)
@@ -194,7 +172,6 @@ skills/
   learning-from-corrections/         fix
   shipping-and-archiving/            done
   extracting-design-system/          setup
-  generating-ds-docs/                docs
 
 hooks/                               SessionStart health-line hook
 scripts/                             validate-skills, bump-version
