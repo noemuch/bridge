@@ -17,22 +17,21 @@ function run(args: string[], env: Record<string, string> = {}) {
 test("help prints the command list and exits 0", () => {
   const r = run(["help"]);
   assert.equal(r.status, 0);
-  assert.match(r.stdout, /bridge-ds v5\.\d+\.\d+/);
+  assert.match(r.stdout, /bridge-ds v\d+\.\d+\.\d+/);
   assert.match(r.stdout, /setup\s+Headless scaffold/);
-  assert.match(r.stdout, /docs build/);
   assert.match(r.stdout, /cron/);
 });
 
 test("no args shows help (exit 0)", () => {
   const r = run([]);
   assert.equal(r.status, 0);
-  assert.match(r.stdout, /bridge-ds v5\./);
+  assert.match(r.stdout, /bridge-ds v/);
 });
 
 test("version prints only the semantic version", () => {
   const r = run(["version"]);
   assert.equal(r.status, 0);
-  assert.match(r.stdout.trim(), /^bridge-ds v5\.\d+\.\d+$/);
+  assert.match(r.stdout.trim(), /^bridge-ds v\d+\.\d+\.\d+$/);
 });
 
 test("unknown command exits non-zero with a helpful message", () => {
@@ -41,24 +40,12 @@ test("unknown command exits non-zero with a helpful message", () => {
   assert.match(r.stderr, /Unknown command: nonexistent-cmd/);
 });
 
-test("`init` was removed in v5.0.0 and emits the migration notice", () => {
-  const r = run(["init"]);
-  assert.notEqual(r.status, 0);
-  assert.match(r.stderr, /removed in v5\.0\.0/);
-  assert.match(r.stderr, /setup bridge/);
-});
-
-test("`update` was removed in v5.0.0 and emits the migration notice", () => {
-  const r = run(["update"]);
-  assert.notEqual(r.status, 0);
-  assert.match(r.stderr, /removed in v5\.0\.0/);
-  assert.match(r.stderr, /plugin update bridge-ds/);
-});
-
-test("`docs` without a subcommand errors", () => {
-  const r = run(["docs"]);
-  assert.notEqual(r.status, 0);
-  assert.match(r.stderr, /Unknown docs subcommand/);
+test("removed v5 commands (init, update, docs, init-docs) now error as Unknown command", () => {
+  for (const cmd of ["init", "update", "init-docs", "docs"]) {
+    const r = run([cmd]);
+    assert.notEqual(r.status, 0, `${cmd} should exit non-zero`);
+    assert.match(r.stderr, /Unknown command/, `${cmd} should show Unknown command`);
+  }
 });
 
 test("`extract` without --headless errors (safety net)", () => {

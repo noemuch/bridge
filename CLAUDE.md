@@ -42,18 +42,17 @@ Two transports, auto-detected. See `references/transport-adapter.md` for full ma
 | Components    | `figma_search_components`     | `search_design_system` |
 | Connection    | `figma_get_status`            | `whoami`               |
 
-## Skills (v5.0.0+)
+## Skills (v6.0.0+)
 
-Bridge uses a **multi-skill** Claude Code architecture. There is no `/design-workflow` slash command — commands are triggered by keywords routed through `using-bridge` (see the command map in that skill).
+Bridge uses a **multi-skill** Claude Code architecture. Commands are triggered by keywords routed through `using-bridge` (see the command map in that skill).
 
 | Skill                       | Trigger keyword             | Purpose                                                       |
 | --------------------------- | --------------------------- | ------------------------------------------------------------- |
-| `using-bridge`              | SessionStart (force-loaded) | Command map, hard rules, drop/status procedures (~500 tokens) |
+| `using-bridge`              | SessionStart (force-loaded) | Command map, iron laws, drop/status procedures (~500 tokens)  |
 | `generating-figma-design`   | `make <description>`        | CSpec → scene graph → compile → execute → verify              |
 | `learning-from-corrections` | `fix`                       | Diff Figma corrections, extract learnings, patch recipes      |
 | `shipping-and-archiving`    | `done`                      | Final Gate B verification, archive CSpec, extract recipes     |
 | `extracting-design-system`  | `setup bridge`              | Extract DS from Figma, scaffold repo, wire up cron            |
-| `generating-ds-docs`        | `docs`                      | 6 modes (init, full-build, sync, check, mcp, headless-sync)   |
 
 Shared references live at the repo root under `references/`:
 
