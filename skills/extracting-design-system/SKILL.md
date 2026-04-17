@@ -210,7 +210,7 @@ Top flags for this skill:
 
 ## Verification
 
-- **Gate A / B / C** — not applicable in V3.3.0/V4.1.0 (setup doesn't compile, execute, or generate docs directly — it composes them). Internal gates: key-validation, schema conformance, token-pipe discipline.
+- **Gate A / B** — not applicable (setup doesn't compile or execute designs). Internal gates: key-validation, schema conformance, token-pipe discipline.
 
 Evidence to surface: per-registry entry counts, key-validation probe results, scaffold file list, token mask (never full value).
 

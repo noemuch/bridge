@@ -63,7 +63,7 @@ Key entry points:
 - `lib/cli/main.ts` — CLI router (all commands)
 - `lib/cli/setup-orchestrator.ts` — headless scaffolding invoked by `setup bridge`
 - `skills/using-bridge/SKILL.md` — force-loaded process-layer skill
-- `skills/*/SKILL.md` — one skill per action (`make`, `fix`, `done`, `setup`, `docs`)
+- `skills/*/SKILL.md` — one skill per action (`make`, `fix`, `done`, `setup`)
 
 ## Community
 
