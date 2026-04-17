@@ -5,6 +5,26 @@
 
 ---
 
+## Compiler Iron Laws
+
+<IRON-LAW>
+Every `$token` reference resolves against the KB or compilation fails with `RESOLVE_TOKEN_NOT_FOUND` (Levenshtein-suggested alternatives included).
+</IRON-LAW>
+
+<IRON-LAW>
+Every emitted Figma Plugin API call respects all 26 enforced rules. Rule violations are compile errors, never warnings.
+</IRON-LAW>
+
+<IRON-LAW>
+Compiler output is deterministic for a given (input + KB) pair. No runtime randomness, no time-dependent codegen.
+</IRON-LAW>
+
+<IRON-LAW>
+Multi-chunk plans preserve nodeId references across chunks via `globalThis` bridging — no chunk may rely on intra-chunk DOM state.
+</IRON-LAW>
+
+---
+
 ## 1. Scene Graph JSON Format
 
 ### Root Document

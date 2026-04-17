@@ -65,30 +65,33 @@ Output template:
    brainstorm the intent first before implementing. For a clear directive
    that maps to a command in the table above, route directly.
 2. **Verification before completion.** No "done" without evidence
-   (see Hard Rules below).
+   (see Iron Laws below).
 3. **Minimal context.** Load only the references needed for the current
    action. See each action skill's `## Verification` section.
 
 ---
 
-## Hard Rules (Non-Negotiable)
+## Iron Laws (non-negotiable)
 
-<HARD-GATE>
-NEVER write raw Figma Plugin API code. All scene graph JSON must pass
-through `lib/compiler/compile.ts`.
+<IRON-LAW>
+NEVER write raw Figma Plugin API code. All scene graph JSON must pass through `lib/compiler/compile.ts`. Violations require explicit human approval before any execution to Figma.
+</IRON-LAW>
 
-NEVER use hardcoded primitive values. Only semantic DS tokens
-(`$color/...`, `$spacing/...`, `$text/...`, `$comp/...`).
+<IRON-LAW>
+NEVER use hardcoded primitive values. Only semantic DS tokens (`$color/...`, `$spacing/...`, `$text/...`, `$comp/...`). The compiler emits `RESOLVE_TOKEN_NOT_FOUND` for any unresolved reference.
+</IRON-LAW>
 
-NEVER claim "done" without:
-  (a) compiler ran to completion (exit code 0)
-  (b) screenshot taken in this turn
-  (c) user confirmation of visual correctness
+<IRON-LAW>
+NEVER claim "done" without: (a) compiler exit 0, (b) screenshot taken in this turn, (c) user confirmation of visual correctness. "Looks right" / "should pass" / "I'm confident" are forbidden — show the evidence.
+</IRON-LAW>
 
-NEVER read `figma-api-rules.md` — the compiler enforces all 26 rules.
+<IRON-LAW>
+NEVER read `figma-api-rules.md`. The compiler enforces all 26 rules. This file does not exist in v6.
+</IRON-LAW>
 
-NEVER reuse a Figma `nodeId` from a previous session.
-</HARD-GATE>
+<IRON-LAW>
+NEVER reuse a Figma `nodeId` from a previous session. Node IDs are session-scoped — re-search.
+</IRON-LAW>
 
 ---
 
