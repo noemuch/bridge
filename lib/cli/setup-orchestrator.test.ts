@@ -30,7 +30,7 @@ test("scaffold creates the expected directory tree with defaults", async () => {
     const created = await scaffold({ dsName: "Spectra", figmaFileKey: "KEY123" });
     // Expected files and directories are returned in the `created` list
     // AND physically exist on disk.
-    for (const relPath of ["docs.config.yaml", ".github/workflows/bridge-docs-cron.yml"]) {
+    for (const relPath of ["docs.config.yaml", ".github/workflows/bridge-kb-cron.yml"]) {
       assert.ok(created.includes(relPath), `created list missing ${relPath}`);
       assert.ok(await exists(path.join(dir, relPath)), `${relPath} not on disk`);
     }
@@ -77,7 +77,7 @@ test("scaffold creates .bridge/ directory for cron reports", async () => {
 test("scaffold produces a cron workflow with the daily schedule", async () => {
   await withTempDir(async (dir) => {
     await scaffold({ dsName: "X", figmaFileKey: "Y" });
-    const yml = await readFile(path.join(dir, ".github/workflows/bridge-docs-cron.yml"), "utf8");
+    const yml = await readFile(path.join(dir, ".github/workflows/bridge-kb-cron.yml"), "utf8");
     assert.match(yml, /Bridge KB — Daily Sync/);
     assert.match(yml, /schedule:\s*-\s*cron: "0 6 \* \* \*"/);
     assert.match(yml, /secrets\.FIGMA_TOKEN/);

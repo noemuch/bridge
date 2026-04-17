@@ -115,8 +115,7 @@ jobs:
           node "$GITHUB_WORKSPACE/bin/bridge.js" setup --ds-name TestDS --figma-key abc123TEST_KEY
           test -f docs.config.yaml
           test -d bridge-ds/knowledge-base/registries
-          test -d design-system/components
-          test -f .github/workflows/bridge-docs-cron.yml
-          test -f .bridge/mcp.json
-          test -f llms.txt
+          test -d bridge-ds/knowledge-base/recipes
+          test -d .bridge
+          test -f .github/workflows/bridge-kb-cron.yml
           echo "✓ Scaffold produced all expected files"

@@ -92,14 +92,12 @@ const { scaffold } = require('@noemuch/bridge-ds/dist/lib/cli/setup-orchestrator
 
 Report:
 ```
-✓ Scaffolded 8 files/directories:
+✓ Scaffolded files/directories:
   - bridge-ds/knowledge-base/registries/
-  - design-system/
+  - bridge-ds/knowledge-base/recipes/
+  - .bridge/
   - docs.config.yaml
-  - .github/workflows/bridge-docs-cron.yml
-  - .bridge/mcp.json
-  - llms.txt
-  - design-system/_manual/README.md
+  - .github/workflows/bridge-kb-cron.yml
 ```
 
 ### Step 5 — Store token in GitHub Secrets (if provided)
@@ -167,7 +165,7 @@ Trigger first cron run now to verify the workflow? [Y/n]
 
 If Y, Bash:
 ```bash
-gh workflow run bridge-docs-cron.yml --repo $GITHUB_REPO
+gh workflow run bridge-kb-cron.yml --repo $GITHUB_REPO
 gh run watch
 ```
 
@@ -178,14 +176,13 @@ gh run watch
 
 Your DS:
   Repo:      https://github.com/{repo}
-  Docs:      design-system/ (rendered on GitHub)
-  LLM index: llms.txt · .llm.txt sidecars
-  MCP:       ds://component/<name>
+  KB:        bridge-ds/knowledge-base/registries/
+  Cron:      .github/workflows/bridge-kb-cron.yml (daily sync)
 
 Next steps:
   • Say "make <description>" to design a new component/screen
   • Say "fix" after manual Figma edits
-  • Say "done" to ship + cascade
+  • Say "done" to ship + extract recipes
   • Daily cron runs at 06:00 UTC automatically
 ```
 

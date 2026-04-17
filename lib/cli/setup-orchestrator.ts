@@ -100,8 +100,8 @@ jobs:
           delete-branch: true
           labels: bridge-kb, automated
 `;
-  await writeFile(".github/workflows/bridge-docs-cron.yml", cronYaml, "utf8");
-  created.push(".github/workflows/bridge-docs-cron.yml");
+  await writeFile(".github/workflows/bridge-kb-cron.yml", cronYaml, "utf8");
+  created.push(".github/workflows/bridge-kb-cron.yml");
 
   return created;
 }

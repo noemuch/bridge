@@ -37,7 +37,7 @@ export async function doctor(version = "6.0.0") {
 
   console.log(brand("Cron"));
   try {
-    await access(".github/workflows/bridge-docs-cron.yml");
+    await access(".github/workflows/bridge-kb-cron.yml");
     console.log(`  ${icons.pass} cron workflow installed`);
   } catch {
     console.log(`  ${icons.warn} cron workflow missing`);
