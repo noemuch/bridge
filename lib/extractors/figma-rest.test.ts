@@ -122,6 +122,43 @@ test("extractComponentsFromFigma fetches components + component_sets + /nodes fo
   assert.equal(reg.components.length, 2);
 });
 
+test("extractComponentsFromFigma filters orphan variants by name heuristic", async () => {
+  // Some Figma libraries publish variants individually without a parent SET.
+  // The node-ID dedup can't catch those (no /component_sets entry exists),
+  // so we fall back to Figma's variant-naming convention (`key=value`).
+  const { fetchImpl } = recordingFetch({
+    "https://api.figma.com/v1/files/FILEKEY/components": {
+      meta: {
+        components: [
+          {
+            key: "ORPHAN_K1",
+            name: "trend=positive, layout=expanded",
+            node_id: "5:1",
+            containing_frame: { pageName: "Trend" },
+          },
+          {
+            key: "REAL_K",
+            name: "RecommendationCard",
+            node_id: "5:2",
+            containing_frame: { pageName: "Cards" },
+          },
+        ],
+      },
+    },
+    "https://api.figma.com/v1/files/FILEKEY/component_sets": {
+      meta: { component_sets: [] },
+    },
+  });
+  const reg = await extractComponentsFromFigma({
+    fileKey: "FILEKEY",
+    token: "figd_test",
+    fetchImpl,
+  });
+  const comps = reg.components as unknown as Array<Record<string, any>>;
+  assert.equal(comps.length, 1);
+  assert.equal(comps[0].name, "RecommendationCard");
+});
+
 test("extractComponentsFromFigma deduplicates variants against /component_sets children", async () => {
   // The Figma /components endpoint returns every variant inside a SET as a
   // standalone entry (and does NOT include a componentSetId field). We must

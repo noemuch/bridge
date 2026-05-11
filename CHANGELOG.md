@@ -2,6 +2,18 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [6.2.2] — 2026-05-11
+
+Hotfix on top of 6.2.1: catch orphan variants whose parent set isn't published.
+
+### Fixed
+
+- **Variants published individually (no parent SET in `/component_sets`) leaked into the registry.** The 6.2.1 node-ID dedup only filters variants whose parent SET is published. Real libraries sometimes publish individual variant COMPONENTs without a SET wrapper, and those slipped through. Added a name-pattern secondary filter using Figma's variant-naming convention (`key=value, key=value`) so those orphans are dropped too.
+
+### Trade-off
+
+The heuristic excludes any component whose name starts with `^\w[\w-]*=`. A legitimate top-level component intentionally named like that (e.g. `key=primary`) would be dropped — possible in theory, very unusual in practice. Documented here so it's not a surprise.
+
 ## [6.2.1] — 2026-05-11
 
 Hotfix on top of 6.2.0: dedupe variants against component-set children.

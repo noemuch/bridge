@@ -254,7 +254,17 @@ export async function extractComponentsFromFigma(
   for (const doc of Object.values(nodeDocs)) {
     for (const child of doc.children ?? []) variantNodeIds.add(child.id);
   }
-  const standaloneComps = allComponents.filter((c) => !c.node_id || !variantNodeIds.has(c.node_id));
+  // Secondary heuristic: Figma's variant-naming convention requires every
+  // variant name to be of the form `key=value` or `key1=value1, key2=value2`.
+  // A small number of variants slip past the node-ID dedup when their parent
+  // set is unpublished — we still want them out of the registry.
+  const looksLikeVariantName = (name: string): boolean => /^\w[\w-]*=/.test(name);
+
+  const standaloneComps = allComponents.filter((c) => {
+    if (c.node_id && variantNodeIds.has(c.node_id)) return false;
+    if (looksLikeVariantName(c.name)) return false;
+    return true;
+  });
 
   // Emit the on-disk shape the compiler actually consumes — `properties` as a
   // record of string-encoded types, `variants` as the variant count, the
