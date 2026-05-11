@@ -54,12 +54,14 @@ test("runCron integration: MCP-free end-to-end on fake fetch", async () => {
     },
   };
   const components = { meta: { components: [] } };
+  const componentSets = { meta: { component_sets: [] } };
   const styles = { meta: { styles: [] } };
 
   global.fetch = (async (url: unknown) => {
     const u = String(url);
     let body: unknown;
     if (u.includes("/variables/local")) body = variables;
+    else if (u.includes("/component_sets")) body = componentSets;
     else if (u.includes("/components")) body = components;
     else if (u.includes("/styles")) body = styles;
     else throw new Error(`unexpected fetch: ${u}`);
@@ -99,6 +101,9 @@ test("runCron: skips variables write on 403 instead of failing the whole run", a
     const u = String(url);
     if (u.endsWith("/variables/local")) {
       return new Response(JSON.stringify({}), { status: 403 });
+    }
+    if (u.endsWith("/component_sets")) {
+      return new Response(JSON.stringify({ meta: { component_sets: [] } }), { status: 200 });
     }
     if (u.endsWith("/components")) {
       return new Response(JSON.stringify({ meta: { components: [] } }), { status: 200 });
@@ -171,9 +176,14 @@ test("runCron multi-file: fetches each registry from its configured fileKey", as
 
     if (u === "https://api.figma.com/v1/files/COMPONENTS_FILE/components") {
       return new Response(
-        JSON.stringify({ meta: { components: [{ key: "C1", name: "Button" }] } }),
+        JSON.stringify({
+          meta: { components: [{ key: "C1", name: "Divider", node_id: "1:1" }] },
+        }),
         { status: 200 }
       );
+    }
+    if (u === "https://api.figma.com/v1/files/COMPONENTS_FILE/component_sets") {
+      return new Response(JSON.stringify({ meta: { component_sets: [] } }), { status: 200 });
     }
     if (u === "https://api.figma.com/v1/files/FOUNDATIONS_FILE/variables/local") {
       return new Response(
@@ -206,7 +216,8 @@ test("runCron multi-file: fetches each registry from its configured fileKey", as
     if (
       u.includes("COMPONENTS_FILE/variables") ||
       u.includes("COMPONENTS_FILE/styles") ||
-      u.includes("FOUNDATIONS_FILE/components")
+      u.includes("FOUNDATIONS_FILE/components") ||
+      u.includes("FOUNDATIONS_FILE/component_sets")
     ) {
       throw new Error(`unexpected cross-file fetch: ${u}`);
     }
@@ -242,7 +253,7 @@ test("runCron multi-file: fetches each registry from its configured fileKey", as
       path.join(dir, "kb/knowledge-base/registries/components.json"),
       "utf8"
     );
-    assert.match(compsRaw, /Button/);
+    assert.match(compsRaw, /Divider/);
     const varsRaw = await readFile(
       path.join(dir, "kb/knowledge-base/registries/variables.json"),
       "utf8"

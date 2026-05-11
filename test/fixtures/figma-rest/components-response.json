@@ -3,7 +3,23 @@
   "error": false,
   "meta": {
     "components": [
-      { "key": "COMPKEY_BTN", "file_key": "FILEKEY", "node_id": "1:2", "name": "Button", "description": "Triggers an action.", "containing_frame": { "pageName": "Components" } }
+      {
+        "key": "COMPKEY_BTN_PRIMARY",
+        "file_key": "FILEKEY",
+        "node_id": "1:101",
+        "component_set_id": "1:100",
+        "name": "variant=primary, size=medium",
+        "description": "",
+        "containing_frame": { "pageName": "Actions" }
+      },
+      {
+        "key": "COMPKEY_DIVIDER",
+        "file_key": "FILEKEY",
+        "node_id": "1:200",
+        "name": "Divider",
+        "description": "Horizontal rule.",
+        "containing_frame": { "pageName": "Layout" }
+      }
     ]
   }
 }

@@ -49,12 +49,48 @@ interface FigmaVariablesResponse {
 interface FigmaComponent {
   key: string;
   name: string;
+  node_id?: string;
+  component_set_id?: string;
   description?: string;
   containing_frame?: { pageName?: string };
 }
 
 interface FigmaComponentsResponse {
   meta?: { components?: FigmaComponent[] };
+}
+
+interface FigmaComponentSet {
+  key: string;
+  name: string;
+  node_id?: string;
+  description?: string;
+  containing_frame?: { pageName?: string };
+}
+
+interface FigmaComponentSetsResponse {
+  meta?: { component_sets?: FigmaComponentSet[] };
+}
+
+// /v1/files/{key}/nodes?ids=... returns rich node data, including
+// `componentPropertyDefinitions` on COMPONENT_SET nodes — the only REST
+// surface that exposes variant / property metadata. See the official spec at
+// https://developers.figma.com/docs/rest-api/component-types/.
+interface FigmaComponentPropertyDefinition {
+  type: "BOOLEAN" | "TEXT" | "INSTANCE_SWAP" | "VARIANT";
+  defaultValue?: boolean | string;
+  variantOptions?: string[];
+}
+
+interface FigmaNodeDocument {
+  id: string;
+  type: string;
+  name?: string;
+  children?: Array<{ id: string; type: string }>;
+  componentPropertyDefinitions?: Record<string, FigmaComponentPropertyDefinition>;
+}
+
+interface FigmaNodesResponse {
+  nodes: Record<string, { document?: FigmaNodeDocument } | null>;
 }
 
 interface FigmaStyle {
@@ -147,6 +183,45 @@ export async function extractVariablesFromFigma(
   return { version: 1, generatedAt: ts, variables };
 }
 
+/** Convert a Figma component-property definition into the string-encoded
+ * form the Bridge compiler expects on disk:
+ * - VARIANT(opt1,opt2,opt3) for variant props
+ * - "BOOLEAN" / "TEXT" / "INSTANCE_SWAP" for the other types
+ *
+ * The compiler's variant validator (`lib/compiler/resolve.ts`) reads this
+ * encoded string verbatim, so the format must match exactly. */
+function encodePropertyDef(def: FigmaComponentPropertyDefinition): string {
+  if (def.type === "VARIANT") {
+    const opts = def.variantOptions ?? [];
+    return `VARIANT(${opts.join(",")})`;
+  }
+  return def.type;
+}
+
+const MAX_NODE_IDS_PER_BATCH = 50;
+
+/** Fetch rich node data for the given Figma node IDs in batches. Returns a
+ * flat map from node ID to the document. Missing nodes are silently
+ * omitted (caller treats absence as "no metadata available"). */
+async function fetchNodes(
+  fileKey: string,
+  ids: string[],
+  token: string,
+  f: typeof fetch
+): Promise<Record<string, FigmaNodeDocument>> {
+  const out: Record<string, FigmaNodeDocument> = {};
+  for (let i = 0; i < ids.length; i += MAX_NODE_IDS_PER_BATCH) {
+    const batch = ids.slice(i, i + MAX_NODE_IDS_PER_BATCH);
+    if (batch.length === 0) continue;
+    const url = `${BASE}/files/${fileKey}/nodes?ids=${encodeURIComponent(batch.join(","))}&depth=1`;
+    const body = await fget<FigmaNodesResponse>(url, token, f);
+    for (const [id, entry] of Object.entries(body.nodes ?? {})) {
+      if (entry?.document) out[id] = entry.document;
+    }
+  }
+  return out;
+}
+
 export async function extractComponentsFromFigma(
   opts: FigmaExtractOptions
 ): Promise<ComponentRegistry> {
@@ -154,23 +229,70 @@ export async function extractComponentsFromFigma(
   const f = opts.fetchImpl ?? fetch;
   const ts = new Date().toISOString();
 
-  const compBody = await fget<FigmaComponentsResponse>(
-    `${BASE}/files/${opts.fileKey}/components`,
-    opts.token,
-    f
-  );
-  const compsArr = compBody.meta?.components ?? [];
-  const components = compsArr.map((c) => ({
-    key: c.key,
-    name: c.name,
-    category: categoryFromPage(c.containing_frame?.pageName),
-    status: "stable" as const,
-    variants: [],
-    properties: [],
-    description: c.description,
-  }));
+  // Pass 1: list standalone components and component sets in parallel.
+  // The /components endpoint includes every component (including variant
+  // instances inside sets); we filter those out via component_set_id.
+  const [compBody, setBody] = await Promise.all([
+    fget<FigmaComponentsResponse>(`${BASE}/files/${opts.fileKey}/components`, opts.token, f),
+    fget<FigmaComponentSetsResponse>(`${BASE}/files/${opts.fileKey}/component_sets`, opts.token, f),
+  ]);
+  const standaloneComps = (compBody.meta?.components ?? []).filter((c) => !c.component_set_id);
+  const componentSets = setBody.meta?.component_sets ?? [];
 
-  return { version: 1, generatedAt: ts, components };
+  // Pass 2: batch-fetch rich node data for every component-set ID so we can
+  // read componentPropertyDefinitions and count variants. Standalone
+  // components don't carry property defs, so we skip them here.
+  const setNodeIds = componentSets.map((s) => s.node_id).filter((id): id is string => !!id);
+  const nodeDocs = setNodeIds.length
+    ? await fetchNodes(opts.fileKey, setNodeIds, opts.token, f)
+    : {};
+
+  // Emit the on-disk shape the compiler actually consumes — `properties` as a
+  // record of string-encoded types, `variants` as the variant count, the
+  // node id and containing page surfaced as `id` and `page`.
+  const components: Array<Record<string, unknown>> = [];
+
+  for (const set of componentSets) {
+    const doc = set.node_id ? nodeDocs[set.node_id] : undefined;
+    const propDefs = doc?.componentPropertyDefinitions ?? {};
+    const properties: Record<string, string> = {};
+    for (const [propKey, def] of Object.entries(propDefs)) {
+      properties[propKey] = encodePropertyDef(def);
+    }
+    components.push({
+      name: set.name,
+      key: set.key,
+      id: set.node_id,
+      type: "COMPONENT_SET",
+      variants: doc?.children?.length ?? 0,
+      page: set.containing_frame?.pageName,
+      category: categoryFromPage(set.containing_frame?.pageName),
+      properties,
+      description: set.description,
+    });
+  }
+
+  for (const c of standaloneComps) {
+    components.push({
+      name: c.name,
+      key: c.key,
+      id: c.node_id,
+      type: "COMPONENT",
+      page: c.containing_frame?.pageName,
+      category: categoryFromPage(c.containing_frame?.pageName),
+      properties: {},
+      description: c.description,
+    });
+  }
+
+  // Cast to the typed registry. The on-disk type is intentionally looser
+  // than the formal ComponentEntry interface — see lib/compiler/registry.ts
+  // which normalizes either shape at read time.
+  return {
+    version: 1,
+    generatedAt: ts,
+    components: components as unknown as ComponentRegistry["components"],
+  };
 }
 
 export async function extractTextStylesFromFigma(

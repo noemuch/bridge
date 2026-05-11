@@ -1,0 +1,16 @@
+{
+  "status": 200,
+  "error": false,
+  "meta": {
+    "component_sets": [
+      {
+        "key": "SETKEY_BTN",
+        "file_key": "FILEKEY",
+        "node_id": "1:100",
+        "name": "Button",
+        "description": "Primary action component.",
+        "containing_frame": { "pageName": "Actions" }
+      }
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "Test File",
+  "lastModified": "2026-05-11T00:00:00Z",
+  "thumbnailUrl": "",
+  "version": "1",
+  "role": "owner",
+  "editorType": "figma",
+  "linkAccess": "view",
+  "nodes": {
+    "1:100": {
+      "document": {
+        "id": "1:100",
+        "type": "COMPONENT_SET",
+        "name": "Button",
+        "children": [
+          { "id": "1:101", "type": "COMPONENT" },
+          { "id": "1:102", "type": "COMPONENT" },
+          { "id": "1:103", "type": "COMPONENT" },
+          { "id": "1:104", "type": "COMPONENT" },
+          { "id": "1:105", "type": "COMPONENT" },
+          { "id": "1:106", "type": "COMPONENT" }
+        ],
+        "componentPropertyDefinitions": {
+          "label#1057:0": { "type": "TEXT", "defaultValue": "Click me" },
+          "hasIcon#1345:0": { "type": "BOOLEAN", "defaultValue": false },
+          "variant": {
+            "type": "VARIANT",
+            "defaultValue": "primary",
+            "variantOptions": ["primary", "secondary", "tertiary"]
+          },
+          "size": {
+            "type": "VARIANT",
+            "defaultValue": "medium",
+            "variantOptions": ["large", "medium", "small"]
+          }
+        }
+      }
+    }
+  }
+}

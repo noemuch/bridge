@@ -2,6 +2,26 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [6.2.0] — 2026-05-11
+
+The REST extractor now produces a metadata-complete `components.json` matching what the MCP path emits. Variant counts and component-property definitions (BOOLEAN / TEXT / INSTANCE_SWAP / VARIANT) are populated from Figma, so the compiler's variant validator works against KBs that were refreshed by the cron — previously, REST-extracted KBs had empty `properties` and the validator silently accepted every variant, masking authoring errors.
+
+### Added
+
+- **2-pass component extraction.** `extractComponentsFromFigma` now calls `/v1/files/{key}/components`, `/v1/files/{key}/component_sets`, and `/v1/files/{key}/nodes?ids=...&depth=1` in concert. The third request batches all component-set node IDs (50 per request) and pulls `componentPropertyDefinitions` so the on-disk shape is record-style (e.g. `{ "size": "VARIANT(large,medium,small)" }`) and matches the compiler's runtime expectations in `lib/compiler/resolve.ts`.
+- **Standalone components are emitted alongside component sets**, filtered via `component_set_id` so variant instances inside a set don't pollute the registry.
+- **Variant count** (`variants: number`) and `id` / `page` fields on each entry — parity with the MCP-extracted KB shape that Bridge teams already rely on.
+
+### Why
+
+The previous REST extractor wrote `properties: []` and `variants: []` because `/components` alone doesn't expose property definitions. The compiler's variant validator (`validateVariants` in `resolve.ts`) reads `entry.properties[key]` as a record of string-encoded type tags — when properties was an empty array, the read silently returned undefined and every variant was accepted as valid. Cron-managed KBs were effectively bypassing validation. v6.2.0 closes that gap: the cron now produces the same shape as the MCP path, and validation works end-to-end.
+
+### Compatibility
+
+The new output is the same shape as the existing MCP-extracted `components.json` files (record-style `properties`, numeric `variants` count, `id` / `page` fields). KBs created with v6.1.x will be overwritten with the richer shape on the next cron run; downstream consumers that only read `key` / `name` are unaffected.
+
+The Figma REST endpoints used (`/components`, `/component_sets`, `/files/{key}/nodes`) are all Tier 1 / Tier 3 and available on every plan — not Enterprise-gated. Rate limits remain comfortably within daily-cron headroom (Tier 1 = 20/min, Tier 3 = 150/min; the extractor uses 3 requests per file, plus one `/nodes` batch per 50 component sets).
+
 ## [6.1.1] — 2026-05-11
 
 Graceful degradation when the Figma variables endpoint is gated by plan tier. Non-Enterprise teams can now run the cron without it failing — variables stay refreshed manually via MCP, components and text styles continue to refresh automatically.
