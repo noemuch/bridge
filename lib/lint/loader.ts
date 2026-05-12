@@ -8,8 +8,10 @@ async function fileExists(p: string): Promise<boolean> {
   try {
     await access(p);
     return true;
-  } catch {
-    return false;
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException).code;
+    if (code === "ENOENT") return false;
+    throw err; // surface EACCES, EIO, etc.
   }
 }
 
@@ -25,32 +27,51 @@ async function loadYaml<T>(p: string): Promise<T> {
  * Resolves `extends` chains recursively. Later configs override earlier.
  */
 export async function loadConfig(configPath: string): Promise<LintConfig | null> {
-  if (!(await fileExists(configPath))) return null;
+  return loadConfigInner(configPath, new Set());
+}
 
-  const raw = await loadYaml<LintConfig>(configPath);
-  const baseDir = dirname(configPath);
+async function loadConfigInner(
+  configPath: string,
+  seen: Set<string>
+): Promise<LintConfig | null> {
+  const absPath = resolve(configPath);
+  if (seen.has(absPath)) {
+    throw new Error(
+      `Lint config cycle detected via ${absPath} (chain: ${[...seen].join(" -> ")})`
+    );
+  }
+  if (!(await fileExists(absPath))) return null;
+  seen.add(absPath);
 
-  // Resolve `extends`
+  const raw = await loadYaml<LintConfig>(absPath);
+  const baseDir = dirname(absPath);
   const resolved: { rules: Record<string, RuleDef | "off"> } = { rules: {} };
+
   for (const ext of raw.extends ?? []) {
+    let extPath: string;
     if (ext.startsWith("bridge:")) {
       const preset = ext.slice("bridge:".length);
-      const builtinPath = resolve(
-        __dirname,
-        "builtin/_rulesets",
-        `${preset}.yaml`
-      );
-      const sub = await loadConfig(builtinPath);
-      if (sub?.rules) Object.assign(resolved.rules, sub.rules);
+      extPath = resolve(__dirname, "builtin/_rulesets", `${preset}.yaml`);
     } else {
-      const sub = await loadConfig(resolve(baseDir, ext));
-      if (sub?.rules) Object.assign(resolved.rules, sub.rules);
+      extPath = resolve(baseDir, ext);
     }
+    const sub = await loadConfigInner(extPath, seen);
+    if (sub === null) {
+      // Surface missing extends — easier debugging than silent no-op.
+      if (ext.startsWith("bridge:")) {
+        console.warn(
+          `[bridge-ds lint] Preset not found: ${ext} (expected at ${extPath}). This is expected during the v7.0 build before Task 10 ships the builtin presets.`
+        );
+      } else {
+        throw new Error(
+          `Lint config extends missing file: ${ext} (resolved to ${extPath})`
+        );
+      }
+      continue;
+    }
+    if (sub.rules) Object.assign(resolved.rules, sub.rules);
   }
   Object.assign(resolved.rules, raw.rules ?? {});
 
-  return {
-    ...raw,
-    rules: resolved.rules,
-  };
+  return { ...raw, rules: resolved.rules };
 }
