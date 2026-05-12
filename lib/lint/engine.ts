@@ -4,6 +4,7 @@ import * as functions from "@stoplight/spectral-functions";
 import { Json as JsonParser } from "@stoplight/spectral-parsers";
 import type { RuleDef, LintDiagnostic, LintResult } from "./types.js";
 import type { Category, Severity } from "@noemuch/bridge-ds-rule-api";
+import { BRIDGE_BUILTIN_STUBS } from "./builtin-functions.js";
 
 interface RunOptions {
   readonly source: string;
@@ -27,6 +28,16 @@ const SPECTRAL_SEVERITY: Record<Severity, number> = {
 const BUILTIN_FUNCTIONS = functions as unknown as Record<string, unknown>;
 
 function resolveFunction(name: string): unknown {
+  // 1. Bridge built-in stubs (custom functions referenced by bridge:recommended).
+  //    These fail OPEN — they emit no diagnostics and warn once per name — so
+  //    consumers can extend the recommended preset without crashing on
+  //    "Unknown function" before real implementations land.
+  const stub = BRIDGE_BUILTIN_STUBS[name];
+  if (typeof stub === "function") {
+    return stub;
+  }
+
+  // 2. Stoplight built-in functions (truthy, pattern, schema, ...).
   const fn = BUILTIN_FUNCTIONS[name];
   if (typeof fn !== "function") {
     throw new Error(
@@ -34,6 +45,7 @@ function resolveFunction(name: string): unknown {
         BUILTIN_FUNCTIONS
       )
         .filter((k) => typeof BUILTIN_FUNCTIONS[k] === "function")
+        .concat(Object.keys(BRIDGE_BUILTIN_STUBS))
         .join(", ")}.`
     );
   }
