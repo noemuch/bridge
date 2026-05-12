@@ -12,6 +12,13 @@ const ALL_CATEGORIES: Category[] = [
   "interaction",
 ];
 
+const KNOWN_CATEGORIES: ReadonlySet<string> = new Set(ALL_CATEGORIES);
+
+// Module-scoped sentinel so we warn at most once per unknown category per
+// process. The lint engine can be invoked many times in a single CLI run
+// (e.g. across multiple specs); spamming stderr would drown real findings.
+const warnedUnknownCategories = new Set<string>();
+
 interface ComputeOpts {
   rules: Record<string, RuleDef>;
   diagnostics: readonly LintDiagnostic[];
@@ -25,18 +32,39 @@ export function computeCoverage(opts: ComputeOpts): CoverageReport {
   const failedRuleIds = new Set(opts.diagnostics.map((d) => d.ruleId));
 
   for (const [id, rule] of Object.entries(opts.rules)) {
-    const cat = rule.meta.category;
+    let cat = rule.meta.category as Category;
+    // Defensive: a rule may declare a `meta.category` value outside the
+    // canonical 7-value enum (e.g. a typo, a future category not yet
+    // wired in). Without this guard `byCategory[cat]` is undefined and
+    // we crash on `.total += 1`. Coerce to "structure" and warn once
+    // per unknown value per process.
+    if (!KNOWN_CATEGORIES.has(cat)) {
+      if (!warnedUnknownCategories.has(cat)) {
+        warnedUnknownCategories.add(cat);
+        console.warn(
+          `[bridge-ds] Rule "${id}" declares unknown meta.category "${cat}". ` +
+            `Coercing to "structure" for coverage. Valid categories: ${ALL_CATEGORIES.join(", ")}.`
+        );
+      }
+      cat = "structure";
+    }
     byCategory[cat].total += 1;
     if (failedRuleIds.has(id)) byCategory[cat].failed += 1;
     else byCategory[cat].passed += 1;
   }
 
   const overall = ALL_CATEGORIES.reduce(
-    (acc, c) => ({
-      passed: acc.passed + byCategory[c].passed,
-      failed: acc.failed + byCategory[c].failed,
-      total: acc.total + byCategory[c].total,
-    }),
+    (acc, c) => {
+      // Defensive: belt-and-braces against any future code path that
+      // hands us a partial byCategory map. Same fallback shape as
+      // renderCoverage uses.
+      const bucket = byCategory[c] ?? { passed: 0, failed: 0, total: 0 };
+      return {
+        passed: acc.passed + bucket.passed,
+        failed: acc.failed + bucket.failed,
+        total: acc.total + bucket.total,
+      };
+    },
     { passed: 0, failed: 0, total: 0 }
   );
 

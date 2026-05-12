@@ -5,7 +5,7 @@
 rules:
   interaction-tokens-are-float:
     description: "$interaction/* tokens must resolve to FLOAT (opacity), not COLOR."
-    given: "$..tokens[?(@.name && @.name.indexOf('$interaction/') === 0)]"
+    given: "$..tokens[?(@ && @.name && @.name.indexOf('$interaction/') === 0)]"
     then:
       function: interaction-token-is-float
     severity: warn

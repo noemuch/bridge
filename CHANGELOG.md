@@ -2,6 +2,23 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [7.1.2] — 2026-05-12
+
+### Fixed
+
+- **Coverage renderer crash fully resolved.** v7.0.2's fallback in
+  `renderCoverage` was incomplete — `computeCoverage` could still produce
+  a partial `byCategory` map if a rule declared `meta.category` outside
+  the canonical 7-value enum. Now coerced to "structure" with a one-time
+  warning, and ALL byCategory accesses are defensively guarded.
+
+- **Universal rule `given` expressions hardened against null array
+  elements.** Rules with `[?(@.field == ...)]` filters now use the
+  defensive `[?(@ && @.field == ...)]` form. Removes the crash trigger
+  for the per-rule isolation introduced in v7.0.2 — those rules now
+  actually fire on real CSpecs instead of just emitting `rule-crash`
+  warnings.
+
 ## [7.1.1] — 2026-05-12
 
 ### Added
