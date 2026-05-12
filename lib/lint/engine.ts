@@ -21,6 +21,9 @@ const SPECTRAL_SEVERITY: Record<Severity, number> = {
   error: 0,
 };
 
+// TODO(v7.1): generate a typed function registry from @stoplight/spectral-functions
+// so RuleDef['then']['function'] can be a typed union (BuiltinFunctionId | (string & {})).
+// Today we resolve dynamically via string name; unknown names throw.
 const BUILTIN_FUNCTIONS = functions as unknown as Record<string, unknown>;
 
 function resolveFunction(name: string): unknown {
@@ -50,6 +53,10 @@ export async function runRulesAgainstDocument(
   const spectralRuleset: Record<string, unknown> = {};
 
   for (const [id, rule] of Object.entries(ruleset.rules)) {
+    // Filter `off` rules before handing to Spectral. Spectral's severity -1 is
+    // undefined behavior — it may still execute rules. Skipping here is the
+    // only safe way to disable a rule.
+    if (rule.severity === "off") continue;
     spectralRuleset[id] = {
       description: rule.description,
       given: rule.given,
@@ -67,20 +74,54 @@ export async function runRulesAgainstDocument(
   } as never);
 
   const doc = new Document(JSON.stringify(document), JsonParser, opts.source);
-  const spectralResults = await spectral.run(doc);
+  // Defensive try/catch: the input is already a JS object that we JSON.stringify
+  // ourselves, so the JSON parser should never throw in practice. We still wrap
+  // to surface any future parser-source errors as structured diagnostics rather
+  // than raw exceptions. Hard to unit-test without mocking.
+  let spectralResults;
+  try {
+    spectralResults = await spectral.run(doc);
+  } catch (err) {
+    return {
+      diagnostics: [
+        {
+          ruleId: "lint-engine/parse-error",
+          severity: "error",
+          category: "structure",
+          message: `Failed to parse document: ${
+            err instanceof Error ? err.message : String(err)
+          }`,
+          path: [],
+          source: opts.source,
+        },
+      ],
+      coverage: {
+        byCategory: {} as never,
+        overall: {
+          passed: 0,
+          failed: 1,
+          total: Object.keys(ruleset.rules).length,
+        },
+      },
+    };
+  }
 
-  const diagnostics: LintDiagnostic[] = spectralResults.map((r) => {
+  const diagnostics: LintDiagnostic[] = [];
+  for (const r of spectralResults) {
     const ruleId = r.code as string;
     const rule = ruleset.rules[ruleId];
-    return {
+    // Spectral may emit diagnostics for internal/alias rules we don't own
+    // (e.g. when ruleset composition expands a rule). Guard against undefined.
+    if (!rule) continue;
+    diagnostics.push({
       ruleId,
       severity: rule.severity,
       category: toCategory(rule),
       message: r.message,
       path: r.path as never,
       source: opts.source,
-    };
-  });
+    });
+  }
 
   const total = Object.keys(ruleset.rules).length;
   const failed = new Set(diagnostics.map((d) => d.ruleId)).size;
