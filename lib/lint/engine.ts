@@ -5,9 +5,11 @@ import { Json as JsonParser } from "@stoplight/spectral-parsers";
 import type { RuleDef, LintDiagnostic, LintResult } from "./types.js";
 import type { Category, Severity } from "@noemuch/bridge-ds-rule-api";
 import { BRIDGE_BUILTIN_STUBS } from "./builtin-functions.js";
+import type { LoadedFunction } from "./load-custom-functions.js";
 
 interface RunOptions {
   readonly source: string;
+  readonly customFunctions?: ReadonlyArray<LoadedFunction>;
 }
 
 // In rulesets, the rule `id` is the record key, so callers may omit it from the
@@ -27,8 +29,13 @@ const SPECTRAL_SEVERITY: Record<Severity, number> = {
 // Today we resolve dynamically via string name; unknown names throw.
 const BUILTIN_FUNCTIONS = functions as unknown as Record<string, unknown>;
 
-function resolveFunction(name: string): unknown {
-  // 1. Bridge built-in stubs (custom functions referenced by bridge:recommended).
+function resolveFunction(name: string, customFunctions: ReadonlyArray<LoadedFunction>): unknown {
+  // 1. Consumer-loaded custom functions (highest priority — let consumers
+  //    override bridge stubs and stoplight builtins if they need to).
+  const custom = customFunctions.find((f) => f.name === name);
+  if (custom) return custom.fn;
+
+  // 2. Bridge built-in stubs (custom functions referenced by bridge:recommended).
   //    These fail OPEN — they emit no diagnostics and warn once per name — so
   //    consumers can extend the recommended preset without crashing on
   //    "Unknown function" before real implementations land.
@@ -37,13 +44,14 @@ function resolveFunction(name: string): unknown {
     return stub;
   }
 
-  // 2. Stoplight built-in functions (truthy, pattern, schema, ...).
+  // 3. Stoplight built-in functions (truthy, pattern, schema, ...).
   const fn = BUILTIN_FUNCTIONS[name];
   if (typeof fn !== "function") {
     throw new Error(
       `Unknown Spectral function "${name}". Built-in functions: ${Object.keys(BUILTIN_FUNCTIONS)
         .filter((k) => typeof BUILTIN_FUNCTIONS[k] === "function")
         .concat(Object.keys(BRIDGE_BUILTIN_STUBS))
+        .concat(customFunctions.map((f) => f.name))
         .join(", ")}.`
     );
   }
@@ -59,6 +67,7 @@ export async function runRulesAgainstDocument(
   document: unknown,
   opts: RunOptions
 ): Promise<LintResult> {
+  const customFunctions = opts.customFunctions ?? [];
   const spectral = new Spectral();
   const spectralRuleset: Record<string, unknown> = {};
 
@@ -72,7 +81,7 @@ export async function runRulesAgainstDocument(
       given: rule.given,
       then: {
         ...(rule.then.field !== undefined ? { field: rule.then.field } : {}),
-        function: resolveFunction(rule.then.function),
+        function: resolveFunction(rule.then.function, customFunctions),
         functionOptions: rule.then.functionOptions,
       },
       severity: SPECTRAL_SEVERITY[rule.severity],

@@ -66,5 +66,11 @@ async function loadConfigInner(configPath: string, seen: Set<string>): Promise<L
   }
   Object.assign(resolved.rules, raw.rules ?? {});
 
-  return { ...raw, rules: resolved.rules };
+  const resolvedFunctionsDir = raw.functionsDir ? resolve(baseDir, raw.functionsDir) : undefined;
+
+  return {
+    ...raw,
+    rules: resolved.rules,
+    functionsDir: resolvedFunctionsDir,
+  };
 }

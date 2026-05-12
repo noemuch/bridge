@@ -15,6 +15,7 @@
 //   record key is fine to leave implicit — no cast required.
 import { loadConfig } from "./loader.js";
 import { runRulesAgainstDocument } from "./engine.js";
+import { loadCustomFunctions } from "./load-custom-functions.js";
 import type { LintResult, RuleDef } from "./types.js";
 
 function emptyResult(): LintResult {
@@ -41,7 +42,10 @@ export async function runLintAtCompileTime(spec: unknown, configPath: string): P
 
   if (Object.keys(compileRules).length === 0) return emptyResult();
 
+  const customFunctions = await loadCustomFunctions(config.functionsDir);
+
   return runRulesAgainstDocument({ rules: compileRules }, spec, {
     source: "<cspec>",
+    customFunctions,
   });
 }

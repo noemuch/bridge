@@ -5,6 +5,7 @@ import { load as yamlLoad, JSON_SCHEMA } from "js-yaml";
 import { loadConfig } from "../lint/loader.js";
 import { runRulesAgainstDocument } from "../lint/engine.js";
 import { computeCoverage, renderCoverage } from "../lint/coverage.js";
+import { loadCustomFunctions } from "../lint/load-custom-functions.js";
 import type { LintDiagnostic, RuleDef } from "../lint/types.js";
 
 interface LintCliOpts {
@@ -40,6 +41,8 @@ export async function lintCommand(opts: LintCliOpts): Promise<number> {
     }
   }
 
+  const customFunctions = await loadCustomFunctions(config.functionsDir);
+
   const allDiagnostics: LintDiagnostic[] = [];
   for await (const specPath of walkCSpecs(process.cwd())) {
     const doc = yamlLoad(await readFile(specPath, "utf-8"), {
@@ -47,6 +50,7 @@ export async function lintCommand(opts: LintCliOpts): Promise<number> {
     });
     const res = await runRulesAgainstDocument({ rules: allRules }, doc, {
       source: path.relative(process.cwd(), specPath),
+      customFunctions,
     });
     allDiagnostics.push(...res.diagnostics);
   }

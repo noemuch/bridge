@@ -2,6 +2,22 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [7.0.1] — 2026-05-12
+
+### Fixed
+
+- **`LintConfig.functionsDir` is now honored at runtime.** v7.0.0 declared the
+  field in the schema but the engine ignored it — consumer-side custom
+  functions (`bridge-ds/lint/functions/*.js`) failed with `Unknown Spectral
+  function "<name>"`. v7.0.1 loads them via dynamic import.
+
+### Note
+
+- TS source files in functionsDir are skipped with a warning — consumers
+  must pre-compile (run `tsc` and point functionsDir at the dist) or
+  author directly in `.js` / `.mjs` / `.cjs`. Future versions may add
+  transparent TS support via ts-node.
+
 ## [7.0.0] — 2026-05-12
 
 DS rules engine. Bridge ships a Spectral-based rules runtime that enforces design-system conventions across three surfaces: the compiler, a new `bridge-ds lint` CLI, and a skill-overlay layer that injects active rules into Claude Code at generation time.
