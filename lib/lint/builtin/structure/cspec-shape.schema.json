@@ -2,30 +2,53 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://bridge-ds.dev/schemas/cspec.json",
   "title": "CSpec",
-  "description": "Bridge component specification.",
+  "description": "Bridge component specification. `additionalProperties: true` is intentional — CSpecs may carry custom annotations (feature flags, experiments, team-specific extensions) not enumerated by the core schema. Tighten via consumer-defined schemas when needed.",
   "type": "object",
   "required": ["name", "archetype", "component"],
   "additionalProperties": true,
   "properties": {
-    "name": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*(-[a-z0-9]+)*$",
+      "description": "kebab-case identifier for the spec (matches the filename)."
+    },
     "archetype": {
       "type": "string",
+      "description": "High-level shape of the spec. Open string for extensibility; conventional values: card, screen, list-item, tag, button.",
       "examples": ["card", "screen", "list-item", "tag", "button"]
     },
-    "component": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+    "component": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]*$",
+      "description": "PascalCase name of the DS component this spec instantiates."
+    },
     "properties": {
       "type": "object",
+      "description": "Component property bag — flat key/value where keys may carry the Figma '#nodeId' suffix for non-variant props.",
       "additionalProperties": { "type": ["string", "number", "boolean", "null"] }
     },
     "tokens": {
       "type": "array",
+      "description": "Design tokens referenced by the spec. Each token's `name` must be a `$category/path/segment` reference.",
       "items": {
         "type": "object",
         "required": ["name"],
-        "properties": { "name": { "type": "string", "pattern": "^\\$" } }
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^\\$[a-z][a-z0-9-]*(\\/[a-z0-9-]+)+$",
+            "description": "Semantic DS token reference (e.g. $color/background/surface/subtle)."
+          }
+        }
       }
     },
-    "children": { "type": "array" },
-    "snapshot": { "type": ["string", "null"] }
+    "children": {
+      "type": "array",
+      "description": "Nested specs (composite components, screen sections)."
+    },
+    "snapshot": {
+      "type": ["string", "null"],
+      "description": "Path to the *-snapshot.json file co-located with this spec (null when not yet shipped)."
+    }
   }
 }

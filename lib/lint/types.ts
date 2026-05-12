@@ -1,10 +1,15 @@
 // lib/lint/types.ts
 // Internal contracts for the lint engine.
+//
+// These mirror the public API exported from `@noemuch/bridge-ds-rule-api`
+// for engine-internal use. Public consumers (custom rule authors) should
+// import from the rule-api package directly; this file is private to Bridge.
 import type {
   Severity,
   Category,
   Surface,
   Status,
+  JsonPath,
 } from "@noemuch/bridge-ds-rule-api";
 
 export interface RuleDef {
@@ -36,6 +41,8 @@ export interface LintConfig {
   readonly rules?: Readonly<Record<string, RuleDef | "off">>;
   readonly overrides?: ReadonlyArray<{
     readonly files: readonly string[];
+    // `Severity` already includes `"off"`, so this Record permits disabling
+    // rules in overrides without a separate `Severity | "off"` union.
     readonly rules: Readonly<Record<string, Severity>>;
   }>;
   readonly functionsDir?: string;
@@ -46,7 +53,7 @@ export interface LintDiagnostic {
   readonly severity: Severity;
   readonly category: Category;
   readonly message: string;
-  readonly path: ReadonlyArray<string | number>;
+  readonly path: JsonPath;
   readonly source: string;
 }
 
