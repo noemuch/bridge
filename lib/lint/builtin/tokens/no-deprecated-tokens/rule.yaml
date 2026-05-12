@@ -1,0 +1,26 @@
+# lib/lint/builtin/tokens/no-deprecated-tokens/rule.yaml
+# Tokens marked `status: deprecated` in the KB are scheduled for removal.
+# Referencing them queues silent breakage on the next DS extract. The custom
+# function consults the KB registry for each referenced token's status.
+rules:
+  no-deprecated-tokens:
+    description: "Avoid referencing tokens marked `status: deprecated` in the KB."
+    given: "$..tokens[*].name"
+    then:
+      function: token-not-deprecated
+      functionOptions:
+        registry: tokens
+    severity: warn
+    meta:
+      bridgeApi: "1.x"
+      category: tokens
+      surface:
+        - compile-time
+        - lint-time
+        - skill-overlay
+      appliesTo: []
+      status: active
+      rationale: "Deprecated tokens are scheduled for removal; referencing them queues silent breakage on the next DS extract."
+      example: "Replace $color/legacy/grey-500 with its successor (check the token's `deprecatedBy` field in the KB)."
+      prompt: "Reference only tokens whose KB status is `active` or `canary`. When the KB flags a token deprecated, switch to the replacement listed under `deprecatedBy` (often the same family with an updated path)."
+      since: "1.0.0"

@@ -1,0 +1,25 @@
+# lib/lint/builtin/tokens/token-refs-resolve/rule.yaml
+# Every $token/... reference in a CSpec must resolve to a real entry in the KB
+# token registry. Dangling references compile to "undefined" in Figma and
+# silently fail. Resolution is delegated to a custom function with KB access.
+rules:
+  token-refs-resolve:
+    description: "Every $token/... reference must resolve to an entry in the KB token registry."
+    given: "$..tokens[*].name"
+    then:
+      function: token-exists-in-kb
+      functionOptions:
+        registry: tokens
+    severity: error
+    meta:
+      bridgeApi: "1.x"
+      category: tokens
+      surface:
+        - compile-time
+        - lint-time
+      appliesTo: []
+      status: active
+      rationale: "Dangling token refs compile to undefined values in Figma and fail silently; KB lookup catches typos at lint time."
+      example: "tokens: [{ name: $color/background/surface/subtle }]  # exists in KB registry"
+      prompt: "Reference only tokens that exist in the KB registry. Run `bridge-ds extract` if a token is missing, or fix the path to match an existing entry such as $color/background/surface/subtle."
+      since: "1.0.0"

@@ -1,0 +1,25 @@
+[
+  {
+    "fixture": "negative/inline-hex.cspec.yaml",
+    "diagnostics": [
+      {
+        "ruleId": "no-hardcoded-hex",
+        "severity": "error",
+        "path": ["properties", "background"],
+        "messageMatches": "hex|hardcoded|token"
+      },
+      {
+        "ruleId": "no-hardcoded-hex",
+        "severity": "error",
+        "path": ["properties", "borderColor"],
+        "messageMatches": "hex|hardcoded|token"
+      },
+      {
+        "ruleId": "no-hardcoded-hex",
+        "severity": "error",
+        "path": ["properties", "accent"],
+        "messageMatches": "hex|hardcoded|token"
+      }
+    ]
+  }
+]

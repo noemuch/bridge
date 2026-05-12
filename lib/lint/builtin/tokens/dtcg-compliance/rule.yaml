@@ -1,0 +1,24 @@
+# lib/lint/builtin/tokens/dtcg-compliance/rule.yaml
+# Validate any embedded design-token definitions against the W3C Design Tokens
+# Community Group format (2025.10 revision). Keeps Bridge KB exports portable
+# to other DTCG-aware tools (Style Dictionary, Tokens Studio, etc.).
+rules:
+  dtcg-compliance:
+    description: "Token files conform to the W3C DTCG 2025.10 format."
+    given: "$.tokenDefinitions"
+    then:
+      function: schema
+      functionOptions:
+        schemaUri: "https://design-tokens.github.io/community-group/format/"
+    severity: warn
+    meta:
+      bridgeApi: "1.x"
+      category: tokens
+      surface:
+        - lint-time
+      appliesTo: []
+      status: active
+      rationale: "DTCG conformance keeps Bridge token exports portable to Style Dictionary, Tokens Studio, and other community tooling."
+      example: "tokenDefinitions: { color: { primary: { $value: '#0066ff', $type: 'color' } } }"
+      prompt: "Author embedded token definitions in DTCG 2025.10 shape: every leaf has `$value` and `$type`, groups nest via plain keys, and aliases use the `{group.name}` syntax. See https://design-tokens.github.io/community-group/format/"
+      since: "1.0.0"

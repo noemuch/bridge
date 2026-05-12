@@ -1,0 +1,7 @@
+name: bad-card
+archetype: card
+component: BadCard
+properties:
+  background: "#ffffff"
+  borderColor: "#0a0a0a"
+  accent: "#f00"

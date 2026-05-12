@@ -1,0 +1,19 @@
+[
+  {
+    "fixture": "negative/dangling-token.cspec.yaml",
+    "diagnostics": [
+      {
+        "ruleId": "token-refs-resolve",
+        "severity": "error",
+        "path": ["tokens", 0, "name"],
+        "messageMatches": "not found|unresolved|registry|KB"
+      },
+      {
+        "ruleId": "token-refs-resolve",
+        "severity": "error",
+        "path": ["tokens", 1, "name"],
+        "messageMatches": "not found|unresolved|registry|KB"
+      }
+    ]
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "fixture": "negative/missing-dollar-prefix.cspec.yaml",
+    "diagnostics": [
+      {
+        "ruleId": "dtcg-compliance",
+        "severity": "warn",
+        "path": ["tokenDefinitions", "color", "primary"],
+        "messageMatches": "DTCG|\\$value|\\$type|schema"
+      },
+      {
+        "ruleId": "dtcg-compliance",
+        "severity": "warn",
+        "path": ["tokenDefinitions", "color", "surface", "subtle"],
+        "messageMatches": "DTCG|\\$value|\\$type|schema"
+      }
+    ]
+  }
+]

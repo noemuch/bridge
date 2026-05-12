@@ -1,0 +1,10 @@
+name: dtcg-broken-card
+archetype: card
+component: DtcgBrokenCard
+tokenDefinitions:
+  color:
+    primary:
+      value: "#0066ff"
+      type: color
+    surface:
+      subtle: "#f6f7f9"

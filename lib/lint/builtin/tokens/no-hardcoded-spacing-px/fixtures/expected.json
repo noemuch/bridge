@@ -1,0 +1,25 @@
+[
+  {
+    "fixture": "negative/px-literals.cspec.yaml",
+    "diagnostics": [
+      {
+        "ruleId": "no-hardcoded-spacing-px",
+        "severity": "error",
+        "path": ["properties", "padding"],
+        "messageMatches": "px|spacing|token"
+      },
+      {
+        "ruleId": "no-hardcoded-spacing-px",
+        "severity": "error",
+        "path": ["properties", "gap"],
+        "messageMatches": "px|spacing|token"
+      },
+      {
+        "ruleId": "no-hardcoded-spacing-px",
+        "severity": "error",
+        "path": ["properties", "marginTop"],
+        "messageMatches": "px|spacing|token"
+      }
+    ]
+  }
+]

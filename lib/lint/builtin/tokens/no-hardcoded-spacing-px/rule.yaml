@@ -1,0 +1,39 @@
+# lib/lint/builtin/tokens/no-hardcoded-spacing-px/rule.yaml
+# Pixel literals in spacing/padding/margin/gap break the spacing scale.
+# Force semantic $spacing/* tokens so density modes and rhythm stay consistent.
+rules:
+  no-hardcoded-spacing-px:
+    description: "Forbid raw `Npx` strings in spacing/padding/margin/gap; use $spacing/* tokens."
+    given:
+      - "$..spacing"
+      - "$..padding"
+      - "$..paddingTop"
+      - "$..paddingRight"
+      - "$..paddingBottom"
+      - "$..paddingLeft"
+      - "$..margin"
+      - "$..marginTop"
+      - "$..marginRight"
+      - "$..marginBottom"
+      - "$..marginLeft"
+      - "$..gap"
+      - "$..rowGap"
+      - "$..columnGap"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "^\\d+px$"
+    severity: error
+    meta:
+      bridgeApi: "1.x"
+      category: tokens
+      surface:
+        - compile-time
+        - lint-time
+        - skill-overlay
+      appliesTo: []
+      status: active
+      rationale: "Pixel literals freeze layout to one density and break the spacing scale; semantic tokens keep rhythm consistent across breakpoints and density modes."
+      example: "padding: $spacing/medium  # 16px in default density"
+      prompt: "Use $spacing/* tokens (e.g. $spacing/small, $spacing/medium, $spacing/large) for every padding, margin, and gap. The token registry maps them to the active density mode."
+      since: "1.0.0"

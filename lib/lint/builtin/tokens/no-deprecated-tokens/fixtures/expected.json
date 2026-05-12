@@ -1,0 +1,19 @@
+[
+  {
+    "fixture": "negative/deprecated-tokens.cspec.yaml",
+    "diagnostics": [
+      {
+        "ruleId": "no-deprecated-tokens",
+        "severity": "warn",
+        "path": ["tokens", 0, "name"],
+        "messageMatches": "deprecated|deprecatedBy|replacement"
+      },
+      {
+        "ruleId": "no-deprecated-tokens",
+        "severity": "warn",
+        "path": ["tokens", 1, "name"],
+        "messageMatches": "deprecated|deprecatedBy|replacement"
+      }
+    ]
+  }
+]

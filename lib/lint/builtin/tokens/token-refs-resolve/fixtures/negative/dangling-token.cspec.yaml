@@ -1,0 +1,6 @@
+name: card-with-dangling-token
+archetype: card
+component: DanglingTokensCard
+tokens:
+  - name: $color/background/surface/typo-here
+  - name: $spacing/does-not-exist

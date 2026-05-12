@@ -1,0 +1,25 @@
+# lib/lint/builtin/tokens/no-hardcoded-hex/rule.yaml
+# Forbids raw hex colors anywhere in a CSpec. Color must flow through
+# semantic tokens so theming, contrast, and dark-mode swaps work.
+rules:
+  no-hardcoded-hex:
+    description: "Forbid hardcoded hex color literals; use semantic $color/* tokens."
+    given: "$..*"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "^#[0-9a-fA-F]{3,8}$"
+    severity: error
+    meta:
+      bridgeApi: "1.x"
+      category: tokens
+      surface:
+        - compile-time
+        - lint-time
+        - skill-overlay
+      appliesTo: []
+      status: active
+      rationale: "Hardcoded hex bypasses theming, contrast, and dark-mode swaps; only semantic tokens guarantee correct rendering across modes."
+      example: "tokens: [{ name: $color/background/surface/subtle }]"
+      prompt: "Use semantic $color/* tokens from the design system for every color value (e.g. $color/background/surface/subtle). Bind colors via the token registry so themes and dark mode resolve correctly."
+      since: "1.0.0"

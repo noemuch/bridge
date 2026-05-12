@@ -1,0 +1,7 @@
+name: card-with-known-tokens
+archetype: card
+component: KnownTokensCard
+tokens:
+  - name: $color/background/surface/subtle
+  - name: $color/text/default
+  - name: $spacing/medium

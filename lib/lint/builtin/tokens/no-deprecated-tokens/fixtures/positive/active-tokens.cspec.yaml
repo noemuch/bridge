@@ -1,0 +1,7 @@
+name: active-tokens-card
+archetype: card
+component: ActiveTokensCard
+tokens:
+  - name: $color/background/surface/subtle
+  - name: $color/text/default
+  - name: $spacing/medium

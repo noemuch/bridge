@@ -1,0 +1,16 @@
+name: dtcg-ok-card
+archetype: card
+component: DtcgOkCard
+tokenDefinitions:
+  color:
+    primary:
+      $value: "#0066ff"
+      $type: color
+    surface:
+      subtle:
+        $value: "#f6f7f9"
+        $type: color
+  spacing:
+    medium:
+      $value: "16px"
+      $type: dimension

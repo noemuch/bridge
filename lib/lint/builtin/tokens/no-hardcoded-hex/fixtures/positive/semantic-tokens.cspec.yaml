@@ -1,0 +1,9 @@
+name: crypto-card
+archetype: card
+component: CryptoCard
+tokens:
+  - name: $color/background/surface/subtle
+  - name: $color/text/default
+  - name: $color/border/opacity/subtlest
+properties:
+  variant: default

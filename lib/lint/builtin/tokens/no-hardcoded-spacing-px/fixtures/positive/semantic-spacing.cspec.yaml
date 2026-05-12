@@ -1,0 +1,7 @@
+name: spaced-card
+archetype: card
+component: SpacedCard
+properties:
+  padding: $spacing/medium
+  gap: $spacing/small
+  marginTop: $spacing/large

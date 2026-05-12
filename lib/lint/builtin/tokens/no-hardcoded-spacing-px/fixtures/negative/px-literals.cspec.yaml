@@ -1,0 +1,7 @@
+name: bad-spacing-card
+archetype: card
+component: BadSpacingCard
+properties:
+  padding: "16px"
+  gap: "8px"
+  marginTop: "24px"

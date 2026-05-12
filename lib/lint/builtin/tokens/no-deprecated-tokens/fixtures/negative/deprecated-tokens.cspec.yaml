@@ -1,0 +1,6 @@
+name: deprecated-tokens-card
+archetype: card
+component: DeprecatedTokensCard
+tokens:
+  - name: $color/legacy/grey-500
+  - name: $spacing/legacy/tight
