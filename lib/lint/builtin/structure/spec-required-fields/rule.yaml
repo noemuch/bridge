@@ -6,12 +6,16 @@
 rules:
   spec-required-fields:
     description: "Top-level keys `name`, `archetype`, and `component` are required."
-    given:
-      - "$.name"
-      - "$.archetype"
-      - "$.component"
+    given: "$"
     then:
-      function: truthy
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          required:
+            - name
+            - archetype
+            - component
     severity: error
     meta:
       bridgeApi: "1.x"

@@ -51,6 +51,8 @@
     "test:skills": "node scripts/validate-skills.js",
     "test:all": "npm run build && node --test dist/lib dist/test",
     "test:security": "npm run build && node --test dist/test/security/*.test.js",
+    "test:rules-fixtures": "npm run build && node --test dist/lib/lint/builtin.test.js",
+    "test:rules-meta": "node scripts/validate-rule-meta.js",
     "version:sync": "node scripts/bump-version.js",
     "prepublishOnly": "npm run typecheck && npm run build && npm run lint && npm run test:skills && npm run test:security"
   },

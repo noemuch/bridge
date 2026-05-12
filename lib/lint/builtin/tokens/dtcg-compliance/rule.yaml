@@ -9,7 +9,48 @@ rules:
     then:
       function: schema
       functionOptions:
-        schemaUri: "https://design-tokens.github.io/community-group/format/"
+        # Recursive DTCG mini-schema: every node is either
+        #   - a leaf token (has $value AND $type), OR
+        #   - a group (no $-prefixed keys; children recurse via $defs/dtcgNode).
+        # `oneOf` enforces the dichotomy: any node with `$value` MUST also
+        # declare `$type` (else it's malformed), and any node WITHOUT `$value`
+        # must be a clean group with no $-prefixed leaks.
+        schema:
+          $ref: "#/$defs/dtcgNode"
+          $defs:
+            dtcgNode:
+              type: object
+              oneOf:
+                - # leaf token
+                  type: object
+                  required: [$value, $type]
+                  properties:
+                    $type:
+                      type: string
+                      enum:
+                        - color
+                        - dimension
+                        - fontFamily
+                        - fontWeight
+                        - duration
+                        - cubicBezier
+                        - number
+                        - string
+                        - boolean
+                        - strokeStyle
+                        - border
+                        - transition
+                        - shadow
+                        - gradient
+                        - typography
+                    $description: { type: string }
+                    $extensions: { type: object }
+                - # group (no $-prefixed keys, recurses)
+                  type: object
+                  patternProperties:
+                    "^[^$].*$":
+                      $ref: "#/$defs/dtcgNode"
+                  additionalProperties: false
     severity: warn
     meta:
       bridgeApi: "1.x"

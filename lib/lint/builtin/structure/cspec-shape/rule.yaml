@@ -1,7 +1,9 @@
 # lib/lint/builtin/structure/cspec-shape/rule.yaml
 # Validates the entire CSpec document against the JSON Schema 2020-12 contract.
-# The schema is co-located one directory up so both compile-time and lint-time
-# loaders share a single source of truth.
+# Schema is inlined here so Spectral's `schema` function can evaluate it
+# without an external $ref resolver. The canonical standalone schema file
+# `../cspec-shape.schema.json` is the source of truth for compile-time
+# loaders — keep both in sync.
 rules:
   cspec-shape:
     description: "CSpec must conform to the JSON Schema 2020-12 contract."
@@ -10,7 +12,47 @@ rules:
       function: schema
       functionOptions:
         schema:
-          $ref: "../cspec-shape.schema.json"
+          $schema: "https://json-schema.org/draft/2020-12/schema"
+          title: CSpec
+          type: object
+          required:
+            - name
+            - archetype
+            - component
+          additionalProperties: true
+          properties:
+            name:
+              type: string
+              pattern: "^[a-z][a-z0-9-]*(-[a-z0-9]+)*$"
+            archetype:
+              type: string
+            component:
+              type: string
+              pattern: "^[A-Z][A-Za-z0-9]*$"
+            properties:
+              type: object
+              additionalProperties:
+                type:
+                  - string
+                  - number
+                  - boolean
+                  - "null"
+            tokens:
+              type: array
+              items:
+                type: object
+                required:
+                  - name
+                properties:
+                  name:
+                    type: string
+                    pattern: "^\\$[a-z][a-z0-9-]*(\\/[a-z0-9-]+)+$"
+            children:
+              type: array
+            snapshot:
+              type:
+                - string
+                - "null"
     severity: error
     meta:
       bridgeApi: "1.x"
