@@ -249,14 +249,25 @@ export function resolveTokenRef(ref: string, registry: Registry): ResolveTokenRe
     };
   }
 
-  // Score all candidates — try both with and without category prefix
+  // Score all candidates — try both with and without category prefix.
+  // The category-aware score (s1) takes precedence: a candidate that matches
+  // every segment INCLUDING the category beats one that only matches the
+  // name parts. Without this bias, e.g. `$radius/medium` collides with
+  // `layout/spacing/medium` (both score 80 — once via "medium" alone) and
+  // the tie is broken by insertion order, silently picking the wrong entry.
   let bestEntry: { key: string; name: string } | null = null;
   let bestScore = 0;
   if (index.byName) {
     index.byName.forEach((entry, name) => {
       const s1 = scoreCandidate(name, searchSegments);
       const s2 = scoreCandidate(name, nameParts);
-      const score = Math.max(s1, s2);
+      // Bias s1 upward only when every category segment is present (>= 80).
+      // A partial (anyPresent=40) match must NOT be boosted past the >40
+      // acceptance threshold — that would let unknown tokens fuzzy-match
+      // any candidate that shares a category. The bonus is just enough to
+      // beat a same-tier s2 hit while staying below an exact-match (100).
+      const s1Biased = s1 >= 80 ? s1 + 10 : s1;
+      const score = Math.max(s1Biased, s2);
       if (score > bestScore) {
         bestEntry = entry;
         bestScore = score;

@@ -2,6 +2,30 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [7.1.3] — 2026-05-18
+
+### Fixed
+
+- **Compiler reads MCP-native `variables.json`.** Files extracted via the
+  Figma plugin path (the only option on non-Enterprise plans, since the
+  REST `/v1/files/:key/variables/local` endpoint returns 403) ship a
+  `{ meta, collections: { [name]: { variables: [] } } }` shape. The
+  compiler's `buildVariableIndex` only read the flat
+  `{ variables: [] }` shape and silently produced empty registries —
+  every `$token` then failed to resolve. `normalizeVariables()` now
+  flattens both shapes transparently. Tests:
+  `lib/compiler/registry.mcp-shape.test.ts`.
+
+- **`$radius/X` no longer aliases `layout/spacing/X`.** Token scoring used
+  to consider name-only matches (`["X"]`) equal to category-aware matches
+  (`["radius","X"]`), so `$radius/medium` would resolve to whichever of
+  `layout/spacing/medium` or `layout/radius/medium` happened to be
+  inserted first in the registry. The bias is now: a full-segment match
+  beats a name-only match — but only when the category segment is
+  actually present in the candidate, so unknown tokens still fall
+  through to `RESOLVE_TOKEN_NOT_FOUND`. Tests:
+  `lib/compiler/resolve.category-bias.test.ts`.
+
 ## [7.1.2] — 2026-05-12
 
 ### Fixed

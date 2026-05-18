@@ -74,9 +74,16 @@ interface RawVariableItem {
   valuesByMode?: Record<string, unknown>;
   scopes?: string[];
 }
+interface RawVariableCollection {
+  variables?: RawVariableItem[];
+}
 interface RawVariablesFile {
   version?: number;
   variables?: RawVariableItem[];
+  // MCP-native shape: variables grouped by collection. Produced by the Figma
+  // plugin export path when the file's plan is not Enterprise (REST returns
+  // 403). The reader flattens it transparently — see normalizeVariables().
+  collections?: Record<string, RawVariableCollection>;
 }
 
 interface RawComponentItem {
@@ -146,13 +153,27 @@ function segmentKeys(name: string): string[] {
 // INDEX BUILDERS
 // ---------------------------------------------------------------------------
 
+function normalizeVariables(data: RawVariablesFile | null): RawVariableItem[] {
+  if (!data) return [];
+  if (Array.isArray(data.variables)) return data.variables;
+  if (data.collections && typeof data.collections === "object") {
+    const flat: RawVariableItem[] = [];
+    for (const c of Object.values(data.collections)) {
+      if (c && Array.isArray(c.variables)) flat.push(...c.variables);
+    }
+    return flat;
+  }
+  return [];
+}
+
 function buildVariableIndex(data: RawVariablesFile | null): VariableIndex {
   const byName = new Map<string, VariableEntry>();
   const bySegment = new Map<string, VariableEntry[]>();
 
-  if (!data || !data.variables) return { byName, bySegment };
+  const variables = normalizeVariables(data);
+  if (variables.length === 0) return { byName, bySegment };
 
-  for (const v of data.variables) {
+  for (const v of variables) {
     const entry: VariableEntry = { name: v.name, key: v.key, collection: "" };
     byName.set(v.name, entry);
 
