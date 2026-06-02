@@ -225,6 +225,55 @@ export function validate(graph: ResolvedSceneGraph, registry: Registry | null): 
       }
 
       // ------------------------------------------------------------------
+      // Requested variant validated against registry metadata.
+      // Registry stores variants as Array<{ name, values }>; we flatten it
+      // into a lookup. No-op when the component has no variant metadata.
+      // ------------------------------------------------------------------
+      if (node.type === "INSTANCE" && node.variant && registry) {
+        const comp = registry.components?.byName?.get((node.component ?? "").toLowerCase());
+        const variantMeta = comp?.variants;
+        if (variantMeta && variantMeta.length > 0) {
+          const allowedByProp = new Map<string, string[]>();
+          for (const v of variantMeta) allowedByProp.set(v.name, v.values);
+          for (const [propKey, propVal] of Object.entries(node.variant as Record<string, string>)) {
+            const allowed = allowedByProp.get(propKey);
+            if (!allowed) {
+              warnings.push(
+                new CompilerError("VALIDATE_UNKNOWN_VARIANT", {
+                  message:
+                    'Component "' +
+                    (node.component ?? node.name) +
+                    '" has no variant property "' +
+                    propKey +
+                    '"',
+                  node: node.name ?? null,
+                  path: path + ".variant." + propKey,
+                })
+              );
+            } else if (!allowed.includes(propVal)) {
+              warnings.push(
+                new CompilerError("VALIDATE_UNKNOWN_VARIANT", {
+                  message:
+                    'Variant "' +
+                    propKey +
+                    '" of "' +
+                    (node.component ?? node.name) +
+                    '" has no value "' +
+                    propVal +
+                    '" (known: ' +
+                    allowed.join(", ") +
+                    ")",
+                  node: node.name ?? null,
+                  path: path + ".variant." + propKey,
+                  suggestion: allowed,
+                })
+              );
+            }
+          }
+        }
+      }
+
+      // ------------------------------------------------------------------
       // TEXT without textStyle
       // ------------------------------------------------------------------
       if (node.type === "TEXT") {

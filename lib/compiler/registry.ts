@@ -21,6 +21,7 @@ export interface ComponentEntry {
   key: string;
   type: string;
   properties: Record<string, unknown>;
+  variants?: Array<{ name: string; values: string[] }>;
 }
 
 export interface TextStyleEntry {
@@ -203,6 +204,7 @@ function buildComponentIndex(data: RawComponentsFile | null): ComponentIndex {
       properties: Array.isArray(comp.properties)
         ? {}
         : ((comp.properties as Record<string, unknown>) ?? {}),
+      ...(Array.isArray(comp.variants) ? { variants: comp.variants } : {}),
     };
     byName.set(comp.name.toLowerCase(), entry);
   }

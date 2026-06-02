@@ -60,6 +60,10 @@ export const ERROR_CODES = {
     severity: "warning",
     message: "Form component has real values but no filled state variant",
   },
+  VALIDATE_UNKNOWN_VARIANT: {
+    severity: "warning",
+    message: "Requested variant property/value is not in the component's registry metadata",
+  },
 
   // Wrap phase
   WRAP_MISSING_FILEKEY: {
