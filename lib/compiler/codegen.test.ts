@@ -49,3 +49,39 @@ test("findPropKey matches exact name segment, not a shared prefix", () => {
   assert.equal(findPropKey(compSet, "Size", "VARIANT"), "Size");
   assert.equal(findPropKey(compSet, "Nope", "TEXT"), undefined);
 });
+
+test("multiple imports are batched into a single Promise.all", () => {
+  const chunk = {
+    label: "build",
+    index: 0,
+    nodes: [],
+    imports: {
+      variables: [
+        { kind: "variable", key: "VariableID:1:1", name: "color/bg", ref: "$color/bg" },
+        { kind: "variable", key: "VariableID:1:2", name: "spacing/md", ref: "$spacing/md" },
+      ],
+      components: [
+        { kind: "component", key: "comp-button", name: "Button", ref: "$comp/Button" },
+      ],
+      textStyles: [],
+    },
+  } as unknown as Chunk;
+
+  const code = generateCode(chunk, { rootName: "S", rootWidth: 100, rootHeight: 100 });
+  assert.ok(code.includes("Promise.all"), "imports must be batched via Promise.all");
+});
+
+test("a single import still compiles correctly", () => {
+  const chunk = {
+    label: "build",
+    index: 0,
+    nodes: [],
+    imports: {
+      variables: [{ kind: "variable", key: "VariableID:1:1", name: "color/bg", ref: "$color/bg" }],
+      components: [],
+      textStyles: [],
+    },
+  } as unknown as Chunk;
+  const code = generateCode(chunk, { rootName: "S", rootWidth: 100, rootHeight: 100 });
+  assert.ok(code.includes("importVariableByKeyAsync"));
+});

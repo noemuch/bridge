@@ -87,44 +87,53 @@ export function importVarName(
 /**
  * Generate import statements for variables, components, and styles.
  * `importNames` is mutated to accumulate `key → varName` mappings.
+ * Multiple imports are batched into a single Promise.all for performance.
  */
 export function emitImports(
   imports: ImportBundle,
   importNames: Map<string, string>,
   bridgePrefix: string | null
 ): string {
-  const lines: string[] = [];
   const bp = bridgePrefix ?? "";
 
   const vars = imports.variables ?? [];
   const comps = imports.components ?? [];
   const styles = imports.textStyles ?? [];
 
+  // Build (varName, importExpr) pairs in a stable order. importVarName mutates
+  // importNames (key→varName) — that side-effect must run for every entry.
+  const pairs: Array<{ name: string; expr: string }> = [];
+
   for (const v of vars) {
-    const vn = importVarName(v, importNames);
-    lines.push(
-      bp +
-        "var " +
-        vn +
-        " = await figma.variables.importVariableByKeyAsync(" +
-        JSON.stringify(v.key) +
-        ");"
-    );
+    pairs.push({
+      name: importVarName(v, importNames),
+      expr: "figma.variables.importVariableByKeyAsync(" + JSON.stringify(v.key) + ")",
+    });
   }
-
   for (const c of comps) {
-    const vn = importVarName(c, importNames);
     const method = c.importMethod ?? "importComponentByKeyAsync";
-    lines.push(bp + "var " + vn + " = await figma." + method + "(" + JSON.stringify(c.key) + ");");
+    pairs.push({
+      name: importVarName(c, importNames),
+      expr: "figma." + method + "(" + JSON.stringify(c.key) + ")",
+    });
   }
-
   for (const s of styles) {
-    const vn = importVarName(s, importNames);
     const method = s.importMethod ?? "importStyleByKeyAsync";
-    lines.push(bp + "var " + vn + " = await figma." + method + "(" + JSON.stringify(s.key) + ");");
+    pairs.push({
+      name: importVarName(s, importNames),
+      expr: "figma." + method + "(" + JSON.stringify(s.key) + ")",
+    });
   }
 
-  return lines.join("\n");
+  if (pairs.length === 0) return "";
+
+  if (pairs.length === 1) {
+    return bp + "var " + pairs[0]!.name + " = await " + pairs[0]!.expr + ";";
+  }
+
+  const names = pairs.map((p) => p.name).join(", ");
+  const exprs = pairs.map((p) => "  " + p.expr).join(",\n");
+  return bp + "var [" + names + "] = await Promise.all([\n" + exprs + ",\n]);";
 }
 
 // ---------------------------------------------------------------------------
