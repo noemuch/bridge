@@ -769,6 +769,32 @@ export interface CodegenContext {
   allImports?: ImportBundle;
 }
 
+/**
+ * Emit a root frame that is placed to the right of any existing page content,
+ * never hardcoded at (0,0). Shared by preload and single-chunk emitters.
+ */
+function emitRootFrame(lines: string[], context: CodegenContext): void {
+  const rootName = context.rootName ?? "Root";
+  const rootWidth = context.rootWidth ?? 1440;
+  const rootHeight = context.rootHeight ?? 900;
+
+  lines.push("// ── ROOT FRAME ──");
+  lines.push("var __bridgeMaxX = 0;");
+  lines.push("for (var __i = 0; __i < figma.currentPage.children.length; __i++) {");
+  lines.push("  var __c = figma.currentPage.children[__i];");
+  lines.push("  if (__c.x + __c.width > __bridgeMaxX) __bridgeMaxX = __c.x + __c.width;");
+  lines.push("}");
+  lines.push("var root = figma.createFrame();");
+  lines.push("root.name = " + JSON.stringify(rootName) + ";");
+  lines.push("root.resize(" + rootWidth + ", " + rootHeight + ");");
+  lines.push('root.layoutMode = "VERTICAL";');
+  lines.push('root.primaryAxisSizingMode = "AUTO";');
+  lines.push('root.counterAxisSizingMode = "FIXED";');
+  lines.push("figma.currentPage.appendChild(root);");
+  lines.push("root.x = __bridgeMaxX === 0 ? 0 : __bridgeMaxX + 100;");
+  lines.push("root.y = 0;");
+}
+
 function emitPreloadChunk(chunk: Chunk, context: CodegenContext): string {
   const lines: string[] = [];
   const importNames = new Map<string, string>();
@@ -790,21 +816,7 @@ function emitPreloadChunk(chunk: Chunk, context: CodegenContext): string {
   });
   lines.push("");
 
-  // Create root frame (Rule 19)
-  const rootName = context.rootName ?? "Root";
-  const rootWidth = context.rootWidth ?? 1440;
-  const rootHeight = context.rootHeight ?? 900;
-
-  lines.push("// ── ROOT FRAME ──");
-  lines.push("var root = figma.createFrame();");
-  lines.push("root.name = " + JSON.stringify(rootName) + ";");
-  lines.push("root.resize(" + rootWidth + ", " + rootHeight + ");");
-  lines.push('root.layoutMode = "VERTICAL";');
-  lines.push('root.primaryAxisSizingMode = "AUTO";');
-  lines.push('root.counterAxisSizingMode = "FIXED";');
-  lines.push("root.x = 0;");
-  lines.push("root.y = 0;");
-  lines.push("figma.currentPage.appendChild(root);");
+  emitRootFrame(lines, context);
   lines.push("globalThis.__bridge.root = root;");
 
   return lines.join("\n");
@@ -866,20 +878,7 @@ function emitSingleChunk(chunk: Chunk, context: CodegenContext): string {
     lines.push("");
   }
 
-  const rootName = context.rootName ?? "Root";
-  const rootWidth = context.rootWidth ?? 1440;
-  const rootHeight = context.rootHeight ?? 900;
-
-  lines.push("// ── ROOT ──");
-  lines.push("var root = figma.createFrame();");
-  lines.push("root.name = " + JSON.stringify(rootName) + ";");
-  lines.push("root.resize(" + rootWidth + ", " + rootHeight + ");");
-  lines.push('root.layoutMode = "VERTICAL";');
-  lines.push('root.primaryAxisSizingMode = "AUTO";');
-  lines.push('root.counterAxisSizingMode = "FIXED";');
-  lines.push("root.x = 0;");
-  lines.push("root.y = 0;");
-  lines.push("figma.currentPage.appendChild(root);");
+  emitRootFrame(lines, context);
   lines.push("");
 
   lines.push("// ── BUILD ──");

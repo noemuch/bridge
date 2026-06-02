@@ -136,6 +136,11 @@ test("compile() returns success for a valid scene graph", () => {
     assert.equal(typeof result.chunks[0]!.id, "string");
     assert.ok(result.plan);
     assert.equal(result.plan!.totalChunks, result.chunks.length);
+    const allCode = result.chunks.map((c) => c.code).join("\n");
+    assert.ok(
+      allCode.includes("figma.currentPage.children"),
+      "compiled output must scan for clear space"
+    );
   } finally {
     kb.cleanup();
   }
