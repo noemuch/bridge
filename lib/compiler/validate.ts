@@ -98,6 +98,24 @@ export function validate(graph: ResolvedSceneGraph, registry: Registry | null): 
       // ------------------------------------------------------------------
       // Rule 3 — FILL child inside AUTO-sized parent
       // ------------------------------------------------------------------
+
+      // ------------------------------------------------------------------
+      // Rule 3 (root) — top-level fillV collapses against the synthetic root.
+      // The compiler's root frame is VERTICAL with primaryAxisSizingMode AUTO
+      // and counterAxisSizingMode FIXED, so fillV (primary axis) collapses to
+      // 0px while fillH (counter axis, FIXED) is fine.
+      // ------------------------------------------------------------------
+      if (parent === null && node.fillV) {
+        errors.push(
+          new CompilerError("VALIDATE_FILL_IN_AUTO_PARENT", {
+            message:
+              "Top-level fillV collapses to 0px against the AUTO-sized root frame — set an explicit height or remove fillV",
+            node: node.name ?? null,
+            path: path + ".fillV",
+          })
+        );
+      }
+
       if (parent && (node.fillH || node.fillV)) {
         const layout = parent.layout ?? "NONE";
 
