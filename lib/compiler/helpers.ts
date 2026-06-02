@@ -33,7 +33,7 @@ export const HELPER_BLOCK: string = [
   "function findPropKey(compSet, prefix, type) {",
   "  var defs = compSet.componentPropertyDefinitions;",
   "  return Object.keys(defs).find(function(k) {",
-  "    return k.startsWith(prefix) && defs[k].type === type;",
+  "    return k.split('#')[0] === prefix && defs[k].type === type;",
   "  });",
   "}",
 ].join("\n");

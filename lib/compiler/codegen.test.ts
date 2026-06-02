@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { generateCode } from "./codegen.js";
 import type { Chunk } from "./plan.js";
+import { HELPER_BLOCK } from "./helpers.js";
 
 function singleChunk(): Chunk {
   return {
@@ -27,4 +28,24 @@ test("root frame is placed in clear space, not hardcoded at (0,0)", () => {
     "root.x must be computed, not hardcoded to 0"
   );
   assert.ok(code.includes("figma.currentPage.appendChild(root)"));
+});
+
+// Reconstruct the runtime findPropKey from the injected helper block so we can
+// test its matching behavior directly.
+function loadFindPropKey(): (compSet: unknown, prefix: string, type: string) => string | undefined {
+  return new Function(HELPER_BLOCK + "\nreturn findPropKey;")() as never;
+}
+
+test("findPropKey matches exact name segment, not a shared prefix", () => {
+  const findPropKey = loadFindPropKey();
+  const compSet = {
+    componentPropertyDefinitions: {
+      "Label secondary#3:4": { type: "TEXT" },
+      "Label#1:2": { type: "TEXT" },
+      "Size": { type: "VARIANT" },
+    },
+  };
+  assert.equal(findPropKey(compSet, "Label", "TEXT"), "Label#1:2");
+  assert.equal(findPropKey(compSet, "Size", "VARIANT"), "Size");
+  assert.equal(findPropKey(compSet, "Nope", "TEXT"), undefined);
 });
