@@ -117,7 +117,7 @@ bridge-ds compile --input scene.json --kb <kb-path> --transport <console|officia
 | ------------ | ------------------------------------------------------------------------------------ |
 | **Parse**    | Load scene graph JSON, validate schema                                               |
 | **Resolve**  | Look up every `$token` reference against the knowledge base registries               |
-| **Validate** | Check structure, detect missing tokens with fuzzy suggestions, flag hardcoded values |
+| **Validate** | Check structure, detect missing tokens with fuzzy suggestions, flag hardcoded values, validate requested variants against registry metadata |
 | **Plan**     | Chunk large graphs for transport limits; bridge nodeIds across chunks                |
 | **Generate** | Emit Figma Plugin API code respecting all 26 rules                                   |
 | **Wrap**     | Adapt output for the target transport (console IIFE vs. official top-level await)    |

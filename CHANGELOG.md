@@ -2,6 +2,46 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [7.2.0] — 2026-06-03
+
+Compiler hardening informed by Figma's official Plugin API gotchas:
+correctness, robustness, and a perf win, with no breaking changes.
+
+### Fixed
+
+- **Root frame placed in clear space, never hardcoded at `(0, 0)`.** The
+  codegen used to drop the root frame at the origin, where it could land
+  on top of existing canvas content. It now computes a clear position so
+  generated output never overlaps prior work.
+
+- **`findPropKey` matches the exact property-name segment.** Property
+  lookup compared against a shared prefix, so a request for `Size` could
+  spuriously match `Size Variant#42:0`. It now matches the exact
+  property-name segment (the part before `#`), eliminating false hits.
+
+- **Top-level nodes with `fillV` are flagged at compile time.** A
+  top-level node sized with `fillV` collapses to `0px` against the
+  AUTO-sized root frame. The compiler now flags this at compile time
+  instead of letting it silently produce an invisible node.
+
+### Added
+
+- **Compile-time variant validation against registry metadata.**
+  Requesting a variant property or value that is absent from the
+  component's registry metadata now emits `VALIDATE_UNKNOWN_VARIANT` (a
+  warning) with suggestions. It is a no-op when the component has no
+  variant metadata, so registries that predate this field are
+  unaffected. The registry loader also stops dropping the `variants`
+  field on load, so the metadata is actually available to the validator.
+  Tests: `lib/compiler/validate.test.ts`.
+
+### Performance
+
+- **Plugin API imports batched into a single `Promise.all`.** Component
+  imports that were `await`ed sequentially (N round-trips) are now
+  issued in one `Promise.all`, cutting import latency to a single
+  round-trip.
+
 ## [7.1.3] — 2026-05-18
 
 ### Fixed
