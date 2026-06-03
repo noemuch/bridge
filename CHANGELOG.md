@@ -2,6 +2,24 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [7.3.1] — 2026-06-03
+
+KB freshness drift-guard added to the `make` skill flow.
+
+### Added
+
+- **KB freshness pre-flight (drift guard).** Phase A of the `make` flow now reads
+  each registry's `generatedAt` and warns the user when the KB is stale (> 7 days:
+  the refresh cron may not be running; > 30 days or missing timestamp: strongly
+  recommend re-running `setup`). The compiler guarantees `$token` resolution
+  against the KB, but not that the KB still matches live Figma — a token removed
+  or renamed in Figma but still present in a stale KB compiles fine and fails at
+  execute time. This guard surfaces that risk before generation. It lives in the
+  skill (runtime), not the compiler, to preserve the compiler's determinism law
+  (a time-based check would make compile output depend on wall-clock time). The
+  KB age is also shown in the C4 plan. This is the cheap interim guard; a live
+  drift probe (verifying resolved keys still exist in Figma) remains future work.
+
 ## [7.3.0] — 2026-06-03
 
 Design-intelligence guidance added to the `make` skill flow.

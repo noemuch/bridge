@@ -64,6 +64,25 @@ Load the **summary** of available DS components — names and types only, not fu
 
 **Do NOT load guides, patterns, or figma-api-rules.md.** The compiler handles all Figma API rules.
 
+### A2b. Check KB freshness (drift guard)
+
+The compiler guarantees every `$token` resolves against the KB — but NOT that the
+KB still matches the live Figma library. A token removed/renamed in Figma but
+still present in a stale KB will **compile fine and then fail at execute time**.
+This check is a runtime guard; it deliberately lives here (not in the compiler),
+because a time-based check would break the compiler's determinism law.
+
+Read `generatedAt` from each loaded registry and compare to today's date:
+- **≤ 7 days** → fresh, no warning.
+- **> 7 days** → surface: "⚠ KB last synced {N}d ago — the refresh cron may not be
+  running; tokens/components may have drifted from live Figma."
+- **> 30 days, or `generatedAt` missing** → STRONGLY warn and recommend re-running
+  `setup` (or the KB cron) before generating: resolved tokens that were removed or
+  renamed in Figma will pass compile but fail on execute.
+
+Carry the KB age into the C4 plan ("KB age: {N}d"). This does not block generation
+— it informs the user before they commit to a `make`.
+
 ### A3. Load learnings
 
 Load `knowledge-base/learnings.json` (skip if file doesn't exist).
@@ -211,6 +230,7 @@ Mode: {screen | component}
 Canvas: {1440px (web) | 390px (mobile) | 1024px (tablet)}
 Recipe: {recipe name or "from scratch"}
 Learnings: {n} applied
+KB age: {N}d{ ⚠ stale — consider `setup` if > 30d}
 
 STRUCTURE:
   Root ({width}x{height}, {layout direction})
