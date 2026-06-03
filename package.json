@@ -52,7 +52,7 @@
     "test": "npm run test:all",
     "test:smoke": "node bin/bridge.js help",
     "test:skills": "node scripts/validate-skills.js",
-    "test:all": "npm run build && node --test \"dist/**/*.test.js\"",
+    "test:all": "npm run build && node --test $(find dist/lib dist/test -name '*.test.js')",
     "test:security": "npm run build && node --test dist/test/security/*.test.js",
     "test:rules-fixtures": "npm run build && node --test dist/lib/lint/builtin.test.js",
     "test:rules-meta": "node scripts/validate-rule-meta.js",
