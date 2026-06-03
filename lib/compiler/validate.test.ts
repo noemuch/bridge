@@ -71,10 +71,7 @@ test("top-level fillH is allowed (root counter axis is FIXED)", () => {
 
   const result = validate(graph, null);
   const codes = result.errors.map((e) => e.code);
-  assert.ok(
-    !codes.includes("VALIDATE_FILL_IN_AUTO_PARENT"),
-    "top-level fillH must not be flagged"
-  );
+  assert.ok(!codes.includes("VALIDATE_FILL_IN_AUTO_PARENT"), "top-level fillH must not be flagged");
 });
 
 test("unknown variant VALUE is flagged with VALIDATE_UNKNOWN_VARIANT", () => {

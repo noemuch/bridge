@@ -113,14 +113,14 @@ Every scene graph JSON goes through a deterministic pipeline:
 bridge-ds compile --input scene.json --kb <kb-path> --transport <console|official>
 ```
 
-| Stage        | Purpose                                                                              |
-| ------------ | ------------------------------------------------------------------------------------ |
-| **Parse**    | Load scene graph JSON, validate schema                                               |
-| **Resolve**  | Look up every `$token` reference against the knowledge base registries               |
+| Stage        | Purpose                                                                                                                                     |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Parse**    | Load scene graph JSON, validate schema                                                                                                      |
+| **Resolve**  | Look up every `$token` reference against the knowledge base registries                                                                      |
 | **Validate** | Check structure, detect missing tokens with fuzzy suggestions, flag hardcoded values, validate requested variants against registry metadata |
-| **Plan**     | Chunk large graphs for transport limits; bridge nodeIds across chunks                |
-| **Generate** | Emit Figma Plugin API code respecting all 26 rules                                   |
-| **Wrap**     | Adapt output for the target transport (console IIFE vs. official top-level await)    |
+| **Plan**     | Chunk large graphs for transport limits; bridge nodeIds across chunks                                                                       |
+| **Generate** | Emit Figma Plugin API code respecting all 26 rules                                                                                          |
+| **Wrap**     | Adapt output for the target transport (console IIFE vs. official top-level await)                                                           |
 
 Errors are caught at compile time, before anything touches Figma.
 

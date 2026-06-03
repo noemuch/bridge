@@ -18,7 +18,10 @@ function fixture(): string {
   const dir = mkdtempSync(path.join(tmpdir(), "bridge-cat-bias-"));
   const regDir = path.join(dir, "knowledge-base", "registries");
   mkdirSync(regDir, { recursive: true });
-  writeFileSync(path.join(regDir, "components.json"), JSON.stringify({ version: 1, components: [] }));
+  writeFileSync(
+    path.join(regDir, "components.json"),
+    JSON.stringify({ version: 1, components: [] })
+  );
   writeFileSync(
     path.join(regDir, "variables.json"),
     JSON.stringify({

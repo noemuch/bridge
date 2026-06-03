@@ -23,10 +23,7 @@ test("root frame is placed in clear space, not hardcoded at (0,0)", () => {
     code.includes("figma.currentPage.children"),
     "expected a scan over figma.currentPage.children for placement"
   );
-  assert.ok(
-    !/root\.x\s*=\s*0\s*;/.test(code),
-    "root.x must be computed, not hardcoded to 0"
-  );
+  assert.ok(!/root\.x\s*=\s*0\s*;/.test(code), "root.x must be computed, not hardcoded to 0");
   assert.ok(code.includes("figma.currentPage.appendChild(root)"));
 });
 
@@ -42,7 +39,7 @@ test("findPropKey matches exact name segment, not a shared prefix", () => {
     componentPropertyDefinitions: {
       "Label secondary#3:4": { type: "TEXT" },
       "Label#1:2": { type: "TEXT" },
-      "Size": { type: "VARIANT" },
+      Size: { type: "VARIANT" },
     },
   };
   assert.equal(findPropKey(compSet, "Label", "TEXT"), "Label#1:2");
@@ -60,9 +57,7 @@ test("multiple imports are batched into a single Promise.all", () => {
         { kind: "variable", key: "VariableID:1:1", name: "color/bg", ref: "$color/bg" },
         { kind: "variable", key: "VariableID:1:2", name: "spacing/md", ref: "$spacing/md" },
       ],
-      components: [
-        { kind: "component", key: "comp-button", name: "Button", ref: "$comp/Button" },
-      ],
+      components: [{ kind: "component", key: "comp-button", name: "Button", ref: "$comp/Button" }],
       textStyles: [],
     },
   } as unknown as Chunk;
@@ -91,14 +86,38 @@ test("multi-chunk preload destructures the same import names it stores on global
   // Build a preload chunk with: 2 variables + 1 component + 1 textStyle
   const imports = {
     variables: [
-      { kind: "variable" as const, key: "VariableID:10:1", name: "color/bg/default", ref: "$color/bg/default", importMethod: null },
-      { kind: "variable" as const, key: "VariableID:10:2", name: "spacing/md", ref: "$spacing/md", importMethod: null },
+      {
+        kind: "variable" as const,
+        key: "VariableID:10:1",
+        name: "color/bg/default",
+        ref: "$color/bg/default",
+        importMethod: null,
+      },
+      {
+        kind: "variable" as const,
+        key: "VariableID:10:2",
+        name: "spacing/md",
+        ref: "$spacing/md",
+        importMethod: null,
+      },
     ],
     components: [
-      { kind: "component" as const, key: "comp-button-key", name: "Button", ref: "$comp/Button", importMethod: null },
+      {
+        kind: "component" as const,
+        key: "comp-button-key",
+        name: "Button",
+        ref: "$comp/Button",
+        importMethod: null,
+      },
     ],
     textStyles: [
-      { kind: "textStyle" as const, key: "style-heading-xl", name: "heading/xl", ref: "$text/heading/xl", importMethod: null },
+      {
+        kind: "textStyle" as const,
+        key: "style-heading-xl",
+        name: "heading/xl",
+        ref: "$text/heading/xl",
+        importMethod: null,
+      },
     ],
   };
 
@@ -128,7 +147,10 @@ test("multi-chunk preload destructures the same import names it stores on global
   assert.ok(destructureMatch, "expected a destructuring assignment from Promise.all");
 
   const destructuredNames = new Set(
-    destructureMatch![1]!.split(",").map((s) => s.trim()).filter(Boolean)
+    destructureMatch![1]!
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
   );
 
   // ── EXTRACT globalThis.__bridge.<name> = <name> ENTRIES ──────────────────────

@@ -16,7 +16,10 @@ function fixture(variablesJson: unknown): string {
   const dir = mkdtempSync(path.join(tmpdir(), "bridge-mcp-shape-"));
   const regDir = path.join(dir, "knowledge-base", "registries");
   mkdirSync(regDir, { recursive: true });
-  writeFileSync(path.join(regDir, "components.json"), JSON.stringify({ version: 1, components: [] }));
+  writeFileSync(
+    path.join(regDir, "components.json"),
+    JSON.stringify({ version: 1, components: [] })
+  );
   writeFileSync(path.join(regDir, "variables.json"), JSON.stringify(variablesJson));
   writeFileSync(path.join(regDir, "text-styles.json"), JSON.stringify({ styles: [] }));
   return dir;
@@ -43,7 +46,10 @@ test("loadRegistry reads the MCP-native variables.json shape (collections)", () 
     const reg = loadRegistry(dir);
     assert.equal(reg.variables.byName.get("layout/spacing/medium")?.key, "spacing_med_key");
     assert.equal(reg.variables.byName.get("layout/radius/medium")?.key, "radius_med_key");
-    assert.equal(reg.variables.byName.get("color/background/surface/subtle")?.key, "surface_subtle_key");
+    assert.equal(
+      reg.variables.byName.get("color/background/surface/subtle")?.key,
+      "surface_subtle_key"
+    );
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

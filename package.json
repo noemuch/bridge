@@ -40,8 +40,11 @@
     "packages/*"
   ],
   "scripts": {
+    "build:deps": "npm run build --workspaces --if-present",
+    "prebuild": "npm run build:deps",
     "build": "tsc && node scripts/copy-builtin-resources.js",
     "build:watch": "tsc --watch",
+    "pretypecheck": "npm run build:deps",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"lib/**/*.ts\" \"test/**/*.ts\"",
     "format": "prettier --write \"lib/**/*.ts\" \"test/**/*.ts\" \"*.{json,md}\"",
@@ -49,7 +52,7 @@
     "test": "npm run test:all",
     "test:smoke": "node bin/bridge.js help",
     "test:skills": "node scripts/validate-skills.js",
-    "test:all": "npm run build && node --test dist/lib dist/test",
+    "test:all": "npm run build && node --test \"dist/**/*.test.js\"",
     "test:security": "npm run build && node --test dist/test/security/*.test.js",
     "test:rules-fixtures": "npm run build && node --test dist/lib/lint/builtin.test.js",
     "test:rules-meta": "node scripts/validate-rule-meta.js",
