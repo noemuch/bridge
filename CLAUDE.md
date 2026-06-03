@@ -87,7 +87,7 @@ Pre-built scene graph templates in `knowledge-base/recipes/` that evolve with us
 setup bridge (once) → make → [fix cycle] → done
 ```
 
-`make` = context load + recipe match + CSpec generation + compile + execute + verify. Iteration happens within `make` (describe changes) or via `fix` (manual Figma corrections).
+`make` = context load + recipe match + section decompose/classify + CSpec generation + compile + execute + verify. Iteration happens within `make` (describe changes) or via `fix` (manual Figma corrections).
 
 ## Knowledge base layout
 

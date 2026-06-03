@@ -2,6 +2,31 @@
 
 All notable changes to Bridge DS are documented here.
 
+## [7.3.0] — 2026-06-03
+
+Design-intelligence guidance added to the `make` skill flow.
+
+### Added
+
+- **Section decompose/classify in the `make` flow.** The `make` command now
+  decomposes a request into named sections and classifies each as `exact`
+  (the DS already has a component — instantiate it), `compose` (assemble DS
+  instances inside tokenized frames), or `new` (no existing DS component —
+  build it first). Ported from Figma's official `figma-generate-design` and
+  edenspiekermann's `apply-design-system` skills.
+
+- **Intent-first token selection.** CSpec authoring now picks the most
+  specific token that carries the design intent: semantic and component
+  tokens over primitive ones, intent-named references over resolved values.
+  This keeps theme and mode switches correct even after the CSpec is written.
+
+### Changed
+
+- **C3 (new-DS-component detection) consumes section classification.**
+  C3 no longer re-decides coverage from scratch; it reads the `new`
+  classification produced by the decompose step, eliminating duplicate
+  analysis and keeping the two steps consistent.
+
 ## [7.2.0] — 2026-06-03
 
 Compiler hardening informed by Figma's official Plugin API gotchas:
