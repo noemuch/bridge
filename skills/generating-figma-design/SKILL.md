@@ -110,6 +110,35 @@ For each recipe in `_index.json`, compute a match score:
 
 ## Phase C — CSpec (target: 30-60s)
 
+### C0. Decompose into sections, then classify each (design intelligence)
+
+Before writing any node, break the request into its major sections, then decide
+HOW each section is built. This is where DS fidelity and composition are won.
+
+**1. Decompose** the request into major sections, top to bottom:
+- Screen → e.g. Header, Hero, Content panels, Footer.
+- Modal / dialog → Title bar, Body / form sections, Action bar.
+- Drawer / sidebar / panel → Navigation, Content area, Footer actions.
+- Component → its part structure (container, leading, label, trailing, states).
+
+**2. Classify each section into exactly one bucket** — this decides INSTANCE vs build:
+- `exact` — a published DS component (or one of its variants) covers the whole
+  section → one INSTANCE node; set its `variant` + `properties`. **Preferred.**
+- `compose` — no single component fits, but the section is built from DS pieces
+  (component INSTANCEs inside tokenized FRAMEs) → never raw shapes with hardcoded
+  values.
+- `new` — no DS component covers it and it is not composable from existing ones
+  → hand to C3 (`new_components`); the component is built first.
+
+Default preference: `exact` > `compose` > `new`. A raw RECTANGLE/ELLIPSE whose
+name matches a DS component is a red flag — the compiler warns (Rule 18); use an
+INSTANCE instead.
+
+Report the section map before C1:
+
+    SECTIONS:
+      {Section} → {exact: Component(variant) | compose | new: name}
+
 ### C1. Generate CSpec YAML
 
 Choose the appropriate template:
@@ -130,7 +159,16 @@ Fill the CSpec based on:
 **If no recipe match (from scratch):**
 - Build the layout tree node by node using the CSpec template structure
 - Reference DS components as INSTANCE nodes (by name — the compiler resolves keys)
-- Use `$token` references for all spacing, colors, radius, typography
+- Use `$token` references for all spacing, colors, radius, typography — and pick
+  the **most specific token that carries intent**. When collections alias each
+  other (primitive ← semantic ← component), reference the most specific one:
+  prefer a semantic token (`$color/bg/...`) over a raw palette value, and a
+  component-level token over a semantic one when it exists. Never reference a
+  primitive when a semantic/component token expresses the same intent — a
+  primitive ignores theme/mode switches.
+- Choose tokens by **intent, not by resolved value**. A token's value depends on
+  the active mode (light/dark); selecting by the value you see in the default
+  mode silently breaks the other modes.
 - Use REPEAT nodes for lists/grids with repeated structure
 
 ### C2. Apply learnings
@@ -148,9 +186,11 @@ LEARNINGS APPLIED ({n}):
 
 ### C3. Detect new DS components (screen mode only)
 
-For each UI pattern described in the CSpec, check if it exists in the component registry:
-- If covered by an existing DS component -> use INSTANCE node
-- If NOT covered -> add to `new_components` section of the CSpec
+Take the sections C0 classified as `new` (the patterns no existing DS component
+covers and that are not composable from existing ones). Add each to the
+`new_components` section of the CSpec. Sections classified `exact` become INSTANCE
+nodes; sections classified `compose` become FRAMEs of INSTANCEs — neither reaches
+this step.
 
 **If new components are identified:**
 ```
